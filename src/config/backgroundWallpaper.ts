@@ -118,7 +118,7 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 				{
 					name: "Sponsor",
 					icon: "material-symbols:favorite",
-					url: "https://lonelybing.com/sponsor/",
+					url: "https://lonelybing.top/sponsor/",
 				},
 				{
 					name: "RSS",

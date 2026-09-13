@@ -48,7 +48,7 @@ export const siteConfig: SiteConfig = {
 	subtitle: "-无限美好",
 
 	// 站点 URL
-	site_url: "https://lonelybing.com",
+	site_url: "https://lonelybing.top",
 
 	// 站点描述
 	description:
