@@ -1,6 +1,6 @@
 ---
 title: Markdown Mermaid 图表
-published: 2026-09-12
+published: 2026-09-11
 pinned: false
 description: 一个包含 Mermaid 的 Markdown 博客文章简单示例。
 tags: [Markdown, 博客, Mermaid, Firefly]

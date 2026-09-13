@@ -1,6 +1,6 @@
 ---
 title: Firefly 文章加密
-published: 2026-09-12
+published: 2026-09-11
 description: 这是一篇密砝保护的示例文章，用于演示文章加密功能。
 tags: [示例, 密砝保护]
 category: 文章示例

@@ -1,7 +1,7 @@
 ---
 title: "MiBand-Daily-Word-Practice · 小米手环背单词小程序"
 slug: miband-daily-word-practice
-published: 2026-09-13
+published: 2026-09-12
 draft: false
 order: 90
 description: "小米手环 9 Pro 上的每日背单词小程序：内置 6200 高中词汇，四档记忆状态与智能抽词重复机制，把闲置的手环变成随身单词本。"
