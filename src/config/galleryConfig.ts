@@ -25,14 +25,14 @@ export const galleryConfig: GalleryConfig = {
 		},
 		{
 			id: "encrypted",
-			name: "加密相册示例",
+			name: "加密的哦~",
 			description:
 				"LonelyBing的好朋友才能看哦~",
 			location: "未知",
 			date: "2026-09-12",
 			tags: ["Life", "Love"],
 			password: "617514",
-			passwordHint: "手机密码",
+			passwordHint: "你猜猜",
 		},
 		{
 			id: "handan",
