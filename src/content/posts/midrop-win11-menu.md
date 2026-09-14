@@ -3,7 +3,7 @@ title: 让「使用小米互传发送」进入 Windows 11 新版右键菜单第�
 published: 2026-09-13
 pinned: false
 description: 通过只含 AppxManifest.xml 的稀疏 MSIX 包为小米互传授予包标识，让「使用小米互传发送」进入 Windows 11 新版右键菜单第一层——不改原厂注册表，不重分发二进制，可完整回滚。
-image: "./images/midrop-win11-menu.png"
+image: "images/midrop-win11-menu.png"
 tags: [Windows 11, 右键菜单, 小米互传, Shell 扩展, MSIX, PowerShell]
 category: 项目分享
 slug: midrop-win11-menu
