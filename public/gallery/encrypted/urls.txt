@@ -1,10 +1,20 @@
 # 每行一个图片 URL，支持 jpg/png/webp/avif/gif后缀
 # # 号开头的行为注释，空行会被忽略
 # 示例：
-https://s41.ax1x.com/2026/05/13/peXsfit.webp
-https://s41.ax1x.com/2026/05/13/peXyh79.jpg
-https://s41.ax1x.com/2026/05/13/peXshJP.webp
-https://s41.ax1x.com/2026/05/13/peXyWm4.jpg
-https://s41.ax1x.com/2026/05/13/peXsRII.webp
-https://s41.ax1x.com/2026/05/13/peXyf0J.jpg
-https://s41.ax1x.com/2026/05/13/peXs2dA.webp
+https://img.lonelybing.top/file/Love/1789364269099.jpg
+https://img.lonelybing.top/file/Love/1789364271267.jpg
+https://img.lonelybing.top/file/Love/1789364255466.png
+https://img.lonelybing.top/file/Love/1789364250317.jpg
+https://img.lonelybing.top/file/Love/1789364254163.jpg
+https://img.lonelybing.top/file/Love/1789364249312.jpg
+https://img.lonelybing.top/file/Love/1789364246117.jpg
+https://img.lonelybing.top/file/Love/1789364244207.jpg
+https://img.lonelybing.top/file/Love/1789364232642.jpg
+https://img.lonelybing.top/file/Love/1789364223795.jpg
+https://img.lonelybing.top/file/Love/1789364224829.jpg
+https://img.lonelybing.top/file/Love/1789364232445.jpg
+https://img.lonelybing.top/file/Love/1789364224070.jpg
+https://img.lonelybing.top/file/Love/1789364227071.jpg
+https://img.lonelybing.top/file/Love/1789364220083.jpg
+https://img.lonelybing.top/file/Love/1789364217778.jpeg
+https://img.lonelybing.top/file/Love/1789364216728.jpg

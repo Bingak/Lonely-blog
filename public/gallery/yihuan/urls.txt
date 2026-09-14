@@ -1,0 +1,7 @@
+# 每行一个图片 URL，支持 jpg/png/webp/avif/gif后缀
+# # 号开头的行为注释，空行会被忽略
+# 示例：
+https://img.lonelybing.top/file/异环/1789356405700.png
+https://img.lonelybing.top/file/异环/1789356409796.png
+https://img.lonelybing.top/file/异环/1789356407628.png
+https://img.lonelybing.top/file/异环/1789356403719.png

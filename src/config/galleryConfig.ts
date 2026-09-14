@@ -16,23 +16,31 @@ export const galleryConfig: GalleryConfig = {
 		// passwordHint: 密码提示，设置后在输入密码错误时显示（可选，需配合password使用）
 		// 每添加一个数组项就相当于添加了一个相册，记得在 public/gallery/ 目录下创建对应的子目录并放入图片
 		{
-			id: "firefly-2026",
-			name: "可爱流萤",
-			description: "飞萤之火自无梦的长夜亮起，绽放在终竟的明天。",
-			location: "崩坏：星穹铁道",
-			date: "2026-01-01",
-			tags: ["崩坏星穹铁道", "流萤"],
+			id: "yihuan",
+			name: "异环",
+			description: "喵喵喵~，异环游戏日常",
+			location: "异环",
+			date: "2026-09-14",
+			tags: ["异环", "游戏"],
 		},
 		{
 			id: "encrypted",
 			name: "加密相册示例",
 			description:
 				"LonelyBing的好朋友才能看哦~",
-			location: "邯郸",
+			location: "未知",
 			date: "2026-09-12",
-			tags: ["加密相册", "Life"],
+			tags: ["Life", "Love"],
 			password: "617514",
 			passwordHint: "手机密码",
+		},
+		{
+			id: "handan",
+			name: "邯郸",
+			description: "邯郸一日游",
+			location: "邯郸",
+			date: "2026-09-13",
+			tags: ["Life", "游玩"],
 		},
 	],
 
