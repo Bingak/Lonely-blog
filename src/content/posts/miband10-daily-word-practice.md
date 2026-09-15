@@ -1,6 +1,6 @@
 ---
 title: 小米手环 10 背单词小程序：MiBand10-Daily-Word-Practice
-published: 2026-09-15
+published: 2026-09-15T09:00:00+08:00
 pinned: false
 description: 小米手环 10 标准版上的每日背单词小程序：从 9 Pro 移植适配 212×520 胶囊窄屏，内置 6200 高中词汇，四档记忆状态与智能抽词重复机制，把闲置的手环变成随身单词本。
 image: "./images/miband10-daily-word-practice-learn.png"
@@ -73,7 +73,7 @@ slug: miband10-daily-word-practice
 
 设置页提供 **屏幕常亮** 开关（刷词时不怕中途熄屏）与 **一键清空数据**；关于页展示作者与版本信息。当前版本 **v1.1.0**，适配机型显示为「小米手环 10 标准版」。
 
-![系统设置界面](images/miband10-daily-word-practice-settings.png)
+![系统设置界面](images/miband10-daily-word-practice-settings-1.png)
 
 ![相关信息界面](images/miband10-daily-word-practice-about.png)
 
