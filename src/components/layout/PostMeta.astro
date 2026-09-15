@@ -276,7 +276,15 @@ const visibleTags =
       </div>
     )
   }
-
+  {!isHome && id && (
+    <span id="busuanzi_container_page_pv" class="post-meta-item page-pv">
+      <span class="icon-wrapper">
+        <Icon name="material-symbols:visibility-outline-rounded" />
+      </span>
+      <span id="busuanzi_value_page_pv"></span>
+      <span>次</span>
+    </span>
+  )}
   {
     password && (
       <div class="flex items-center">
@@ -337,6 +345,45 @@ const visibleTags =
 
   .post-meta-cover a:active::before {
     background-color: rgb(255 255 255 / 0.26) !important;
+  }
+
+  .page-pv {
+  flex-basis: 100% !important;
+  font-size: inherit;
+  color: inherit;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+
+  width: auto !important;
+  margin-top: 8px;
+  gap: 6px;
+  }
+
+  .page-pv .icon-wrapper {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    border-radius: 7px;
+    background: rgba(92, 192, 157, 0.16);
+    color: #65cda9;
+  }
+
+  .page-pv .icon-wrapper svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .page-pv #busuanzi_value_page_pv {
+    margin: 0;
   }
 
   @media (max-width: 767px) {
