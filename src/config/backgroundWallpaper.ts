@@ -51,7 +51,9 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 		mobile: [
 			"https://api.elaina.cat/random/mobile",
 			"https://t.alcy.cc/mp",
-		 "https://moeapi.cc/v1/random?orientation=portrait&rating=sfw&format=redirect&count=1",
+		 "https://unsplash.it/1600/900?random",
+			"https://tu.ltyuanfang.cn/api/fengjing.php",
+			"https://api.isoyu.com/bing_images.php",
 		 "https://api.mmeiblog.cn/phone",
 		],
 		// 背景视频播放地址
