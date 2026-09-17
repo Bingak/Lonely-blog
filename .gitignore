@@ -22,3 +22,5 @@ build/
 # 部署缓存
 .vercel
 .wrangler
+.obsidian
+templates
