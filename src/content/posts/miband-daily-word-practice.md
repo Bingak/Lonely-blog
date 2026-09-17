@@ -7,6 +7,8 @@ image: ""
 tags: [小米手环, Vela, 快应用, 背单词, 开源项目]
 category: 项目分享
 slug: miband-daily-word-practice
+series: "小米手环"
+seriesOrder: 1
 ---
 
 ## 🌟 项目概述
