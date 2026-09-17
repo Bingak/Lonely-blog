@@ -11,10 +11,14 @@
             "id": "ec7befa41219cd0a",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "src/content/dynamic/2026-09-17 12-39.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "新标签页"
+              "title": "2026-09-17 12-39"
             }
           }
         ]
@@ -197,8 +201,9 @@
   },
   "active": "ec7befa41219cd0a",
   "lastOpenFiles": [
-    "src/content/dynamic/2026-09-15-1148.md",
     "src/content/dynamic/2026-09-13-010756.md",
+    "src/content/dynamic/2026-09-17 12-39.md",
+    "src/content/dynamic/2026-09-15-11-48.md",
     "_tmp_16656_1d7a787c",
     "src/content/dynamic/2026-09-15-2248.md",
     "src/content/posts/blog-visitor-counter-busuanzi.md",
