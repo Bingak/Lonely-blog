@@ -12,6 +12,8 @@ tags:
   - 开源项目
 category: 项目分享
 slug: miband10-daily-word-practice
+series: "小米手环"
+seriesOrder: 2
 ---
 
 ## 🌟 项目概述

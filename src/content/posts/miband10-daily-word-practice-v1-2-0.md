@@ -7,6 +7,8 @@ image: "./images/miband10-daily-word-practice-settings-2.png"
 tags: [小米手环, Vela, 快应用, 性能优化, 背单词, 开源项目]
 category: 项目分享
 slug: miband10-daily-word-practice-v1-2-0
+series: "小米手环"
+seriesOrder: 3
 ---
 
 ## 🌟 更新概述
