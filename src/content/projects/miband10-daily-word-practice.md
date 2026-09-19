@@ -90,9 +90,9 @@ MiBand10-Daily-Word-Practice 这玩意儿，就是个跑在小米手环 10 标�
 ### 设置与关于
 
 设置页有屏幕常亮开关（刷词时不怕中途熄屏）和一键清空数据；关于页展示作者跟版本信息. 当前版本 v1.1.0，适配机型显示「小米手环 10 标准版」.
-![系统设置界面](images/ miband1o-daily-word-practice-settings-1.png)
+![系统设置界面](https://img.lonelybing.top/file/Miband/miband10-daily-word-practice-settings-1.png)
 
-![相关信息界面](images/miband10-daily-word-practice-about.png)
+![相关信息界面](https://img.lonelybing.top/file/Miband/miband10-daily-word-practice-about.png)
 
 ### 简洁的界面
 
