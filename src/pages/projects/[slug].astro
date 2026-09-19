@@ -1,5 +1,6 @@
 ---
 import { render } from "astro:content";
+import Comment from "@components/comment/index.astro";
 import Markdown from "@components/common/Markdown.astro";
 import { Icon } from "astro-icon/components";
 import CoverImage from "@/components/common/CoverImage.astro";
@@ -37,7 +38,11 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 
-const { title, description, published, tags, link, status } = entry.data;
+const { title, description, published, tags, link, status, comment } =
+	entry.data;
+
+// 评论页标识：与真实地址一致（astro.config 中 trailingSlash: "always" → /projects/<slug>/）
+const commentPath = `/projects/${removeFileExtension(entry.id)}/`;
 
 // OG 元数据用绝对 URL；页面内封面由 <CoverImage> 用原始 src + basePath 解析（同文章页）
 const coverOg = await resolveProjectImageAbsolute(
@@ -200,4 +205,7 @@ const visibleTags = tags || [];
       </div>
     </div>
   </div>
+
+  <!-- 评论（frontmatter 里写 comment: false 可单独关闭） -->
+  {comment && <Comment customPath={commentPath} title={title} />}
 </MainGridLayout>
