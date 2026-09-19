@@ -4,7 +4,7 @@ published: 2026-09-16T13:00:00+08:00
 pinned: false
 description: 小米手环 10 背单词小程序 v1.2.0 更新：通过数据瘦身、紧凑字符串分片、惰性加载三层优化，词库从 1.07MB 降到 382KB 且启动零对象构造；同时把硬编码的每日 50 词改为 10~200 可自定义并持久化。
 image: "./images/miband10-daily-word-practice-settings-2.png"
-tags: [小米手环, Vela, 快应用, 性能优化, 背单词, 开源项目]
+tags: [小米手环, Vela, 快应用, 开源项目]
 category: 项目分享
 slug: miband10-daily-word-practice-v1-2-0
 series: "小米手环"
