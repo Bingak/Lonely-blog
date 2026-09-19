@@ -26,7 +26,7 @@
 			var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 			var seconds = Math.floor((diff % (1000 * 60)) / 1000);
 			document.getElementById("site-runtime").textContent =
-				"本站已运行 " + days + " 天 " + hours + " 小时 " + minutes + " 分 " + seconds + " 秒";
+				"本站已存活 " + days + " 天 " + hours + " 小时 " + minutes + " 分 " + seconds + " 秒";
 		}
 		updateRuntime();
 		setInterval(updateRuntime, 1000);
