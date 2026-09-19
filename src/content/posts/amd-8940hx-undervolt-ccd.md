@@ -4,7 +4,7 @@ published: 2026-09-19
 pinned: false
 description: 折腾了一圈 8940HX：降压定频再关掉一个 CCD，打游戏不掉帧、风扇也不吵了，就是生产力会慢点。
 image: "./images/amd-bios-start.jpg"
-tags: [AMD, 降压, 关核, UMAF, SMUDebugTool, 笔记本]
+tags: [AMD, 降压, 关核]
 category: 硬件折腾
 slug: amd-8940hx-undervolt-ccd
 ---
