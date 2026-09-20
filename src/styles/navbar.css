@@ -369,7 +369,8 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
  * 小于1280px时隐藏导航栏菜单图标
  * ============================================ */
 @media (max-width: 1279px) {
-    .navbar-icon {
+    #navbar > div > div > a .navbar-icon,
+    #navbar > div > div > div > button .navbar-icon {
         display: none !important;
     }
 }
