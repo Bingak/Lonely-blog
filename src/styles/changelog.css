@@ -1,6 +1,7 @@
 /**
  * 更新日志页面样式
- * 布局语义与 1.png 一致：一行多列的卡片网格，每格 = 类型徽章 + 日期 + 标题 + 摘要 + 作者/统计。
+ * 同一天的提交聚合成日卡片，点击展开显示当日完整提交列表。
+ * 没有提交的日子不显示卡片。
  * 配色统一走主题变量（--primary / --card-bg / --line-divider 等），自动适配亮暗色。
  */
 
@@ -63,46 +64,7 @@
 	font-variant-numeric: tabular-nums;
 	opacity: 0.75;
 }
-
-/* ── 卡片网格：自适应列数（与项目页 --project-card-min-width 同一策略） ── */
-.changelog-grid {
-	display: grid;
-	grid-template-columns: repeat(
-		auto-fill,
-		minmax(var(--changelog-card-min-width, 300px), 1fr)
-	);
-	gap: 1rem;
-}
-
-.changelog-card {
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-	padding: 1rem 1.1rem;
-	border-radius: var(--radius-large);
-	background: var(--card-bg);
-	transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-		box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.changelog-card:hover {
-	transform: translateY(-3px);
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-}
-
-/* 全屏透明壁纸模式下卡片跟随半透明底色 */
-:global(.wallpaper-transparent) .changelog-card {
-	background: var(--card-bg-transparent);
-}
-
-/* ── 卡片头部：类型徽章 + 日期 ── */
-.changelog-card-head {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 0.5rem;
-}
-
+/* ── 类型徽章（日卡片头部 + 展开后单条提交复用） ── */
 .changelog-kind {
 	display: inline-flex;
 	align-items: center;
@@ -160,19 +122,156 @@
 	color: #5eead4;
 }
 
-.changelog-date {
-	font-size: 0.72rem;
-	color: var(--content-meta);
+/* ── 日卡片列表：同一天聚合成一张卡片 ── */
+.changelog-day-list {
+	display: grid;
+	gap: 0.75rem;
+}
+
+.changelog-day {
+	overflow: hidden;
+	transition: box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.changelog-day.is-expanded {
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* 全屏透明壁纸模式下卡片跟随半透明底色 */
+:global(.wallpaper-transparent) .changelog-day {
+	background: var(--card-bg-transparent);
+}
+
+/* ── 日卡片头部：可点击展开 ── */
+.changelog-day-header {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	width: 100%;
+	padding: 1rem 1.25rem;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	text-align: left;
+	font: inherit;
+	color: inherit;
+	transition: background-color 0.18s;
+}
+
+.changelog-day-header:hover {
+	background: var(--btn-regular-bg);
+}
+
+.changelog-day-header:focus-visible {
+	outline: 2px solid var(--primary);
+	outline-offset: -2px;
+}
+
+.changelog-day-date {
+	font-size: 0.95rem;
+	font-weight: 700;
+	color: var(--deep-text);
 	font-variant-numeric: tabular-nums;
 	white-space: nowrap;
 }
 
-/* ── 标题与摘要 ── */
+:global(:root.dark) .changelog-day-date {
+	color: oklch(0.95 0.01 var(--hue));
+}
+
+.changelog-day-count {
+	font-size: 0.78rem;
+	color: var(--content-meta);
+	white-space: nowrap;
+}
+
+.changelog-day-kinds {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: 0.3rem;
+	margin-left: auto;
+}
+
+.changelog-day-stats {
+	display: inline-flex;
+	gap: 0.35rem;
+	font-size: 0.72rem;
+	font-variant-numeric: tabular-nums;
+	color: var(--content-meta);
+	white-space: nowrap;
+}
+
+.changelog-day-stats em {
+	font-style: normal;
+	color: #16a34a;
+}
+
+.changelog-day-stats i {
+	font-style: normal;
+	color: #dc2626;
+}
+
+:global(:root.dark) .changelog-day-stats em {
+	color: #4ade80;
+}
+:global(:root.dark) .changelog-day-stats i {
+	color: #f87171;
+}
+
+.changelog-day-chevron {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	color: var(--content-meta);
+	transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), color 0.18s;
+}
+
+.changelog-day.is-expanded .changelog-day-chevron {
+	transform: rotate(180deg);
+	color: var(--primary);
+}
+
+.changelog-day-chevron svg {
+	font-size: 1.5rem;
+}
+
+/* ── 展开后内容区 ── */
+.changelog-day-body {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding: 0 1.25rem 1rem;
+	border-top: 1px solid var(--line-divider);
+	margin-top: 0.25rem;
+}
+
+/* ── 展开后的单条提交 ── */
+.changelog-commit {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+	padding: 0.75rem 0;
+	border-bottom: 1px solid color-mix(in srgb, var(--line-divider) 50%, transparent);
+}
+
+.changelog-commit:last-child {
+	border-bottom: none;
+}
+
+.changelog-commit-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+}
+
 .changelog-title {
 	font-size: 0.92rem;
 	font-weight: 700;
 	line-height: 1.45;
 	color: var(--deep-text);
+	margin: 0;
 }
 
 .changelog-title a {
@@ -193,22 +292,19 @@
 	font-size: 0.78rem;
 	line-height: 1.6;
 	color: var(--content-meta);
-	/* 摘要最多两行，保证卡片高度接近 */
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
 	line-clamp: 2;
 	-webkit-box-orient: vertical;
 	overflow: hidden;
+	margin: 0;
 }
 
-/* ── 卡片底部：作者 + 增删统计 + short SHA ── */
 .changelog-foot {
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
-	margin-top: auto;
-	padding-top: 0.5rem;
-	border-top: 1px solid var(--line-divider);
+	padding-top: 0.25rem;
 	font-size: 0.72rem;
 	color: var(--content-meta);
 }
@@ -274,9 +370,12 @@
 }
 
 /* ── 加载骨架 ── */
-.changelog-card.is-skeleton {
-	gap: 0.7rem;
+.changelog-day.is-skeleton {
 	pointer-events: none;
+}
+
+.changelog-day.is-skeleton .skeleton-line {
+	margin: 0.5rem 0;
 }
 
 .skeleton-line {
@@ -322,6 +421,7 @@
 
 /* ── 无障碍与动效偏好 ── */
 @media (prefers-reduced-motion: reduce) {
+	.changelog-day,
 	.changelog-card,
 	.skeleton-line,
 	.changelog-pill {
@@ -331,7 +431,18 @@
 }
 
 @media (max-width: 640px) {
-	.changelog-grid {
-		--changelog-card-min-width: 100%;
+	.changelog-day-header {
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		padding: 0.875rem 1rem;
+	}
+
+	.changelog-day-kinds {
+		margin-left: 0;
+		width: 100%;
+	}
+
+	.changelog-day-body {
+		padding: 0 1rem 0.75rem;
 	}
 }
