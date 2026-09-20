@@ -1,0 +1,50 @@
+media:
+  - name: assets
+    label: 站点资源
+    input: public/assets
+    output: /assets
+    categories: [image]
+
+content:
+  - name: blog-posts
+    label: 📝 博客文章
+    type: group
+    items:
+      - name: posts
+        label: 📝 博客文章
+        type: collection
+        path: src/content/posts
+        format: yaml-frontmatter
+        filename:
+          template: "{year}-{month}-{day}-{primary}.md"
+          field: create
+        view:
+          primary: title
+          fields: [title, published, tags, category, draft, pinned]
+          sort: ["published desc", "title asc"]
+        fields:
+          - name: title
+            label: 标题
+            type: string
+            required: true
+          - name: published
+            label: 发布时间
+            type: date
+            required: true
+            options:
+              time: false
+              format: yyyy-MM-dd
+          - name: tags
+            label: 标签
+            type: select
+            options:
+              multiple: true
+              creatable: true
+          - name: body
+            label: 正文
+            type: rich-text
+            required: true
+
+settings:
+  content:
+    merge: false
