@@ -307,6 +307,11 @@ const socialLinks = profileConfig.links.map((link) => ({
 		color: var(--deep-text);
 		line-height: 1.4;
 	}
+	/* 主题的 --deep-text 在暗色下仍为深色（面向浅色表面设计），
+	   卡片贴深色玻璃背景，这几处文字需切回亮色 */
+	:global(:root.dark) .npp-name {
+		color: oklch(0.95 0.01 var(--hue));
+	}
 	.npp-bio {
 		font-size: 0.72rem;
 		color: var(--content-meta);
@@ -433,6 +438,9 @@ const socialLinks = profileConfig.links.map((link) => ({
 		font-weight: 700;
 		color: var(--deep-text);
 	}
+	:global(:root.dark) .npp-section-title {
+		color: oklch(0.95 0.01 var(--hue));
+	}
 	.npp-section-sub {
 		font-size: 0.65rem;
 		color: var(--content-meta);
@@ -472,6 +480,9 @@ const socialLinks = profileConfig.links.map((link) => ({
 		color: var(--deep-text);
 		font-weight: 600;
 		font-variant-numeric: tabular-nums;
+	}
+	:global(:root.dark) .npp-progress-head span:last-child {
+		color: oklch(0.95 0.01 var(--hue));
 	}
 	.npp-progress {
 		height: 0.35rem;
