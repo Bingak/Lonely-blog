@@ -1,0 +1,646 @@
+---
+/**
+ * 导航栏左侧站名悬停资料卡（参考 my-blog 的 NavbarProfileCard 实现思路，自包含简化版）：
+ * - 桌面端 hover/focus 站名展开浮层小卡片，移出延迟收起，过渡动画平滑；
+ * - 左栏：身份（头像/昵称/签名）+ 社交入口 + 贡献热力图（12 月 × 5 周方块，
+ *   构建期由文章发布日期静态统计色阶，悬浮显示「N月第M周 · X篇」提示）；
+ * - 右栏：建站倒计时模块，以 SITE_FOUNDING_DATE 为基准实时计算已运行时间
+ *   （年/月/日/时/分/秒，每秒刷新），附带月/年进度条（每次展开从 0 重放加载动画）。
+ * 样式与配色复用主题变量（--card-bg / --primary 等），移动端不渲染该浮层。
+ */
+import { Picture } from "astro:assets";
+import * as path from "node:path";
+import type { ImageMetadata } from "astro";
+import { Icon } from "astro-icon/components";
+import { getCollection } from "astro:content";
+import { profileConfig } from "@/config/profileConfig";
+import { getFallbackFormat, getImageFormats } from "@/utils/image-utils";
+import { url } from "@/utils/url-utils";
+
+// ── 建站日期（用于右栏已运行时间计算），需要调整时只改这里 ──
+const SITE_FOUNDING_DATE = "2026-09-12";
+
+const displayName = profileConfig.name;
+const bio = profileConfig.bio;
+
+// ── 头像解析：src 目录走 Astro 优化，public / 远程 URL 直接引用（与 Navbar logo 同一套约定）──
+const avatarValue = profileConfig.avatar || "";
+let avatarImg: ImageMetadata | null = null;
+if (
+	avatarValue &&
+	!avatarValue.startsWith("/") &&
+	!avatarValue.startsWith("http")
+) {
+	const files = import.meta.glob<ImageMetadata>(
+		"../../**/*.{png,jpg,jpeg,webp,avif,gif,svg}",
+		{ import: "default" },
+	);
+	const normalizedPath = path
+		.normalize(path.join("../../", avatarValue))
+		.replace(/\\/g, "/");
+	const file = files[normalizedPath];
+	if (file) avatarImg = await file();
+}
+
+// ── 贡献热力图：构建期统计当年文章按「月-周」分布，渲染方块 + 色阶，客户端只补提示 ──
+const now = new Date();
+const currentYear = now.getFullYear();
+const weekCounts = new Map<string, number>();
+const posts = await getCollection("posts", ({ data }) => {
+	return import.meta.env.PROD ? data.draft !== true : true;
+});
+for (const post of posts) {
+	const published = post.data.published;
+	if (!published || published.getFullYear() !== currentYear) continue;
+	const key = `${published.getMonth()}-${Math.min(4, Math.floor((published.getDate() - 1) / 7))}`;
+	weekCounts.set(key, (weekCounts.get(key) ?? 0) + 1);
+}
+const currentWeekKey = `${now.getMonth()}-${Math.min(4, Math.floor((now.getDate() - 1) / 7))}`;
+
+const heatColumns = Array.from({ length: 12 }, (_, month) => ({
+	month,
+	cells: Array.from({ length: 5 }, (_, week) => {
+		const key = `${month}-${week}`;
+		const count = weekCounts.get(key) ?? 0;
+		const label =
+			count > 0
+				? `${month + 1}月第${week + 1}周 · ${count}篇`
+				: `${month + 1}月第${week + 1}周`;
+		return {
+			key,
+			level: Math.min(3, count),
+			label,
+			isCurrent: key === currentWeekKey,
+		};
+	}),
+}));
+
+const socialLinks = profileConfig.links.map((link) => ({
+	...link,
+	href:
+		link.url.startsWith("http") || link.url.startsWith("mailto:")
+			? link.url
+			: url(link.url),
+}));
+---
+
+<div class="navbar-profile-panel" id="navbar-profile-panel" data-founding={SITE_FOUNDING_DATE} aria-hidden="true">
+	<div class="npp-arrow" aria-hidden="true"></div>
+	<div class="npp-card card-base">
+		<!-- 左栏：身份 + 社交 + 贡献热力图 -->
+		<div class="npp-left">
+			<a class="npp-identity" href={url('/about/')} aria-label={`关于 ${displayName}`} title="前往关于页">
+				<span class="npp-avatar" aria-hidden="true">
+					{avatarImg ? (
+						<Picture
+							src={avatarImg}
+							alt=""
+							class="npp-avatar-img"
+							formats={getImageFormats()}
+							fallbackFormat={getFallbackFormat()}
+							widths={[96, 192]}
+							loading="lazy"
+						/>
+					) : avatarValue ? (
+						<img
+							src={avatarValue.startsWith("/") ? url(avatarValue) : avatarValue}
+							alt=""
+							class="npp-avatar-img"
+							loading="lazy"
+							decoding="async"
+						/>
+					) : (
+						<span class="npp-avatar-fallback">{displayName.slice(0, 1)}</span>
+					)}
+				</span>
+				<span class="npp-identity-text">
+					<strong class="npp-name">{displayName}</strong>
+					{bio && <span class="npp-bio">{bio}</span>}
+				</span>
+			</a>
+
+			<div class="npp-socials">
+				{socialLinks.map((social) => (
+					<a
+						class="npp-social-btn"
+						href={social.href}
+						target={social.href.startsWith("mailto:") ? undefined : "_blank"}
+						rel={social.href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+						aria-label={social.name}
+						title={social.name}
+					>
+						<Icon name={social.icon} />
+					</a>
+				))}
+			</div>
+
+			<div class="npp-heatmap" role="group" aria-label={`${currentYear} 年发文贡献日历`}>
+				{heatColumns.map((column) => (
+					<div class="npp-heat-col">
+						<span class="npp-heat-month" aria-hidden="true">{column.month + 1}</span>
+						{column.cells.map((cell) => (
+							<span
+								class:list={[
+									"npp-heat-cell",
+									`is-level-${cell.level}`,
+									{ "is-current": cell.isCurrent },
+								]}
+								data-tooltip={cell.label}
+								role="img"
+								aria-label={cell.label}
+							/>
+						))}
+					</div>
+				))}
+			</div>
+		</div>
+
+		<!-- 右栏：建站已运行时间 + 进度条 -->
+		<div class="npp-right">
+			<div class="npp-section">
+				<div class="npp-section-head">
+					<span class="npp-section-title">已运行</span>
+					<span class="npp-section-sub">自 {SITE_FOUNDING_DATE.replaceAll("-", ".")}</span>
+				</div>
+				<div class="npp-elapsed">
+					<div class="npp-unit"><strong data-npp-unit="year">00</strong><span>年</span></div>
+					<div class="npp-unit"><strong data-npp-unit="month">00</strong><span>月</span></div>
+					<div class="npp-unit"><strong data-npp-unit="day">00</strong><span>日</span></div>
+					<div class="npp-unit"><strong data-npp-unit="hour">00</strong><span>时</span></div>
+					<div class="npp-unit"><strong data-npp-unit="minute">00</strong><span>分</span></div>
+					<div class="npp-unit"><strong data-npp-unit="second">00</strong><span>秒</span></div>
+				</div>
+			</div>
+
+			<div class="npp-section">
+				<div class="npp-progress-head">
+					<span>本月已过</span>
+					<span data-npp-pct="month">0%</span>
+				</div>
+				<div class="npp-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-npp-progress="month">
+					<span class="npp-progress-fill" data-npp-fill="month"></span>
+				</div>
+			</div>
+
+			<div class="npp-section">
+				<div class="npp-progress-head">
+					<span>今年已过</span>
+					<span data-npp-pct="year">0%</span>
+				</div>
+				<div class="npp-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-npp-progress="year">
+					<span class="npp-progress-fill" data-npp-fill="year"></span>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+	/* ── 浮层开合：透明度 + 位移过渡，桥接区域防止鼠标移出误收 ── */
+	.navbar-profile-panel {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		padding-top: 1.25rem;
+		z-index: 70;
+		opacity: 0;
+		transform: translateY(-8px) scale(0.97);
+		transform-origin: top left;
+		pointer-events: none;
+		transition:
+			opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+			transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+	}
+	.navbar-profile-panel.is-open {
+		opacity: 1;
+		transform: none;
+		pointer-events: auto;
+	}
+	@media (max-width: 1023.98px) {
+		.navbar-profile-panel {
+			display: none;
+		}
+	}
+
+	/* 指向站名的小箭头 */
+	.npp-arrow {
+		position: absolute;
+		top: 0.95rem;
+		left: 1.75rem;
+		width: 0.7rem;
+		height: 0.7rem;
+		background: var(--card-bg);
+		transform: rotate(45deg);
+		border-top-left-radius: 0.2rem;
+		box-shadow: -1px -1px 2px rgba(0, 0, 0, 0.04);
+	}
+	:global(body.wallpaper-transparent) .npp-arrow {
+		background: var(--card-bg-transparent);
+	}
+
+	.npp-card {
+		position: relative;
+		display: flex;
+		gap: 1rem;
+		width: 32rem;
+		max-width: calc(100vw - 2rem);
+		padding: 1rem 1.2rem;
+		box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+		/* 覆盖 card-base 的 overflow-hidden，避免悬浮提示贴边时被裁剪 */
+		overflow: visible;
+	}
+
+	/* ── 左栏 ── */
+	.npp-left {
+		flex: 1 1 0;
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+	.npp-identity {
+		display: flex;
+		align-items: center;
+		gap: 0.7rem;
+		border-radius: 0.6rem;
+		margin: -0.15rem -0.35rem;
+		padding: 0.15rem 0.35rem;
+		transition: opacity 0.2s;
+		color: inherit;
+		text-decoration: none;
+		cursor: pointer;
+	}
+	.npp-identity:hover {
+		opacity: 0.82;
+	}
+	.npp-avatar {
+		width: 2.6rem;
+		height: 2.6rem;
+		border-radius: 9999px;
+		overflow: hidden;
+		flex-shrink: 0;
+		background: var(--btn-regular-bg);
+	}
+	.npp-avatar-img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	.npp-avatar-fallback {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: 100%;
+		font-size: 1.2rem;
+		font-weight: 700;
+		color: var(--primary);
+	}
+	.npp-identity-text {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+	}
+	.npp-name {
+		font-size: 0.95rem;
+		font-weight: 700;
+		color: var(--deep-text);
+		line-height: 1.4;
+	}
+	.npp-bio {
+		font-size: 0.72rem;
+		color: var(--content-meta);
+		line-height: 1.4;
+	}
+
+	.npp-socials {
+		display: flex;
+		gap: 0.45rem;
+	}
+	.npp-social-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 1.8rem;
+		height: 1.8rem;
+		border-radius: 9999px;
+		background: var(--btn-regular-bg);
+		color: var(--btn-content);
+		font-size: 0.9rem;
+		transition:
+			background-color 0.2s,
+			color 0.2s,
+			transform 0.2s;
+	}
+	.npp-social-btn:hover {
+		background: var(--btn-regular-bg-hover);
+		color: var(--primary);
+		transform: translateY(-2px);
+	}
+
+	/* ── 贡献热力图：12 月 × 5 周 ── */
+	.npp-heatmap {
+		display: flex;
+		gap: 3px;
+	}
+	.npp-heat-col {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 3px;
+		flex: 1 1 0;
+	}
+	.npp-heat-month {
+		font-size: 0.6rem;
+		line-height: 1;
+		color: var(--content-meta);
+		margin-bottom: 2px;
+	}
+	.npp-heat-cell {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 1 / 1;
+		border-radius: 3px;
+		background: var(--btn-regular-bg);
+		transition: transform 0.15s;
+	}
+	.npp-heat-cell:hover {
+		transform: scale(1.15);
+		/* 悬停放大产生层叠上下文，必须提升 z-index，
+		   否则提示会被 DOM 顺序靠后的兄弟方格盖住 */
+		z-index: 30;
+	}
+	.npp-heat-cell.is-level-1 {
+		background: color-mix(in srgb, var(--primary) 35%, transparent);
+	}
+	.npp-heat-cell.is-level-2 {
+		background: color-mix(in srgb, var(--primary) 65%, transparent);
+	}
+	.npp-heat-cell.is-level-3 {
+		background: var(--primary);
+	}
+	.npp-heat-cell.is-current {
+		outline: 1.5px solid var(--primary);
+		outline-offset: 1px;
+	}
+
+	/* 方块悬浮提示 */
+	.npp-heat-cell::after {
+		content: attr(data-tooltip);
+		position: absolute;
+		bottom: calc(100% + 6px);
+		left: 50%;
+		transform: translateX(-50%) translateY(2px);
+		padding: 0.2rem 0.5rem;
+		border-radius: 0.375rem;
+		background: var(--codeblock-bg);
+		color: #fff;
+		font-size: 0.68rem;
+		line-height: 1.3;
+		white-space: nowrap;
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.15s;
+		z-index: 30;
+	}
+	.npp-heat-cell:hover::after,
+	.npp-heat-cell:focus::after {
+		opacity: 1;
+		transform: translateX(-50%) translateY(0);
+	}
+
+	/* ── 右栏 ── */
+	.npp-right {
+		flex: 0 0 9.5rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.8rem;
+		border-left: 1px solid var(--line-divider);
+		padding-left: 1rem;
+	}
+	.npp-section {
+		display: flex;
+		flex-direction: column;
+		gap: 0.45rem;
+	}
+	.npp-section-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+	}
+	.npp-section-title {
+		font-size: 0.78rem;
+		font-weight: 700;
+		color: var(--deep-text);
+	}
+	.npp-section-sub {
+		font-size: 0.65rem;
+		color: var(--content-meta);
+	}
+
+	.npp-elapsed {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 0.3rem 0.4rem;
+	}
+	.npp-unit {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.1rem;
+	}
+	.npp-unit strong {
+		font-size: 1rem;
+		font-weight: 700;
+		color: var(--primary);
+		font-variant-numeric: tabular-nums;
+		line-height: 1.2;
+	}
+	.npp-unit span {
+		font-size: 0.6rem;
+		color: var(--content-meta);
+		line-height: 1.2;
+	}
+
+	.npp-progress-head {
+		display: flex;
+		justify-content: space-between;
+		font-size: 0.7rem;
+		color: var(--content-meta);
+	}
+	.npp-progress-head span:last-child {
+		color: var(--deep-text);
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+	}
+	.npp-progress {
+		height: 0.35rem;
+		border-radius: 9999px;
+		background: var(--btn-regular-bg);
+		overflow: hidden;
+	}
+	.npp-progress-fill {
+		display: block;
+		height: 100%;
+		width: 0;
+		border-radius: inherit;
+		background: var(--primary);
+	}
+</style>
+
+<script>
+	function initNavbarProfileCard(): void {
+		const panel = document.getElementById("navbar-profile-panel");
+		const wrap = document.getElementById("navbar-profile-wrap");
+		if (!panel || !wrap || panel.dataset.nppInitialized) return;
+		panel.dataset.nppInitialized = "true";
+
+		const reducedMotion = window.matchMedia(
+			"(prefers-reduced-motion: reduce)",
+		).matches;
+		const foundingRaw = panel.dataset.founding || "2026-09-12";
+		const [fy, fm, fd] = foundingRaw.split("-").map(Number);
+		const START = new Date(fy, (fm || 1) - 1, fd || 1, 0, 0, 0);
+
+		const CLOSE_DELAY = 260;
+		let closeTimer: number | null = null;
+
+		const unitEls: Record<string, HTMLElement | null> = {
+			year: panel.querySelector("[data-npp-unit='year']"),
+			month: panel.querySelector("[data-npp-unit='month']"),
+			day: panel.querySelector("[data-npp-unit='day']"),
+			hour: panel.querySelector("[data-npp-unit='hour']"),
+			minute: panel.querySelector("[data-npp-unit='minute']"),
+			second: panel.querySelector("[data-npp-unit='second']"),
+		};
+		const fills: Record<string, HTMLElement | null> = {
+			month: panel.querySelector("[data-npp-fill='month']"),
+			year: panel.querySelector("[data-npp-fill='year']"),
+		};
+		const pcts: Record<string, HTMLElement | null> = {
+			month: panel.querySelector("[data-npp-pct='month']"),
+			year: panel.querySelector("[data-npp-pct='year']"),
+		};
+
+		/* ── 已运行时间：按日历差算年/月，剩余毫秒折算日/时/分/秒 ── */
+		function elapsedParts(now: Date): Record<string, number> {
+			if (now.getTime() <= START.getTime())
+				return { year: 0, month: 0, day: 0, hour: 0, minute: 0, second: 0 };
+			let years = now.getFullYear() - START.getFullYear();
+			let months = now.getMonth() - START.getMonth();
+			const anchorOf = (y: number, m: number): Date => {
+				const anchor = new Date(START);
+				anchor.setFullYear(START.getFullYear() + y);
+				anchor.setMonth(START.getMonth() + m);
+				return anchor;
+			};
+			if (anchorOf(years, months).getTime() > now.getTime()) {
+				months -= 1;
+				if (months < 0) {
+					months += 12;
+					years -= 1;
+				}
+			}
+			const anchor = anchorOf(years, months);
+			let rest = now.getTime() - anchor.getTime();
+			const day = Math.floor(rest / 86400000);
+			rest -= day * 86400000;
+			const hour = Math.floor(rest / 3600000);
+			rest -= hour * 3600000;
+			const minute = Math.floor(rest / 60000);
+			rest -= minute * 60000;
+			const second = Math.floor(rest / 1000);
+			return { year: years, month: months, day, hour, minute, second };
+		}
+
+		function renderElapsed(): void {
+			const parts = elapsedParts(new Date());
+			for (const [key, value] of Object.entries(parts)) {
+				const el = unitEls[key];
+				if (el) el.textContent = String(value).padStart(2, "0");
+			}
+		}
+		renderElapsed();
+		window.setInterval(renderElapsed, 1000);
+
+		/* ── 进度条：每次展开从 0 重放从左到右的加载动画 ── */
+		function periodProgress(now: Date, kind: "month" | "year"): number {
+			const start =
+				kind === "month"
+					? new Date(now.getFullYear(), now.getMonth(), 1)
+					: new Date(now.getFullYear(), 0, 1);
+			const end =
+				kind === "month"
+					? new Date(now.getFullYear(), now.getMonth() + 1, 1)
+					: new Date(now.getFullYear() + 1, 0, 1);
+			return Math.min(
+				1,
+				Math.max(0, (now.getTime() - start.getTime()) / (end.getTime() - start.getTime())),
+			);
+		}
+
+		function setAnimatedFill(fill: HTMLElement, progress: HTMLElement, pct: number): void {
+			progress.setAttribute("aria-valuenow", String(Math.round(pct)));
+			if (reducedMotion) {
+				fill.style.transition = "none";
+				fill.style.width = `${pct}%`;
+				return;
+			}
+			fill.style.transition = "none";
+			fill.style.width = "0%";
+			void fill.offsetWidth;
+			fill.style.transition = "width 0.9s cubic-bezier(0.22, 1, 0.36, 1)";
+			fill.style.width = `${pct}%`;
+		}
+
+		function replayFills(): void {
+			const now = new Date();
+			for (const kind of ["month", "year"] as const) {
+				const fill = fills[kind];
+				const progress = panel.querySelector<HTMLElement>(
+					`[data-npp-progress='${kind}']`,
+				);
+				if (!fill || !progress) continue;
+				const pct = periodProgress(now, kind) * 100;
+				if (pcts[kind]) pcts[kind]!.textContent = `${Math.round(pct)}%`;
+				setAnimatedFill(fill, progress, pct);
+			}
+		}
+
+		/* ── 开合控制：hover/focus 展开，移出延迟收起 ── */
+		function cancelScheduledClose(): void {
+			if (closeTimer !== null) {
+				window.clearTimeout(closeTimer);
+				closeTimer = null;
+			}
+		}
+		function openPanel(): void {
+			cancelScheduledClose();
+			if (panel.classList.contains("is-open")) return;
+			panel.classList.add("is-open");
+			panel.setAttribute("aria-hidden", "false");
+			replayFills();
+		}
+		function closePanel(): void {
+			cancelScheduledClose();
+			panel.classList.remove("is-open");
+			panel.setAttribute("aria-hidden", "true");
+		}
+		function scheduleClose(): void {
+			cancelScheduledClose();
+			closeTimer = window.setTimeout(closePanel, CLOSE_DELAY);
+		}
+
+		wrap.addEventListener("mouseenter", openPanel);
+		wrap.addEventListener("mouseleave", scheduleClose);
+		wrap.addEventListener("focusin", openPanel);
+		wrap.addEventListener("focusout", (event) => {
+			const next = event.relatedTarget;
+			if (next instanceof Node && wrap.contains(next)) return;
+			scheduleClose();
+		});
+		panel.addEventListener("focusin", cancelScheduledClose);
+	}
+
+	initNavbarProfileCard();
+</script>

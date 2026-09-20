@@ -1,4 +1,22 @@
 {
+	"bingak/miband-daily-word-practice": {
+		"description": "小米手环9Pro每日背单词小程序",
+		"language": "Python",
+		"avatarUrl": "https://avatars.githubusercontent.com/u/125661763?v=4",
+		"license": null
+	},
+	"bingak/miband10-daily-word-practice": {
+		"description": "小米手环 10 标准版每日背单词 Vela 快应用（212×520 胶囊屏适配版）",
+		"language": "Python",
+		"avatarUrl": "https://avatars.githubusercontent.com/u/125661763?v=4",
+		"license": null
+	},
+	"bingak/midropwin11menu": {
+		"description": "把小米互传「使用小米互传发送」提升到 Windows 11 新版右键菜单第一层（稀疏 MSIX 包标识方案）",
+		"language": "PowerShell",
+		"avatarUrl": "https://avatars.githubusercontent.com/u/125661763?v=4",
+		"license": "NOASSERTION"
+	},
 	"cuteleaf/firefly": {
 		"description": "🍀Firefly, fresh and aesthetic Astro blog theme template. ",
 		"language": "Astro",

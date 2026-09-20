@@ -21,6 +21,7 @@ import { isHomePage } from "@/utils/layout-utils";
 import { resolveNavMenuLinks } from "@/utils/nav-menu-utils";
 import { url } from "@/utils/url-utils";
 import DropdownMenu from "./DropdownMenu.astro";
+import NavbarProfileCard from "./NavbarProfileCard.astro";
 
 const className = Astro.props.class;
 
@@ -160,7 +161,8 @@ const logoVariants = await Promise.all(
         "overflow-visible! h-18 px-4"
     ]}>
         <div class="mx-auto h-full w-full max-w-(--page-width) grid grid-cols-[auto_minmax(0,1fr)_auto] items-center">
-            <a href={url('/')} class="btn-plain circle-animation h-13 px-3 md:px-5 font-bold active:scale-95">
+            <div id="navbar-profile-wrap" class="relative flex items-center">
+                <a href={url('/')} class="btn-plain circle-animation h-13 px-3 md:px-5 font-bold active:scale-95">
                 <div class:list={[
                     "flex flex-row items-center text-md",
                     siteConfig.navbar.followTheme ? "text-(--primary)" : "dark:text-white text-black"
@@ -189,6 +191,9 @@ const logoVariants = await Promise.all(
                     {navbarTitle}
                 </div>
             </a>
+                {/* 站名悬停资料卡：贡献热力图 + 建站已运行时间 */}
+                <NavbarProfileCard />
+            </div>
             <div class:list={[
                 "hidden lg:flex items-center col-start-2",
                 isNavbarMenuCentered
