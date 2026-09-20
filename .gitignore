@@ -18,9 +18,46 @@ build/
 .DS_Store
 .vscode/
 .idea/
+.obsidian/
+*.swp
+*.swo
+*~
 
 # 部署缓存
 .vercel
 .wrangler
-.obsidian
-templates
+
+# 模板文件
+templates/
+
+# Excalidraw 绘图文件
+*.canvas
+*.base
+
+# 临时文件
+*.tmp
+*.temp
+.cache/
+
+# 日志文件
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 操作系统文件
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDE 和编辑器
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# 包管理器
+package-lock.json
+yarn.lock

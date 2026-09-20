@@ -195,7 +195,8 @@ const logoVariants = await Promise.all(
                     ? "justify-center"
                     : "justify-start pl-2"
             ]}>
-                <div class="navbar-pill flex items-center rounded-full bg-black/5 dark:bg-white/5 px-1 py-1 gap-0.5">
+                <div class="navbar-pill flex items-center rounded-full bg-black/5 dark:bg-white/5 px-1 py-1 gap-0.5 relative">
+                    <div class="nav-sliding-indicator" aria-hidden="true"></div>
                     {links.map((l) => {
                         return <DropdownMenu link={l} />;
                     })}
@@ -460,6 +461,67 @@ if (document.readyState === 'loading') {
         if (raf !== null) {
             cancelAnimationFrame(raf);
             raf = null;
+        }
+    });
+})();
+
+// 导航栏滑动指示器 - 鼠标悬停时背景平滑移动
+(function initSlidingIndicator() {
+    const navbar = document.getElementById('navbar');
+    if (!navbar) return;
+    const pill = navbar.querySelector('.navbar-pill') as HTMLElement | null;
+    const indicator = navbar.querySelector('.nav-sliding-indicator') as HTMLElement | null;
+    if (!pill || !indicator) return;
+
+    let raf: number | null = null;
+    let hideTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    function updateIndicator(target: HTMLElement) {
+        const pillRect = pill!.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        const left = targetRect.left - pillRect.left;
+        const width = targetRect.width;
+        indicator!.style.left = left + 'px';
+        indicator!.style.width = width + 'px';
+        indicator!.classList.add('visible');
+    }
+
+    function hideIndicator() {
+        indicator!.classList.remove('visible');
+    }
+
+    const navButtons = pill.querySelectorAll('.nav-link-btn, [data-dropdown-trigger]');
+    navButtons.forEach(btn => {
+        btn.addEventListener('mouseenter', function (this: HTMLElement) {
+            if (hideTimeout) {
+                clearTimeout(hideTimeout);
+                hideTimeout = null;
+            }
+            if (raf) cancelAnimationFrame(raf);
+            raf = requestAnimationFrame(() => {
+                updateIndicator(this);
+                raf = null;
+            });
+        });
+
+        btn.addEventListener('mouseleave', function () {
+            hideTimeout = setTimeout(() => {
+                hideIndicator();
+            }, 100);
+        });
+    });
+
+    pill.addEventListener('mouseleave', function () {
+        if (hideTimeout) clearTimeout(hideTimeout);
+        hideTimeout = setTimeout(() => {
+            hideIndicator();
+        }, 150);
+    });
+
+    pill.addEventListener('mouseenter', function () {
+        if (hideTimeout) {
+            clearTimeout(hideTimeout);
+            hideTimeout = null;
         }
     });
 })();
