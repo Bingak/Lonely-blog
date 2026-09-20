@@ -93,6 +93,9 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 
 			// 关于页面
 			LinkPresets.About,
+
+			// 更新日志（数据来自 GitHub commit 记录）
+			LinkPresets.Changelog,
 		],
 	});
 
@@ -240,6 +243,12 @@ export const LinkPresets: Record<string, NavBarLink> = {
 		name: "关于我",
 		url: "/about/",
 		icon: "material-symbols:person",
+	},
+	Changelog: {
+		name: "更新日志",
+		url: "/changelog/",
+		icon: "material-symbols:history",
+		pageKey: "changelog",
 	},
 };
 

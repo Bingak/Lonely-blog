@@ -536,4 +536,15 @@ export const ja: Translation = {
 	[Key.exitImmersiveReading]: "没入型リーディングを終了する",
 	[Key.tocExpand]: "目錄を開く",
 	[Key.tocCollapse]: "目錄をたたむ",
+
+	// 更新履歴
+	[Key.changelog]: "更新履歴",
+	[Key.changelogDescription]: "サイトの更新記録。GitHub リポジトリから自動取得",
+	[Key.changelogCount]: "コミット {count} 件",
+	[Key.changelogLoading]: "コミットを読み込み中…",
+	[Key.changelogEmpty]: "更新履歴はまだありません",
+	[Key.changelogError]: "コミットの取得に失敗しました。後でもう一度お試しください",
+	[Key.changelogRetry]: "再取得",
+	[Key.changelogViewOnGithub]: "GitHub で見る",
+	[Key.changelogAll]: "すべて",
 };

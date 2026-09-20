@@ -528,4 +528,15 @@ export const zh_TW: Translation = {
 	[Key.exitImmersiveReading]: "退出沉浸閱讀",
 	[Key.tocExpand]: "展開目錄",
 	[Key.tocCollapse]: "摺疊目錄",
+
+	// 更新日誌
+	[Key.changelog]: "更新日誌",
+	[Key.changelogDescription]: "站點改動記錄，數據自動同步自 GitHub 倉庫",
+	[Key.changelogCount]: "共 {count} 次提交",
+	[Key.changelogLoading]: "正在取得提交記錄…",
+	[Key.changelogEmpty]: "暫時沒有更新記錄",
+	[Key.changelogError]: "提交記錄取得失敗，請稍後重試",
+	[Key.changelogRetry]: "重新取得",
+	[Key.changelogViewOnGithub]: "在 GitHub 檢視",
+	[Key.changelogAll]: "全部",
 };

@@ -1,0 +1,80 @@
+---
+/**
+ * 更新日志页面
+ *
+ * 数据不来自内容集合，而是由客户端组件 ChangelogFeed 调 GitHub REST API 获取，
+ * 因此本页只负责：页面开关校验、标题面板、挂载组件。
+ * 详见 src/config/changelogConfig.ts（仓库 / 分支 / 分页 / Token）。
+ */
+import { Icon } from "astro-icon/components";
+import ChangelogFeed from "@/components/pages/changelog/ChangelogFeed.svelte";
+import { changelogConfig, siteConfig } from "@/config";
+import type { ChangelogConfig } from "@/config/changelogConfig";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import "@/styles/changelog.css";
+
+// 页面开关：siteConfig.pages.changelog 与 changelogConfig.enable 需同时为真
+if (!siteConfig.pages.changelog || !changelogConfig.enable) {
+	return Astro.redirect("/404/");
+}
+
+const config: ChangelogConfig = changelogConfig;
+const title = config.title || i18n(I18nKey.changelog);
+const description = config.description || i18n(I18nKey.changelogDescription);
+
+// 仓库主页地址，供标题面板的「在 GitHub 查看」按钮使用
+const repoSite = `${config.webBase}/${config.repo}`;
+---
+
+<MainGridLayout title={title} description={description}>
+	<section class="dynamic-page changelog-page" aria-labelledby="changelog-page-title">
+		<!-- 标题面板：与留言页同款宽松布局 -->
+		<div class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32">
+			<div class="card-base z-10 px-9 py-6 relative w-full">
+				<div class="mb-8">
+					<div class="flex items-center gap-3 mb-3">
+						<div class="h-8 w-8 rounded-lg bg-(--primary) flex items-center justify-center text-white dark:text-black/70">
+							<Icon name="material-symbols:history" class="text-[1.5rem]" />
+						</div>
+						<div class="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+							{title}
+						</div>
+						<a
+							class="changelog-repo btn-card ml-auto"
+							href={repoSite}
+							target="_blank"
+							rel="noopener noreferrer"
+							title={config.repo}
+						>
+							<Icon name="fa7-brands:github" />
+							<span>{config.repo}</span>
+							<Icon name="fa7-solid:arrow-up-right-from-square" />
+						</a>
+					</div>
+					{description && (
+						<p class="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4">
+							{description}
+						</p>
+					)}
+				</div>
+			</div>
+		</div>
+
+		<!-- 列表主体：拉取 / 分类筛选 / 分页全部在组件内完成 -->
+		<div class="mt-4">
+		<ChangelogFeed
+			client:load
+			repo={config.repo}
+			branch={config.branch}
+			token={config.token}
+			itemsPerPage={config.itemsPerPage}
+			maxItems={config.maxItems}
+			showBody={config.showBody}
+			showStats={config.showStats}
+			webBase={config.webBase}
+		/>
+		</div>
+	</section>
+</MainGridLayout>

@@ -526,4 +526,15 @@ export const zh_CN: Translation = {
 	[Key.exitImmersiveReading]: "退出沉浸阅读",
 	[Key.tocExpand]: "展开目录",
 	[Key.tocCollapse]: "折叠目录",
+
+	// 更新日志
+	[Key.changelog]: "更新日志",
+	[Key.changelogDescription]: "站点改动记录，数据自动同步自 GitHub 仓库",
+	[Key.changelogCount]: "共 {count} 次提交",
+	[Key.changelogLoading]: "正在获取提交记录…",
+	[Key.changelogEmpty]: "暂时没有更新记录",
+	[Key.changelogError]: "提交记录获取失败，请稍后重试",
+	[Key.changelogRetry]: "重新获取",
+	[Key.changelogViewOnGithub]: "在 GitHub 查看",
+	[Key.changelogAll]: "全部",
 };

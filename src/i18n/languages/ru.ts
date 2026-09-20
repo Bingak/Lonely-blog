@@ -540,4 +540,16 @@ export const ru: Translation = {
 	[Key.exitImmersiveReading]: "Выйти из режима чтения",
 	[Key.tocExpand]: "Развернуть оглавление",
 	[Key.tocCollapse]: "Свернуть оглавление",
+
+	// История обновлений
+	[Key.changelog]: "История обновлений",
+	[Key.changelogDescription]:
+		"История изменений сайта, синхронизируется из репозитория GitHub",
+	[Key.changelogCount]: "{count} коммитов",
+	[Key.changelogLoading]: "Загрузка коммитов…",
+	[Key.changelogEmpty]: "Пока нет записей об обновлениях",
+	[Key.changelogError]: "Не удалось загрузить коммиты, попробуйте позже",
+	[Key.changelogRetry]: "Повторить",
+	[Key.changelogViewOnGithub]: "Открыть на GitHub",
+	[Key.changelogAll]: "Все",
 };

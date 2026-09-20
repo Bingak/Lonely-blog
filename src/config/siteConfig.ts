@@ -21,6 +21,8 @@ const pages = resolvePageToggles({
 	dynamic: true,
 	// 项目展示页开关
 	projects: true,
+	// 更新日志页面开关（数据来自 GitHub commit 记录）
+	changelog: true,
 	// 相册页面开关
 	gallery: true,
 	// 书签导航页面开关

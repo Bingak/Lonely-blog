@@ -539,4 +539,15 @@ export const en: Translation = {
 	[Key.exitImmersiveReading]: "Exit Immersive Reading",
 	[Key.tocExpand]: "Expand directory",
 	[Key.tocCollapse]: "Collapse directory",
+
+	// Changelog
+	[Key.changelog]: "Changelog",
+	[Key.changelogDescription]: "Site update history, synced from the GitHub repository",
+	[Key.changelogCount]: "{count} commits",
+	[Key.changelogLoading]: "Loading commits…",
+	[Key.changelogEmpty]: "No update records yet",
+	[Key.changelogError]: "Failed to load commits, please try again later",
+	[Key.changelogRetry]: "Retry",
+	[Key.changelogViewOnGithub]: "View on GitHub",
+	[Key.changelogAll]: "All",
 };

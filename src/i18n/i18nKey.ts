@@ -520,6 +520,17 @@ enum I18nKey {
 	exitImmersiveReading = "exitImmersiveReading",
 	tocExpand = "tocExpand",
 	tocCollapse = "tocCollapse",
+
+	// 更新日志 (changelog)
+	changelog = "changelog",
+	changelogDescription = "changelogDescription",
+	changelogCount = "changelogCount",
+	changelogLoading = "changelogLoading",
+	changelogEmpty = "changelogEmpty",
+	changelogError = "changelogError",
+	changelogRetry = "changelogRetry",
+	changelogViewOnGithub = "changelogViewOnGithub",
+	changelogAll = "changelogAll",
 }
 
 export default I18nKey;

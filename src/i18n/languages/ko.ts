@@ -536,4 +536,15 @@ export const ko: Translation = {
 	[Key.exitImmersiveReading]: "몰입형 읽기 종료",
 	[Key.tocExpand]: "목차 펼치기",
 	[Key.tocCollapse]: "목차 접기",
+
+	// 변경 내역
+	[Key.changelog]: "변경 내역",
+	[Key.changelogDescription]: "사이트 업데이트 기록, GitHub 저장소에서 자동 동기화",
+	[Key.changelogCount]: "커밋 {count}개",
+	[Key.changelogLoading]: "커밋을 불러오는 중…",
+	[Key.changelogEmpty]: "아직 업데이트 기록이 없습니다",
+	[Key.changelogError]: "커밋을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요",
+	[Key.changelogRetry]: "다시 시도",
+	[Key.changelogViewOnGithub]: "GitHub에서 보기",
+	[Key.changelogAll]: "전체",
 };
