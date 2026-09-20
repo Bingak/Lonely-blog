@@ -190,14 +190,16 @@ const logoVariants = await Promise.all(
                 </div>
             </a>
             <div class:list={[
-                "hidden lg:flex items-center space-x-1 col-start-2",
+                "hidden lg:flex items-center col-start-2",
                 isNavbarMenuCentered
                     ? "justify-center"
                     : "justify-start pl-2"
             ]}>
-                {links.map((l) => {
-                    return <DropdownMenu link={l} />;
-                })}
+                <div class="navbar-pill flex items-center rounded-full bg-black/5 dark:bg-white/5 px-1 py-1 gap-0.5">
+                    {links.map((l) => {
+                        return <DropdownMenu link={l} />;
+                    })}
+                </div>
             </div>
             <div class="flex col-start-3 justify-self-end">
                 <!--<SearchPanel client:load>-->
@@ -425,6 +427,42 @@ if (document.readyState === 'loading') {
 } else {
     initSemifullScrollDetection();
 }
+
+// 鼠标跟随聚光灯效果
+(function initSpotlight() {
+    const navbar = document.getElementById('navbar');
+    if (!navbar) return;
+    const bar = navbar.querySelector(':scope > div') as HTMLElement | null;
+    if (!bar) return;
+
+    let raf: number | null = null;
+    let pendingX = 0;
+    let pendingY = 0;
+
+    function updateSpotlight() {
+        bar!.style.setProperty('--spotlight-x', pendingX + 'px');
+        bar!.style.setProperty('--spotlight-y', pendingY + 'px');
+        navbar!.classList.add('navbar-spotlight');
+        raf = null;
+    }
+
+    navbar.addEventListener('mousemove', function (e: MouseEvent) {
+        const rect = bar!.getBoundingClientRect();
+        pendingX = e.clientX - rect.left;
+        pendingY = e.clientY - rect.top;
+        if (raf === null) {
+            raf = requestAnimationFrame(updateSpotlight);
+        }
+    });
+
+    navbar.addEventListener('mouseleave', function () {
+        navbar!.classList.remove('navbar-spotlight');
+        if (raf !== null) {
+            cancelAnimationFrame(raf);
+            raf = null;
+        }
+    });
+})();
 </script>
 
 {
