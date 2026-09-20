@@ -154,7 +154,7 @@ const navTitle = siteConfig.navbar.title || siteConfig.title;
         display: flex;
         flex-direction: column;
         background: var(--card-bg);
-        border-radius: var(--radius-large) 0 0 var(--radius-large); /* 仅左侧，跟随主题统一圆角 */
+        border-radius: var(--radius-large); /* 全圆角，跟随主题统一圆角 */
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
         overflow: hidden;
         transform: translateX(100%);
@@ -291,6 +291,41 @@ const navTitle = siteConfig.navbar.title || siteConfig.title;
     .mobile-submenu .mobile-menu-item {
         padding-left: 52px;
     }
+
+    /* ---- 聚光灯效果 ---- */
+    .mobile-menu-drawer {
+        --spotlight-x: 50%;
+        --spotlight-y: 50%;
+    }
+    .mobile-menu-drawer::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        pointer-events: none;
+        z-index: 0;
+        background: radial-gradient(
+            280px circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+            rgba(255, 255, 255, 0.06),
+            transparent 60%
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    :root.dark .mobile-menu-drawer::after {
+        background: radial-gradient(
+            280px circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+            rgba(255, 255, 255, 0.05),
+            transparent 60%
+        );
+    }
+    .mobile-menu-drawer.drawer-spotlight::after {
+        opacity: 1;
+    }
+    .mobile-menu-drawer > * {
+        position: relative;
+        z-index: 1;
+    }
 </style>
 
 <script>
@@ -365,4 +400,31 @@ const navTitle = siteConfig.navbar.title || siteConfig.title;
             submenu.setAttribute("aria-hidden", (!isExpanded).toString());
         }
     }
+
+    // 鼠标跟随聚光灯效果（移动端抽屉）
+    function initDrawerSpotlight() {
+        const drawer = document.querySelector(".mobile-menu-drawer") as HTMLElement | null;
+        if (!drawer) return;
+        let raf: number | null = null;
+        let pendingX = 0;
+        let pendingY = 0;
+        function update() {
+            drawer!.style.setProperty("--spotlight-x", pendingX + "px");
+            drawer!.style.setProperty("--spotlight-y", pendingY + "px");
+            drawer!.classList.add("drawer-spotlight");
+            raf = null;
+        }
+        drawer.addEventListener("mousemove", (e: MouseEvent) => {
+            const rect = drawer!.getBoundingClientRect();
+            pendingX = e.clientX - rect.left;
+            pendingY = e.clientY - rect.top;
+            if (raf === null) raf = requestAnimationFrame(update);
+        });
+        drawer.addEventListener("mouseleave", () => {
+            drawer!.classList.remove("drawer-spotlight");
+            if (raf !== null) { cancelAnimationFrame(raf); raf = null; }
+        });
+    }
+    initDrawerSpotlight();
+    document.addEventListener("astro:page-load", initDrawerSpotlight);
 </script>
