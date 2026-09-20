@@ -464,10 +464,38 @@ const minutes = remarkPluginFrontmatter.minutes;
   }
 
   :global(.grid-mode) .no-cover .post-card-content {
-    width: calc(100% - 52px - 12px) !important;
+    width:  100% !important;
   }
 
   :global(.grid-mode) .post-card-enter-btn {
     display: flex !important;
+    top: 50% !important;
+    bottom: auto !important;
+    transform: translateY(-50%) !important;
+    height: auto !important;
+    padding: 0.25rem 0.125rem !important;
+  }
+
+  :global(.grid-mode) .post-card-enter-btn svg {
+    font-size: 1.5rem !important;
+  }
+
+  /* 网格模式：卡片更紧凑 */
+  :global(.grid-mode) .post-card-content {
+    padding: 0.875rem 1rem 1rem !important;
+  }
+
+  :global(.grid-mode) .post-card-title {
+    font-size: 1.125rem !important;
+    line-height: 1.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  :global(.grid-mode) .post-card-title::before {
+    display: none !important;
+  }
+
+  :global(.grid-mode) .post-card-image {
+    aspect-ratio: 16/9 !important;
   }
 </style>
