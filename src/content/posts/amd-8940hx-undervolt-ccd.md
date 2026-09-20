@@ -1,6 +1,6 @@
 ---
 title: 给 8940HX 降压关核之后，风扇终于不吵了
-published: 2026-09-19
+published: 2026-09-17
 pinned: false
 description: 折腾了一圈 8940HX：降压定频再关掉一个 CCD，打游戏不掉帧、风扇也不吵了，就是生产力会慢点。
 image: "./images/amd-bios-start.jpg"
