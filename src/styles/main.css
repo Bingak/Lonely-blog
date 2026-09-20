@@ -50,6 +50,38 @@
   }
 }
 
+/* 圆形角过渡动画 - 用于博客标题按钮 */
+@utility circle-animation {
+  position: relative;
+  z-index: 0;
+  border-radius: 0.5rem;
+  transition: border-radius 0.3s ease-out, background-color 0.3s ease-out;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    z-index: -10;
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+  }
+  &:hover,
+  &:focus-visible {
+    border-radius: 2rem;
+  }
+  &:hover::before,
+  &:focus-visible::before {
+    opacity: 1;
+    background-color: var(--btn-plain-bg-hover);
+  }
+  &:active::before {
+    background-color: var(--btn-plain-bg-active);
+  }
+  &:active {
+    background: none;
+  }
+}
+
 /* 确保平滑滚动 */
 html {
     scroll-behavior: smooth;
