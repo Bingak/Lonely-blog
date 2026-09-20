@@ -102,18 +102,18 @@ let expandedDate = $state<string | null>(null);
 
 /** 提交标题前缀 → 类型。[feat] / feat: / 🐛 都归一到同一类 */
 const KIND_PATTERNS: Array<{ kind: CommitKind; re: RegExp }> = [
-	{ kind: "feat", re: /^\s*(?:\[|\(|\{)?\s*(?:feat|feature|add|新增|添加)/i },
-	{ kind: "fix", re: /^\s*(?:\[|\(|\{)?\s*(?:fix|bugfix|hotfix|修复|修正)/i },
-	{ kind: "docs", re: /^\s*(?:\[|\(|\{)?\s*(?:docs?|documentation|文档|说明)/i },
-	{ kind: "style", re: /^\s*(?:\[|\(|\{)?\s*(?:style|ui|css|样式|美化)/i },
+	{ kind: "feat", re: /^\s*(?:\[|\(|\{)?\s*(?:feat|feature|add|新增|添加|实现|完成|加入)/i },
+	{ kind: "fix", re: /^\s*(?:\[|\(|\{)?\s*(?:fix|bugfix|hotfix|修复|修正|修正|解决|修补)/i },
+	{ kind: "docs", re: /^\s*(?:\[|\(|\{)?\s*(?:docs?|documentation|文档|说明| readme|readme)/i },
+	{ kind: "style", re: /^\s*(?:\[|\(|\{)?\s*(?:style|ui|css|样式|美化|排版)/i },
 	{
 		kind: "refactor",
 		re: /^\s*(?:\[|\(|\{)?\s*(?:refactor|重构)/i,
 	},
-	{ kind: "perf", re: /^\s*(?:\[|\(|\{)?\s*(?:perf|optimize|优化|性能)/i },
+	{ kind: "perf", re: /^\s*(?:\[|\(|\{)?\s*(?:perf|optimize|优化|性能|改善|改进|提速)/i },
 	{
 		kind: "chore",
-		re: /^\s*(?:\[|\(|\{)?\s*(?:chore|build|ci|deps|bump|配置|依赖)/i,
+		re: /^\s*(?:\[|\(|\{)?\s*(?:chore|build|ci|deps|bump|配置|依赖|更新|修改|调整|移除|删除|清理|替换|更换|升级|初始化|安装)/i,
 	},
 ];
 
@@ -160,20 +160,35 @@ function normalize(raw: GithubCommit, base: string): CommitItem {
 	};
 }
 
-/** 拉取最新 100 条 commits（GitHub API 单页最大 100） */
+/**
+ * 拉取最新 N 条 commits（N = maxItems）
+ * GitHub API 单页上限 100，配置超过 100 会自动分页累积拉取。
+ */
 async function fetchAllCommits(): Promise<GithubCommit[]> {
 	const headers: Record<string, string> = {
 		Accept: "application/vnd.github+json",
 	};
 	if (token) headers.Authorization = `Bearer ${token}`;
 
-	const api = `https://api.github.com/repos/${repo}/commits?per_page=100`;
-	const url = branch ? `${api}&sha=${encodeURIComponent(branch)}` : api;
+	const perPage = 100;
+	const pages = Math.ceil(maxItems / perPage);
+	const all: GithubCommit[] = [];
 
-	const response = await fetch(url, { headers });
-	if (!response.ok) throw new Error(`GitHub API ${response.status}`);
+	for (let page = 1; page <= pages; page++) {
+		const api = `https://api.github.com/repos/${repo}/commits?per_page=${perPage}&page=${page}`;
+		const url = branch ? `${api}&sha=${encodeURIComponent(branch)}` : api;
 
-	return (await response.json()) as GithubCommit[];
+		const response = await fetch(url, { headers });
+		if (!response.ok) throw new Error(`GitHub API ${response.status}`);
+
+		const batch = (await response.json()) as GithubCommit[];
+		if (batch.length === 0) break; // 没有更多提交了
+		all.push(...batch);
+		if (all.length >= maxItems) break;
+	}
+
+	// 截断到 maxItems 条
+	return all.slice(0, maxItems);
 }
 
 /** 获取单个 commit 的 stats（additions/deletions） */

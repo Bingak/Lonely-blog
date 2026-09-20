@@ -23,7 +23,7 @@ export interface ChangelogConfig {
 	/** 每页展示多少条 commit */
 	itemsPerPage: number;
 
-	/** 最多拉取多少条（GitHub 单页上限 100，需更多可改成分页累积拉取） */
+	/** 最多拉取多少条（GitHub API 单页上限 100，配置超过 100 会自动分页累积拉取） */
 	maxItems: number;
 
 	/**
@@ -61,9 +61,9 @@ export const changelogConfig: ChangelogConfig = {
 	title: "更新日志",
 	description: "本站基于 Firefly 主题魔改，这里记录每一次改动",
 
-	// 分页：每页 12 条，最多拉取 100 条（GitHub API 单页上限）
+	// 分页：每页 12 天，最多拉取 200 条（GitHub API 单页上限 100，自动分 2 页拉取）
 	itemsPerPage: 12,
-	maxItems: 100,
+	maxItems: 200,
 
 	// 可选 Token：留空即匿名访问。若 GitHub 限流导致页面报错，
 	// 可在部署平台配置环境变量 PUBLIC_CHANGELOG_GITHUB_TOKEN=ghp_xxx 后重新构建
