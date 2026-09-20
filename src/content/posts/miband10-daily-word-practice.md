@@ -3,7 +3,7 @@ title: 小米手环 10 背单词小程序：MiBand10-Daily-Word-Practice
 published: 2026-09-15T09:00:00+08:00
 pinned: false
 description: 小米手环 10 标准版上的每日背单词小程序：从 9 Pro 移植适配 212×520 胶囊窄屏，内置 6200 高中词汇，四档记忆状态与智能抽词重复机制，把闲置的手环变成随身单词本。
-image: ./images/miband10-daily-word-practice-learn.png
+image: https://img.lonelybing.top/file/post/miband10-daily-word-practice-learn.png
 tags:
   - 小米手环
   - Vela
@@ -32,7 +32,7 @@ MiBand10-Daily-Word-Practice 是个跑在小米手环 10 标准版上的每日�
 
 ::github{repo="Bingak/MiBand10-Daily-Word-Practice"}
 
-![每日记单词主菜单](images/miband10-daily-word-practice-menu.png)
+![每日记单词主菜单](https://img.lonelybing.top/file/post/miband10-daily-word-practice-menu.png)
 
 内置词表塞了不少单词汉译和短语，词库文件差不多有 ==6MB== 大. 手环空间不足的话，建议先腾点地方再装.
 
@@ -64,7 +64,7 @@ MiBand10-Daily-Word-Practice 是个跑在小米手环 10 标准版上的每日�
 | 模糊 | 🟡 黄色 | 似曾相识，但不确定 | 计入待练习，当天重复 **5 次** |
 | 忘记 | 🔴 红色 | 对不起，我们第一次见 | 计入待练习，当天重复 **7 次** |
 
-![单词学习界面：单词卡片与四档记忆按钮](images/miband10-daily-word-practice-learn.png)
+![单词学习界面：单词卡片与四档记忆按钮](https://img.lonelybing.top/file/post/miband10-daily-word-practice-learn.png)
 
 ### 每日抽词与间隔重复
 
@@ -77,15 +77,15 @@ MiBand10-Daily-Word-Practice 是个跑在小米手环 10 标准版上的每日�
 
 除了当天的任务，还提供复习功能，可以回看近 7 日学习统计. *数据不会骗人*——坚持没坚持，一眼就能看出来喵~（悲）.
 
-![数据统计界面](images/miband10-daily-word-practice-stats.png)
+![数据统计界面](https://img.lonelybing.top/file/post/miband10-daily-word-practice-stats.png)
 
 ### 设置与关于
 
 设置页有屏幕常亮开关和一键清空数据；关于页展示作者跟版本信息. 当前版本 v1.1.0，适配机型「小米手环 10 标准版」.
 
-![系统设置界面](images/miband10-daily-word-practice-settings-1.png)
+![系统设置界面](https://img.lonelybing.top/file/post/miband10-daily-word-practice-settings-1.png)
 
-![相关信息界面](images/miband10-daily-word-practice-about.png)
+![相关信息界面](https://img.lonelybing.top/file/post/miband10-daily-word-practice-about.png)
 
 ### 简洁的界面
 

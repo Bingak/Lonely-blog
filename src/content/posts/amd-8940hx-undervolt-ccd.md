@@ -3,7 +3,7 @@ title: 给 8940HX 降压关核之后，风扇终于不吵了
 published: 2026-09-17
 pinned: false
 description: 折腾了一圈 8940HX：降压定频再关掉一个 CCD，打游戏不掉帧、风扇也不吵了，就是生产力会慢点。
-image: "./images/amd-bios-start.jpg"
+image: "https://img.lonelybing.top/file/post/amd-bios-start.jpg"
 tags: [AMD, 降压, 关核]
 category: 硬件折腾
 slug: amd-8940hx-undervolt-ccd
@@ -18,7 +18,7 @@ CPU 都 80 多度了，跟要原地升空一样，(直升机已起飞)
 
 结论：游戏基本无感，帧数没怎么掉，但是风扇是真安静了；但渲染、编译、跑分这种真吃满 16 核的活会慢点，要用的时候把 CCD 开回来就可以.
 
-![Ryzen 9 8940HX：16 核 32 线程的双 CCD 处理器](./images/amd-ryzen-8940hx.jpg)
+![Ryzen 9 8940HX：16 核 32 线程的双 CCD 处理器](https://img.lonelybing.top/file/post/amd-ryzen-8940hx.jpg)
 
 双 CCD 对生产力当然好，代价也摆着：得照顾俩 CCD 的供电散热，单核少核加速被压得保守；俩一起发热面积大，风扇更乐意转喵~.
 
@@ -33,14 +33,14 @@ CPU 都 80 多度了，跟要原地升空一样，(直升机已起飞)
 可恶的鸡哥 BIOS 里根本没有这些选项。
 需用到相关bios:UMAF_BETA .用法简单：U 盘(f32)，进 BIOS 关 Secure Boot，然后从 U 盘启动。
 
-![进 UMAF 之前的 AMI Setup 界面](./images/amd-bios-start.jpg)
+![进 UMAF 之前的 AMI Setup 界面](https://img.lonelybing.top/file/post/amd-bios-start.jpg)
 如图：
 
-![解锁后多出来的 AMD PBS / CBS / Overclocking](./images/amd-umaf-devices-list.jpg)
+![解锁后多出来的 AMD PBS / CBS / Overclocking](https://img.lonelybing.top/file/post/amd-umaf-devices-list.jpg)
 
 点进 AMD Overclocking，Manual CPU Overclocking、PBO、各种电压控制……等等
 
-![AMD Overclocking 菜单：PBO、VDDG / VDDP、SoC 电压都在这儿](./images/amd-umaf-overclocking.jpg)
+![AMD Overclocking 菜单：PBO、VDDG / VDDP、SoC 电压都在这儿](https://img.lonelybing.top/file/post/amd-umaf-overclocking.jpg)
 
 顺带一提，B 站那个视频 ==BV1RM816bEM4== 把流程讲得细，软件评论区置顶. 我的思路跟它基本一致。
 
@@ -49,11 +49,11 @@ CPU 都 80 多度了，跟要原地升空一样，(直升机已起飞)
 打开CPU Core Count Control. 
 有一几个选项，CCD00 / CCD01 各 8 位，`1` 开 `0` 关.
 
-![CCD00 全开、CCD01 全关，等于把第二个 CCD 整个关掉](./images/amd-core-count-ccd.jpg)
+![CCD00 全开、CCD01 全关，等于把第二个 CCD 整个关掉](https://img.lonelybing.top/file/post/amd-core-count-ccd.jpg)
 
 我把 CCD01 整条设 0，只留 CCD00 那 8 个核.任务管理器内核变 8、逻辑处理器变 16，L3 从 64MB 掉到 32MB.
 
-![任务管理器：8 核 16 线程，确实只剩一个 CCD 了](./images/amd-taskmanager-8c16t.jpg)
+![任务管理器：8 核 16 线程，确实只剩一个 CCD 了](https://img.lonelybing.top/file/post/amd-taskmanager-8c16t.jpg)
 
 少 8 个核，多核跑分腰斩是肯定的. 但游戏压根用不满 16 核，体感几乎为零；只剩一个 CCD 发热，热量更集中，散热更小
 
@@ -64,10 +64,10 @@ CPU 都 80 多度了，跟要原地升空一样，(直升机已起飞)
 BIOS 里当然能直接改：
 其实得先在SMUDebugTool (调完不用重启,立即生效) 慢慢摸好体制，每次降压完成后要跑一跑负载。
 ~~其实不必须进bios里面改，而且bios里最高负30~~
-![BIOS 里的 Curve Optimizer：Per Core 模式，逐核给负偏移](./images/amd-curve-optimizer.jpg)
+![BIOS 里的 Curve Optimizer：Per Core 模式，逐核给负偏移](https://img.lonelybing.top/file/post/amd-curve-optimizer.jpg)
 
 
-![SMUDebugTool：Per Core 逐核负偏移，右侧还能设 FMax](./images/amd-smudebugtool.png)
+![SMUDebugTool：Per Core 逐核负偏移，右侧还能设 FMax](https://img.lonelybing.top/file/post/amd-smudebugtool.png)
 
 界面在 PBO → Curve Optimizer，Per Core 模式，每核一个框. 我取值大概 ==−20 到 −30==，按每核体质微调——体质差少减一档，体质好多减一档，都填负(negative). 调完记得按 Apply saved profile on startup
 
@@ -87,7 +87,7 @@ PBO 里
 ## 实测：温度掉了，帧数几乎没动喵~
 
 
-![游戏实测：CPU 约 69°C / 44W，GPU 67°C，帧数依然稳得住](./images/amd-ingame-result.jpg)
+![游戏实测：CPU 约 69°C / 44W，GPU 67°C，帧数依然稳得住](https://img.lonelybing.top/file/post/amd-ingame-result.jpg)
 
 CPU 大概 70°C、44W、4.7GHz 上下，GPU 67°C，. 温度肉眼降一截，最直观的是风扇噪音，明显下降(室友都说好！)
 

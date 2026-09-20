@@ -31,7 +31,7 @@ export const galleryConfig: GalleryConfig = {
 			location: "未知",
 			date: "2026-09-12",
 			tags: ["Life", "Love"],
-			password: "chenfan",
+			password: "0928",
 			passwordHint: "你猜猜",
 		},
 		{
