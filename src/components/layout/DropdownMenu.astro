@@ -24,8 +24,8 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 
 <div class:list={["dropdown-container", className]} data-dropdown>
 	{hasChildren ? (
-		<button 
-			class="btn-plain scale-animation rounded-lg h-10 font-bold px-4 pr-8 active:scale-95 dropdown-trigger relative"
+		<button
+			class="btn-plain scale-animation rounded-full h-9 font-bold px-4 pr-8 active:scale-95 dropdown-trigger relative text-black/75 dark:text-white/75 hover:text-black dark:hover:text-white hover:bg-black/8 dark:hover:bg-white/10 transition-colors duration-150"
 			aria-expanded="false"
 			aria-haspopup="true"
 			data-dropdown-trigger
@@ -43,7 +43,7 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 						href={child.external ? child.url : url(child.url)}
 						target={child.external ? "_blank" : undefined}
 						isLast={index === (processedLink.children?.length || 0) - 1}
-						class="dropdown-item focus-ring-inset h-10"
+						class="dropdown-item focus-ring-inset"
 					>
 						{child.icon && <Icon name={child.icon} class="text-[1.25rem] mr-3 navbar-icon" />}
 						<span>{child.name}</span>
@@ -55,11 +55,11 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 			</DropdownPanel>
 		</div>
 	) : (
-		<a 
-			aria-label={processedLink.name} 
-			href={processedLink.external ? processedLink.url : url(processedLink.url)} 
+		<a
+			aria-label={processedLink.name}
+			href={processedLink.external ? processedLink.url : url(processedLink.url)}
 			target={processedLink.external ? "_blank" : null}
-			class="btn-plain scale-animation rounded-lg h-10 font-bold px-4 active:scale-95"
+			class="btn-plain scale-animation rounded-full h-9 font-bold px-4 active:scale-95 text-black/75 dark:text-white/75 hover:text-black dark:hover:text-white hover:bg-black/8 dark:hover:bg-white/10 transition-colors duration-150"
 		>
 			<div class="flex items-center gap-1.5">
 				{processedLink.icon && <Icon name={processedLink.icon} class="text-[1.1rem] mr-1.5 navbar-icon" />}
