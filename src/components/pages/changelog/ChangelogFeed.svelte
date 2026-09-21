@@ -102,7 +102,7 @@ let expandedDate = $state<string | null>(null);
 
 /** 提交标题前缀 → 类型。[feat] / feat: / 🐛 都归一到同一类 */
 const KIND_PATTERNS: Array<{ kind: CommitKind; re: RegExp }> = [
-	{ kind: "feat", re: /^\s*(?:\[|\(|\{)?\s*(?:feat|feature|add|新增|添加|实现|完成|加入)/i },
+	{ kind: "feat", re: /^\s*(?:\[|\(|\{)?\s*(?:feat|feature|add|新增|添加|实现|完成|加入|功能|新)/i },
 	{ kind: "fix", re: /^\s*(?:\[|\(|\{)?\s*(?:fix|bugfix|hotfix|修复|修正|修正|解决|修补)/i },
 	{ kind: "docs", re: /^\s*(?:\[|\(|\{)?\s*(?:docs?|documentation|文档|说明| readme|readme)/i },
 	{ kind: "style", re: /^\s*(?:\[|\(|\{)?\s*(?:style|ui|css|样式|美化|排版)/i },
