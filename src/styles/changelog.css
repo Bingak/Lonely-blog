@@ -176,7 +176,41 @@
 }
 
 :global(:root.dark) .changelog-day-date {
-	color: oklch(0.95 0.01 var(--hue));
+   color: #ffffff;
+}
+
+/* 暗色模式：提升可读性，文字与背景不再重合 */
+:global(:root.dark) .changelog-day-count {
+   color: #e5e7eb;
+}
+:global(:root.dark) .changelog-day-stats {
+   color: #e5e7eb;
+}
+:global(:root.dark) .changelog-day-chevron {
+   color: #e5e7eb;
+}
+:global(:root.dark) .changelog-body {
+   color: #e5e7eb;
+}
+:global(:root.dark) .changelog-foot {
+   color: #d1d5db;
+}
+:global(:root.dark) .changelog-author {
+   color: #f3f4f6;
+}
+:global(:root.dark) .changelog-commit-sha {
+   color: #d1d5db;
+}
+:global(:root.dark) .changelog-stats {
+   color: #d1d5db;
+}
+:global(:root.dark) .changelog-author-name {
+   color: #f3f4f6;
+}
+:global(:root.dark) .changelog-empty,
+:global(:root.dark) .changelog-error,
+:global(:root.dark) .changelog-loading {
+   color: #e5e7eb;
 }
 
 .changelog-day-count {
@@ -285,7 +319,7 @@
 }
 
 :global(:root.dark) .changelog-title {
-	color: oklch(0.95 0.01 var(--hue));
+	color: #ffffff;
 }
 
 .changelog-body {
