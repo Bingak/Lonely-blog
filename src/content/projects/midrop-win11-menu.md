@@ -5,7 +5,7 @@ published: 2026-09-13
 draft: false
 order: 95
 description: "通过只含 AppxManifest.xml 的稀疏 MSIX 包为小米互传授予包标识，让「使用小米互传发送」进入 Windows 11 新版右键菜单第一层——不改原厂注册表，不重分发二进制，可完整回滚。"
-image: "images/midrop-win11-menu.png"
+image: "https://img.lonelybing.top/file/post/midrop-win11-menu.png"
 status: "published"
 tags:
   - Windows 11
@@ -119,7 +119,7 @@ powershell -ExecutionPolicy Bypass -File .\Install-RouteA-DevMode.ps1 -EnableDev
 
 安装脚本会自动重启 `explorer.exe`. 然后你右键一个文件，新版菜单第一层就会出现 ==使用小米互传发送== 了.
 
-![Windows 11 新版右键菜单第一层中的「使用小米互传发送」](images/midrop-win11-menu.png)
+![Windows 11 新版右键菜单第一层中的「使用小米互传发送」](https://img.lonelybing.top/file/post/midrop-win11-menu.png)
 
 要是没出现，注销再重新登录一次试试.
 
