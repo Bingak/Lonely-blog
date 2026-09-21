@@ -272,6 +272,14 @@ html {
         @apply rounded-(--radius-large) overflow-hidden bg-(--card-bg-transparent) transition-colors duration-150;
     }
 
+    /* 文章卡片蓝色细边框 */
+    .post-card-wrapper {
+        border: 1.5px solid oklch(0.65 0.18 215 / 0.45);
+    }
+    :global(:root.dark) .post-card-wrapper {
+        border-color: oklch(0.72 0.16 215 / 0.5);
+    }
+
     /* LQIP 占位渐变 */
     .lqip-placeholder {
         z-index: 0;

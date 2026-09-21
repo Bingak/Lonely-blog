@@ -124,7 +124,7 @@ const recentPosts = posts.slice(0, 6);
                     await navigator.clipboard.writeText(url);
                     const originalText = btn.textContent;
                     btn.textContent = btn.getAttribute('data-copied-text') || '';
-                    btn.style.backgroundColor = 'var(--success-color, #10b981)';
+                    btn.style.backgroundColor = 'var(--success-color, #2563eb)';
 
                     setTimeout(() => {
                         btn.textContent = originalText;

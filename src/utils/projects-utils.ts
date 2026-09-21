@@ -95,8 +95,8 @@ const PROJECT_STATUS_META: Record<
 	published: {
 		key: I18nKey.projectStatusPublished,
 		icon: "material-symbols:rocket-launch",
-		className: "bg-green-500/15 text-green-600 dark:text-green-400",
-		coverClassName: "bg-green-600/90 text-white dark:bg-green-700/90",
+		className: "bg-blue-500/15 text-blue-600 dark:text-blue-400",
+		coverClassName: "bg-blue-600/90 text-white dark:bg-blue-700/90",
 	},
 	archived: {
 		key: I18nKey.projectStatusArchived,

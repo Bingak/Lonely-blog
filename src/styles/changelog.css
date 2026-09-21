@@ -237,7 +237,7 @@
 
 .changelog-day-stats em {
 	font-style: normal;
-	color: #16a34a;
+	color: #2563eb;
 }
 
 .changelog-day-stats i {
@@ -246,7 +246,7 @@
 }
 
 :global(:root.dark) .changelog-day-stats em {
-	color: #4ade80;
+	color: #60a5fa;
 }
 :global(:root.dark) .changelog-day-stats i {
 	color: #f87171;
@@ -375,7 +375,7 @@
 
 .changelog-stats em {
 	font-style: normal;
-	color: #16a34a;
+	color: #2563eb;
 }
 
 .changelog-stats i {
@@ -384,7 +384,7 @@
 }
 
 :global(:root.dark) .changelog-stats em {
-	color: #4ade80;
+	color: #60a5fa;
 }
 :global(:root.dark) .changelog-stats i {
 	color: #f87171;
