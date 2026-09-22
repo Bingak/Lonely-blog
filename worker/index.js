@@ -223,7 +223,18 @@ async function fetchStatsForSha(origin, repo, token, sha) {
 			"Cache-Control": `public, max-age=${COMMIT_TTL}`,
 		},
 	});
-	ctx.waitUntil(cache.put(key, cacheable).catch(() => {}));
+	// 必须用 try/catch 包住：Cloudflare 的 cache.put 在部分情况下是**同步抛错**的，
+	// 写成 `cache.put(...).catch(() => {})` 兜不住 —— 异常会直接冒出本函数，
+	// 被调用方的 catch 吞成 null，结果就是「取了半天数据却一条都没返回」。
+	ctx.waitUntil(
+		(async () => {
+			try {
+				await cache.put(key, cacheable);
+			} catch {
+				// 写缓存失败不影响本次返回
+			}
+		})(),
+	);
 
 	return {
 		additions: data?.stats?.additions ?? 0,
@@ -315,6 +326,17 @@ async function probeSha(origin, repo, token, sha) {
 		const d = JSON.parse(raw);
 		out.stats = d.stats;
 		out.steps.push("parsed=ok");
+
+		const cacheable = new Response(raw, {
+			status: 200,
+			headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": `public, max-age=${COMMIT_TTL}` },
+		});
+		try {
+			await cache.put(key, cacheable);
+			out.steps.push("put=ok");
+		} catch (e) {
+			out.steps.push("put_err=" + (e && e.message ? e.message : String(e)));
+		}
 	} catch (e) {
 		out.steps.push("fetch_err=" + (e && e.message ? e.message : String(e)));
 	}
