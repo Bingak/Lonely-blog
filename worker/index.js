@@ -14,6 +14,7 @@
  * 路由约定（前端 src/components/pages/changelog/ChangelogFeed.svelte 依赖）：
  *   GET /api/commits?per_page=100&page=1     -> GitHub commits 列表原始 JSON 数组
  *   GET /api/commits/{sha}                   -> 单个 commit 详情（含 stats 增删行数）
+ *   GET /api/commits/stats?shas=a,b,c        -> 批量取 stats，形如 { sha: { additions, deletions } }
  *
  * 可用环境变量：
  *   GITHUB_TOKEN   建议用 wrangler secret put GITHUB_TOKEN 写入；缺省则匿名请求（60 次/小时/边缘 IP）
@@ -30,6 +31,17 @@ const DEFAULT_BRANCH = "main";
 const LIST_TTL = 300;
 /** 单个 commit 的 stats 一经产生就不会变，缓存 7 天 */
 const COMMIT_TTL = 604800;
+
+/**
+ * 批量 stats 接口单次允许的 sha 数量。
+ *
+ * 为什么是 15：Free 计划下 subrequest 与 Cache API 调用**共享** 50 次/请求的配额
+ * （Workers Limits → Cache API limits：「shares the same quota as subrequests (fetch())」）。
+ * 每个 sha 在最坏情况下要花 3 次：cache.match + fetch + cache.put，
+ * 15 × 3 = 45，留出余量给静态资源绑定等其它调用。
+ * 修大这个值时务必同步改前端 ChangelogFeed.svelte 的 STATS_BATCH_SIZE。
+ */
+const STATS_BATCH_MAX = 15;
 
 const SHA_RE = /^[0-9a-f]{7,40}$/i;
 const REPO_RE = /^[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+$/;
@@ -168,6 +180,108 @@ function handleCommit(request, env, ctx, sha) {
 	});
 }
 
+/**
+ * 取单个 commit 的 stats，优先复用 7 天边缘缓存。
+ * 缓存键与 /api/commits/{sha} 完全一致（同一个 origin + 路径），因此两条路由共享缓存条目。
+ * 返回 null 表示拿不到（上游异常 / 非 2xx），调用方据此把该 sha 从结果里省略。
+ */
+async function fetchStatsForSha(origin, repo, token, sha) {
+	const cache = caches.default;
+	const key = new Request(`${origin}/api/commits/${sha}`, { method: "GET" });
+
+	try {
+		const hit = await cache.match(key);
+		if (hit) {
+			const data = await hit.json();
+			return {
+				additions: data?.stats?.additions ?? 0,
+				deletions: data?.stats?.deletions ?? 0,
+			};
+		}
+	} catch {
+		// 缓存读取异常不应影响功能，继续回源
+	}
+
+	const upstream = await fetch(`${GITHUB_API}/repos/${repo}/commits/${sha}`, {
+		headers: upstreamHeaders(token),
+	});
+	if (!upstream.ok) return null;
+
+	const raw = await upstream.text();
+	let data;
+	try {
+		data = JSON.parse(raw);
+	} catch {
+		return null;
+	}
+
+	// 用字符串构造 Response：长度已知 → 不是 chunked → 并发的 cache.put 不会被串行阻塞
+	const cacheable = new Response(raw, {
+		status: 200,
+		headers: {
+			"Content-Type": "application/json; charset=utf-8",
+			"Cache-Control": `public, max-age=${COMMIT_TTL}`,
+		},
+	});
+	ctx.waitUntil(cache.put(key, cacheable).catch(() => {}));
+
+	return {
+		additions: data?.stats?.additions ?? 0,
+		deletions: data?.stats?.deletions ?? 0,
+	};
+}
+
+/**
+ * GET /api/commits/stats?shas=a,b,c —— 批量取多个 commit 的增删行数。
+ *
+ * 存在的理由：GitHub 的 commits **列表**接口不返回 stats，前端只能逐条补；
+ * 200 条提交就是 200 个请求。这里合并成「一次请求带一批 sha」，
+ * 前端从 200 次请求降到十几次。
+ *
+ * 结果里只包含成功取到的 sha —— 拿不到的直接省略，
+ * 让前端能区分「这个提交确实是 0 行改动」和「没取到数据」，后者会显示为 —。
+ */
+async function handleStatsBatch(env, ctx, url) {
+	const raw = url.searchParams.get("shas") || "";
+	const seen = new Set();
+	const shas = [];
+	for (const part of raw.split(",")) {
+		const sha = part.trim().toLowerCase();
+		if (!SHA_RE.test(sha) || seen.has(sha)) continue;
+		seen.add(sha);
+		shas.push(sha);
+		if (shas.length >= STATS_BATCH_MAX) break;
+	}
+
+	if (shas.length === 0) {
+		return jsonResponse({ error: `缺少合法的 shas 参数（逗号分隔的 sha，最多 ${STATS_BATCH_MAX} 个）` }, 400);
+	}
+
+	const { repo } = resolveTarget(env, null);
+	const token = env.GITHUB_TOKEN;
+	const authMode = token ? "token" : "anonymous";
+
+	const results = await Promise.all(
+		shas.map(async (sha) => {
+			try {
+				const stats = await fetchStatsForSha(url.origin, repo, token, sha);
+				return stats ? [sha, stats] : null;
+			} catch {
+				return null;
+			}
+		}),
+	);
+
+	const payload = {};
+	for (const entry of results) {
+		if (entry) payload[entry[0]] = entry[1];
+	}
+
+	// 聚合结果本身不进边缘缓存：每个 sha 已有 7 天缓存，再缓存一层只会增加失效面。
+	// 给浏览器一个短 TTL，避免同一次会话里反复问。
+	return jsonResponse(payload, 200, { "X-Changelog-Auth": authMode, "Cache-Control": `public, max-age=${LIST_TTL}` });
+}
+
 export default {
 	async fetch(request, env, ctx) {
 		const url = new URL(request.url);
@@ -178,6 +292,10 @@ export default {
 			}
 
 			const rest = url.pathname.slice("/api/commits".length).replace(/^\//, "");
+			// 批量 stats：必须在 sha 校验之前拦下，"stats" 不是合法 sha
+			if (rest === "stats") {
+				return handleStatsBatch(env, ctx, url);
+			}
 			if (rest) {
 				if (!SHA_RE.test(rest)) {
 					return jsonResponse({ error: "sha 格式不合法" }, 400);

@@ -252,6 +252,12 @@
 	color: #f87171;
 }
 
+/* 增删行数未取到时的占位符：与真实的 +0 -0 区分开 */
+.changelog-stats-pending {
+	opacity: 0.55;
+	cursor: help;
+}
+
 .changelog-day-chevron {
 	display: inline-flex;
 	align-items: center;

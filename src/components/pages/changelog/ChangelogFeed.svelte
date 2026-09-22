@@ -5,6 +5,12 @@
  * 数据链路：浏览器 → 同源 API `/api/commits` → Cloudflare Worker → GitHub REST API
  *   → 归一化为 CommitItem → 按类型分类 → 按天聚合 → 分页切片 → 渲染日卡片
  *
+ * 增删行数（stats）为什么要单独一批请求：GitHub 的 commits **列表**接口不返回 stats，
+ * 只能逐个 commit 去问详情。早期实现是逐条请求、且写死只补最新 50 条，
+ * 导致第 51 条往后的日期全显示成 `+0 -0`（看起来像「这天没改代码」）。
+ * 现在改为走 Worker 的批量接口 `/api/commits/stats?shas=…`，一次问一批，
+ * 并把 maxItems 全量补齐；仍取不到的行显示 `—`，与真实的 0 区分开。
+ *
  * 同一天的提交聚合成一张日卡片，点击展开显示当日所有完整提交信息。
  * 没有提交的日子不会显示卡片。
  *
@@ -35,6 +41,8 @@ interface CommitItem {
 	date: Date;
 	additions: number;
 	deletions: number;
+	/** stats 是否真的取到了；false 时显示 — ，避免与真实的 +0 -0 混淆 */
+	hasStats: boolean;
 	url: string;
 }
 
@@ -59,6 +67,8 @@ interface DayGroup {
 	/** 当日增删行数合计 */
 	totalAdditions: number;
 	totalDeletions: number;
+	/** 当日所有提交的 stats 是否都已取到；false 时该日显示 — 而非合计值 */
+	statsLoaded: boolean;
 }
 
 /** GitHub commit API 的原始结构（只声明用到的字段） */
@@ -157,6 +167,8 @@ function normalize(raw: GithubCommit, base: string): CommitItem {
 		date: new Date(raw.commit?.author?.date || Date.now()),
 		additions: raw.stats?.additions ?? 0,
 		deletions: raw.stats?.deletions ?? 0,
+		// 列表接口不返回 stats，这里一律标记未加载，由 loadStats 补齐
+		hasStats: Boolean(raw.stats),
 		url: raw.html_url || `${base}/${repo}/commit/${sha}`,
 	};
 }
@@ -216,23 +228,100 @@ async function fetchAllCommits(): Promise<GithubCommit[]> {
 	return all.slice(0, maxItems);
 }
 
+/**
+ * 每批带多少个 sha。必须与 Worker 端的 STATS_BATCH_MAX 保持一致：
+ * 那一边是按「subrequest + Cache API 调用共享 50 次/请求」的配额反推出来的。
+ */
+const STATS_BATCH_SIZE = 15;
+
+/** 没有 Worker 可回落时，匿名直连最多补多少条（匿名额度仅 60 次/小时） */
+const ANON_STATS_LIMIT = 50;
+
+/**
+ * 批量取增删行数，返回 { sha: {additions, deletions} }。
+ * 返回 null 表示同源代理不可用（纯静态部署），调用方据此回落到逐条直连；
+ * 返回 {} 表示代理在但这次没拿到数据，此时保留「未加载」状态。
+ */
+async function fetchStatsBatch(
+	shas: string[],
+): Promise<Record<string, { additions: number; deletions: number }> | null> {
+	const response = await requestViaProxy(
+		`/api/commits/stats?shas=${shas.join(",")}`,
+	);
+	if (!response) return null;
+	if (!response.ok) return {};
+
+	const data = await response.json();
+	return data && typeof data === "object" ? data : {};
+}
+
 /** 获取单个 commit 的 stats（additions/deletions），走同源代理并带长缓存 */
 async function fetchCommitStats(
 	sha: string,
-): Promise<{ additions: number; deletions: number }> {
+): Promise<{ additions: number; deletions: number } | null> {
 	let response = await requestViaProxy(`/api/commits/${sha}`);
 	if (!response) {
 		response = await fetch(`${GITHUB_API}/repos/${repo}/commits/${sha}`, {
 			headers: { Accept: "application/vnd.github+json" },
 		});
 	}
-	if (!response.ok) return { additions: 0, deletions: 0 };
+	if (!response.ok) return null;
 
 	const data = await response.json();
+	if (!data?.stats) return null;
 	return {
-		additions: data.stats?.additions ?? 0,
-		deletions: data.stats?.deletions ?? 0,
+		additions: data.stats.additions ?? 0,
+		deletions: data.stats.deletions ?? 0,
 	};
+}
+
+/** 回落路径：逐条直连 GitHub 补 stats，受匿名限流约束，只用于没有 Worker 的部署 */
+async function fetchStatsIndividually(items: CommitItem[]): Promise<void> {
+	const batchSize = 5;
+	for (let i = 0; i < items.length; i += batchSize) {
+		const batch = items.slice(i, i + batchSize);
+		await Promise.all(
+			batch.map(async (commit) => {
+				const stats = await fetchCommitStats(commit.sha);
+				if (!stats) return;
+				commit.additions = stats.additions;
+				commit.deletions = stats.deletions;
+				commit.hasStats = true;
+			}),
+		);
+		if (i + batchSize < items.length) {
+			await new Promise((resolve) => setTimeout(resolve, 200));
+		}
+	}
+}
+
+/**
+ * 补齐所有 commit 的增删行数。批量优先，任何一批失败都不影响页面渲染 ——
+ * 拿不到的行会保持 hasStats=false，界面上显示为 — ，而不是假的 +0 -0。
+ */
+async function loadStats(items: CommitItem[]): Promise<void> {
+	const pending = items.filter((item) => !item.hasStats);
+	if (pending.length === 0) return;
+
+	for (let i = 0; i < pending.length; i += STATS_BATCH_SIZE) {
+		const batch = pending.slice(i, i + STATS_BATCH_SIZE);
+		const map = await fetchStatsBatch(batch.map((item) => item.sha));
+
+		if (map === null) {
+			// 同源代理不存在（纯静态托管）：回落到匿名直连，只补前 N 条
+			await fetchStatsIndividually(pending.slice(0, ANON_STATS_LIMIT));
+			return;
+		}
+
+		for (const commit of batch) {
+			const stats: { additions: number; deletions: number } | undefined =
+				map[commit.sha] ?? map[commit.sha.toLowerCase()];
+			if (!stats) continue;
+			commit.additions = stats.additions ?? 0;
+			commit.deletions = stats.deletions ?? 0;
+			commit.hasStats = true;
+		}
+	}
 }
 
 async function loadCommits(): Promise<void> {
@@ -245,31 +334,8 @@ async function loadCommits(): Promise<void> {
 		// 归一化所有 commits
 		const normalized = allRaw.map((item) => normalize(item, webBase));
 
-		// 第二步：批量获取 stats（仅对前 N 个 commit，避免过多请求）
-		// 服务端已按 sha 做 7 天长缓存，这里限制 50 个足够覆盖当前可见范围
-		const statsLimit = 50;
-		const commitsNeedingStats = normalized
-			.filter((c) => c.additions === 0 && c.deletions === 0)
-			.slice(0, statsLimit);
-
-		if (commitsNeedingStats.length > 0) {
-			// 并发获取 stats，每批 5 个，避免触发限流
-			const batchSize = 5;
-			for (let i = 0; i < commitsNeedingStats.length; i += batchSize) {
-				const batch = commitsNeedingStats.slice(i, i + batchSize);
-				await Promise.all(
-					batch.map(async (commit) => {
-						const stats = await fetchCommitStats(commit.sha);
-						commit.additions = stats.additions;
-						commit.deletions = stats.deletions;
-					}),
-				);
-				// 批次间短暂延迟，避免触发 GitHub 限流
-				if (i + batchSize < commitsNeedingStats.length) {
-					await new Promise((resolve) => setTimeout(resolve, 200));
-				}
-			}
-		}
+		// 第二步：批量补齐 stats（一次请求带一批 sha，覆盖 maxItems 全量）
+		await loadStats(normalized);
 
 		commits = normalized;
 		currentPage = 1;
@@ -306,10 +372,13 @@ const groupedByDate = $derived.by(() => {
 			const kindSet = new Set<CommitKind>();
 			let totalAdd = 0;
 			let totalDel = 0;
+			let statsLoaded = true;
 			for (const c of dayCommits) {
 				kindSet.add(c.kind);
 				totalAdd += c.additions;
 				totalDel += c.deletions;
+				// 同一天只要有一条没取到 stats，当日合计就不可信，直接显示 —
+				if (!c.hasStats) statsLoaded = false;
 			}
 			return {
 				date,
@@ -317,6 +386,7 @@ const groupedByDate = $derived.by(() => {
 				kinds: [...kindSet],
 				totalAdditions: totalAdd,
 				totalDeletions: totalDel,
+				statsLoaded,
 			} as DayGroup;
 		})
 		.sort((a, b) => b.date.localeCompare(a.date));
@@ -448,8 +518,15 @@ function handlePageChange(page: number): void {
 					</span>
 					{#if showStats}
 						<span class="changelog-day-stats">
-							<em>+{day.totalAdditions}</em>
-							<i>-{day.totalDeletions}</i>
+							{#if day.statsLoaded}
+								<em>+{day.totalAdditions}</em>
+								<i>-{day.totalDeletions}</i>
+							{:else}
+								<span
+									class="changelog-stats-pending"
+									title="增删行数未取到，显示为 — 以区别于真实的 0"
+								>—</span>
+							{/if}
 						</span>
 					{/if}
 					<!-- 展开/收起指示器 -->
@@ -495,8 +572,12 @@ function handlePageChange(page: number): void {
 									</a>
 									{#if showStats}
 										<span class="changelog-stats" aria-hidden="true">
-											<em>+{commit.additions}</em>
-											<i>-{commit.deletions}</i>
+											{#if commit.hasStats}
+												<em>+{commit.additions}</em>
+												<i>-{commit.deletions}</i>
+											{:else}
+												<span class="changelog-stats-pending">—</span>
+											{/if}
 										</span>
 									{/if}
 								</footer>
