@@ -1,6 +1,7 @@
 /**
  * 更新日志页面样式
- * 同一天的提交聚合成日卡片，点击展开显示当日完整提交列表。
+ * 按天：同一天的提交聚合成日卡片，点击展开显示当日完整提交列表。
+ * 按月：月卡片展开后，月内每天先是一个折叠按钮，再点开才是当天的提交（三层）。
  * 没有提交的日子不显示卡片。
  * 配色统一走主题变量（--primary / --card-bg / --line-divider 等），自动适配亮暗色。
  */
@@ -330,31 +331,74 @@
 	gap: 0.75rem;
 }
 
-/* 月内按天分段：一条虚分隔线 + 当天日期与合计，下面是当天的提交 */
+/* 月内某一天：月卡片内再嵌一层折叠按钮，点开才显示当天的提交 */
 .changelog-subday {
 	display: flex;
 	flex-direction: column;
+	border: 1px solid color-mix(in srgb, var(--line-divider) 65%, transparent);
+	border-radius: 0.6rem;
+	overflow: hidden;
+	transition: border-color 0.2s;
 }
 
-.changelog-subday-head {
+.changelog-subday.is-expanded {
+	border-color: color-mix(in srgb, var(--primary) 32%, transparent);
+}
+
+.changelog-subday-header {
 	display: flex;
 	align-items: center;
-	gap: 0.6rem;
-	margin: 0;
-	padding: 0.5rem 0 0.4rem;
-	border-bottom: 1px dashed color-mix(in srgb, var(--line-divider) 70%, transparent);
+	flex-wrap: wrap;
+	gap: 0.5rem 0.6rem;
+	width: 100%;
+	padding: 0.55rem 0.8rem;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	text-align: left;
+	font: inherit;
 	font-size: 0.82rem;
 	font-weight: 700;
 	color: var(--deep-text);
 	font-variant-numeric: tabular-nums;
+	transition: background-color 0.18s;
 }
 
-.changelog-subday-head .changelog-day-stats {
-	margin-left: auto;
+.changelog-subday-header:hover {
+	background: var(--btn-regular-bg);
 }
 
-:global(:root.dark) .changelog-subday-head {
+.changelog-subday-header:focus-visible {
+	outline: 2px solid var(--primary);
+	outline-offset: -2px;
+}
+
+.changelog-subday-date {
+	white-space: nowrap;
+}
+
+:global(:root.dark) .changelog-subday-header {
 	color: #ffffff;
+}
+
+/* 里层箭头比外层小一号，避免两层箭头抢焦点 */
+.changelog-subday .changelog-day-chevron svg {
+	font-size: 1.25rem;
+}
+
+.changelog-subday.is-expanded .changelog-day-chevron {
+	transform: rotate(180deg);
+	color: var(--primary);
+}
+
+/* 展开后的当天提交列表：分隔线 + 淡底色，与外层日卡片区分层级 */
+.changelog-subday-body {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding: 0.5rem 0.9rem 0.75rem 1.1rem;
+	border-top: 1px dashed color-mix(in srgb, var(--line-divider) 70%, transparent);
+	background: color-mix(in srgb, var(--btn-regular-bg) 40%, transparent);
 }
 
 /* ── 展开后的单条提交 ── */

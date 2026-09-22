@@ -12,9 +12,9 @@
  * 并把 maxItems 全量补齐；仍取不到的行显示 `—`，与真实的 0 区分开。
  *
  * 分组支持两档粒度，右上角胶囊可切换（默认按月）：
- *   - 按月：同月的所有日期合并成一张月卡片，头部是该月合计，
- *           展开展示月内按天分段的提交列表（列表长了也不会刷出一屏日卡片）；
- *   - 按天：同一天的提交聚合成一张日卡片，点击展开显示当日完整提交。
+ *   - 按月：同月的所有日期合并成一张月卡片（月 → 天 → 提交 共三层），
+ *           展开月卡片先看到该月每天一个可点的日按钮，再点某一天才展开当天的提交列表；
+ *   - 按天：同一天的提交聚合成一张日卡片，点击展开显示当日完整提交（两层）。
  * 两档共用同一套日聚合逻辑，口径一致，不会出现"某天数字对不上"。
  * 没有提交的日子不会显示卡片。
  *
@@ -137,6 +137,12 @@ let groupMode = $state<"day" | "month">("month");
 let expandedDate = $state<string | null>(null);
 /** 当前展开的月份键（按月视图），格式 YYYY-MM，null 表示全部收起 */
 let expandedMonth = $state<string | null>(null);
+/**
+ * 按月视图里，月内当前展开的那一天，格式 YYYY-MM-DD，null 表示该月内各天全部收起。
+ * 与按天视图的 expandedDate 分开维护 —— 两档视图的"展开"语义不同，
+ * 共用同一个变量会让切视图时出现串台。
+ */
+let expandedSubday = $state<string | null>(null);
 
 /** 提交标题前缀 → 类型。[feat] / feat: / 🐛 都归一到同一类 */
 const KIND_PATTERNS: Array<{ kind: CommitKind; re: RegExp }> = [
@@ -486,6 +492,7 @@ const availableKinds = $derived(
 function collapseAll(): void {
 	expandedDate = null;
 	expandedMonth = null;
+	expandedSubday = null;
 }
 
 function selectKind(kind: CommitKind | "all"): void {
@@ -507,7 +514,16 @@ function toggleDay(date: string): void {
 }
 
 function toggleMonth(month: string): void {
-	expandedMonth = expandedMonth === month ? null : month;
+	const next = expandedMonth === month ? null : month;
+	expandedMonth = next;
+	// 收起该月（或换到别的月）时，把月内展开的那一天一并复位，
+	// 否则下次展开该月会"莫名其妙已经展开了一天"
+	if (next !== month) expandedSubday = null;
+}
+
+/** 月内某一天的展开/收起：月 → 天 → 提交 三层里的中间那层 */
+function toggleSubday(date: string): void {
+	expandedSubday = expandedSubday === date ? null : date;
 }
 
 function padStart2(value: number): string {
@@ -715,11 +731,31 @@ function handlePageChange(page: number): void {
 					{#if expandedMonth === month.month}
 						<div class="changelog-day-body changelog-month-body">
 							{#each month.days as day (day.date)}
-								<section class="changelog-subday">
-									<h4 class="changelog-subday-head">
-										<time datetime={day.date}>{day.date.slice(5)}</time>
+								<!-- 月内某一天：再折叠一层，点开后才显示当天的提交详情 -->
+								<section
+									class="changelog-subday"
+									class:is-expanded={expandedSubday === day.date}
+								>
+									<button
+										type="button"
+										class="changelog-subday-header"
+										onclick={() => toggleSubday(day.date)}
+										aria-expanded={expandedSubday === day.date}
+									>
+										<time class="changelog-subday-date" datetime={day.date}>
+											{day.date.slice(5)}
+										</time>
 										<span class="changelog-day-count">
 											{day.commits.length} 次提交
+										</span>
+										<!-- 当天出现过的类型徽章 -->
+										<span class="changelog-day-kinds">
+											{#each day.kinds as kind (kind)}
+												<span class="changelog-kind" data-kind={kind}>
+													<Icon icon={KIND_META[kind].icon} />
+													{KIND_META[kind].label}
+												</span>
+											{/each}
 										</span>
 										{#if showStats}
 											<span class="changelog-day-stats">
@@ -734,10 +770,18 @@ function handlePageChange(page: number): void {
 												{/if}
 											</span>
 										{/if}
-									</h4>
-									{#each day.commits as commit (commit.sha)}
-										{@render commitCard(commit)}
-									{/each}
+										<span class="changelog-day-chevron" aria-hidden="true">
+											<Icon icon="material-symbols:keyboard-arrow-down" />
+										</span>
+									</button>
+								
+								{#if expandedSubday === day.date}
+									<div class="changelog-subday-body">
+										{#each day.commits as commit (commit.sha)}
+											{@render commitCard(commit)}
+										{/each}
+									</div>
+								{/if}
 								</section>
 							{/each}
 						</div>
