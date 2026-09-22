@@ -1,8 +1,12 @@
 {
 	"name": "lonely-blog",
+	// Worker 入口：处理 /api/commits 代理（服务端带 GitHub token），其余请求透传静态资源
+	"main": "worker/index.js",
 	"compatibility_date": "2025-01-01",
 	"compatibility_flags": ["nodejs_compat"],
 	"assets": {
-		"directory": "./dist"
+		"directory": "./dist",
+		// 供 Worker 内 env.ASSETS.fetch() 透传静态资源；默认仍是「静态资源优先」，不影响现有路由
+		"binding": "ASSETS"
 	}
 }
