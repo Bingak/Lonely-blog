@@ -184,8 +184,11 @@ function handleCommit(request, env, ctx, sha) {
  * 取单个 commit 的 stats，优先复用 7 天边缘缓存。
  * 缓存键与 /api/commits/{sha} 完全一致（同一个 origin + 路径），因此两条路由共享缓存条目。
  * 返回 null 表示拿不到（上游异常 / 非 2xx），调用方据此把该 sha 从结果里省略。
+ *
+ * 注意 ctx 必须由调用方传进来：本函数定义在模块顶层，
+ * 拿不到 fetch(request, env, ctx) 的 ctx，漏传就是一个运行时 ReferenceError。
  */
-async function fetchStatsForSha(origin, repo, token, sha) {
+async function fetchStatsForSha(origin, repo, token, sha, ctx) {
 	const cache = caches.default;
 	const key = new Request(`${origin}/api/commits/${sha}`, { method: "GET" });
 
@@ -223,9 +226,9 @@ async function fetchStatsForSha(origin, repo, token, sha) {
 			"Cache-Control": `public, max-age=${COMMIT_TTL}`,
 		},
 	});
-	// 必须用 try/catch 包住：Cloudflare 的 cache.put 在部分情况下是**同步抛错**的，
-	// 写成 `cache.put(...).catch(() => {})` 兜不住 —— 异常会直接冒出本函数，
-	// 被调用方的 catch 吞成 null，结果就是「取了半天数据却一条都没返回」。
+	// 用 try/catch 包住，别写成 `cache.put(...).catch(...)`：
+	// cache.put 在部分情况下会**同步抛错**，那时 .catch() 根本不会被求值，
+	// 异常会直接冒出本函数，被调用方的 catch 吞成 null —— 表现为「回源成功却一条都没返回」。
 	ctx.waitUntil(
 		(async () => {
 			try {
@@ -272,16 +275,10 @@ async function handleStatsBatch(env, ctx, url) {
 	const token = env.GITHUB_TOKEN;
 	const authMode = token ? "token" : "anonymous";
 
-	// 临时诊断分支：?debug=1 时只查第一个 sha 并回传每一步的结果
-	if (url.searchParams.get("debug") === "1") {
-		const probe = await probeSha(url.origin, repo, token, shas[0]);
-		return jsonResponse({ authMode, statLen: (token || "").length, probe }, 200, { "X-Changelog-Auth": authMode });
-	}
-
 	const results = await Promise.all(
 		shas.map(async (sha) => {
 			try {
-				const stats = await fetchStatsForSha(url.origin, repo, token, sha);
+				const stats = await fetchStatsForSha(url.origin, repo, token, sha, ctx);
 				return stats ? [sha, stats] : null;
 			} catch {
 				return null;
@@ -297,50 +294,6 @@ async function handleStatsBatch(env, ctx, url) {
 	// 聚合结果本身不进边缘缓存：每个 sha 已有 7 天缓存，再缓存一层只会增加失效面。
 	// 给浏览器一个短 TTL，避免同一次会话里反复问。
 	return jsonResponse(payload, 200, { "X-Changelog-Auth": authMode, "Cache-Control": `public, max-age=${LIST_TTL}` });
-}
-
-/** 临时诊断：把回源链路上每一步的真实结果吐出来，定位完即删 */
-async function probeSha(origin, repo, token, sha) {
-	const out = { sha: sha.slice(0, 7), steps: [] };
-	const cache = caches.default;
-	const key = new Request(`${origin}/api/commits/${sha}`, { method: "GET" });
-	try {
-		const hit = await cache.match(key);
-		out.steps.push("match=" + (hit ? "HIT" : "MISS"));
-		if (hit) {
-			out.stats = (await hit.json()).stats;
-			return out;
-		}
-	} catch (e) {
-		out.steps.push("match_err=" + (e && e.message ? e.message : String(e)));
-	}
-	try {
-		const r = await fetch(`${GITHUB_API}/repos/${repo}/commits/${sha}`, { headers: upstreamHeaders(token) });
-		out.steps.push(`fetch=${r.status}`);
-		const raw = await r.text();
-		out.steps.push("bytes=" + raw.length);
-		if (!r.ok) {
-			out.steps.push("errbody=" + raw.slice(0, 180));
-			return out;
-		}
-		const d = JSON.parse(raw);
-		out.stats = d.stats;
-		out.steps.push("parsed=ok");
-
-		const cacheable = new Response(raw, {
-			status: 200,
-			headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": `public, max-age=${COMMIT_TTL}` },
-		});
-		try {
-			await cache.put(key, cacheable);
-			out.steps.push("put=ok");
-		} catch (e) {
-			out.steps.push("put_err=" + (e && e.message ? e.message : String(e)));
-		}
-	} catch (e) {
-		out.steps.push("fetch_err=" + (e && e.message ? e.message : String(e)));
-	}
-	return out;
 }
 
 export default {
