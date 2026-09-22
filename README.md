@@ -26,7 +26,7 @@
 
 <img alt="Lighthouse" src="./docs/images/Lighthouse.png" />
 
-> 主题本体是 [CuteLeaf](https://github.com/CuteLeaf) 的 [Firefly](https://github.com/CuteLeaf/Firefly)，往上追溯还有 [saicaca](https://github.com/saicaca) 的 [Fuwari](https://github.com/saicaca/fuwari)——轮子是他们造的，我只是把开起来的手感调成了自己的（笑）. 魔改的折腾过程大多写成了[博客文章](https://lonelybing.top/)，欢迎围观喵~
+> 主题本体是 [CuteLeaf](https://github.com/CuteLeaf) 的 [Firefly](https://github.com/CuteLeaf/Firefly)，往上追溯还有 [saicaca](https://github.com/saicaca) 的 [Fuwari](https://github.com/saicaca/fuwari)——魔改的折腾过程大多写成了[博客文章](https://lonelybing.top/)，欢迎围观喵~
 
 ## 项目概述
 
