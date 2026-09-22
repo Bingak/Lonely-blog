@@ -261,6 +261,12 @@ async function handleStatsBatch(env, ctx, url) {
 	const token = env.GITHUB_TOKEN;
 	const authMode = token ? "token" : "anonymous";
 
+	// 临时诊断分支：?debug=1 时只查第一个 sha 并回传每一步的结果
+	if (url.searchParams.get("debug") === "1") {
+		const probe = await probeSha(url.origin, repo, token, shas[0]);
+		return jsonResponse({ authMode, statLen: (token || "").length, probe }, 200, { "X-Changelog-Auth": authMode });
+	}
+
 	const results = await Promise.all(
 		shas.map(async (sha) => {
 			try {
@@ -280,6 +286,39 @@ async function handleStatsBatch(env, ctx, url) {
 	// 聚合结果本身不进边缘缓存：每个 sha 已有 7 天缓存，再缓存一层只会增加失效面。
 	// 给浏览器一个短 TTL，避免同一次会话里反复问。
 	return jsonResponse(payload, 200, { "X-Changelog-Auth": authMode, "Cache-Control": `public, max-age=${LIST_TTL}` });
+}
+
+/** 临时诊断：把回源链路上每一步的真实结果吐出来，定位完即删 */
+async function probeSha(origin, repo, token, sha) {
+	const out = { sha: sha.slice(0, 7), steps: [] };
+	const cache = caches.default;
+	const key = new Request(`${origin}/api/commits/${sha}`, { method: "GET" });
+	try {
+		const hit = await cache.match(key);
+		out.steps.push("match=" + (hit ? "HIT" : "MISS"));
+		if (hit) {
+			out.stats = (await hit.json()).stats;
+			return out;
+		}
+	} catch (e) {
+		out.steps.push("match_err=" + (e && e.message ? e.message : String(e)));
+	}
+	try {
+		const r = await fetch(`${GITHUB_API}/repos/${repo}/commits/${sha}`, { headers: upstreamHeaders(token) });
+		out.steps.push(`fetch=${r.status}`);
+		const raw = await r.text();
+		out.steps.push("bytes=" + raw.length);
+		if (!r.ok) {
+			out.steps.push("errbody=" + raw.slice(0, 180));
+			return out;
+		}
+		const d = JSON.parse(raw);
+		out.stats = d.stats;
+		out.steps.push("parsed=ok");
+	} catch (e) {
+		out.steps.push("fetch_err=" + (e && e.message ? e.message : String(e)));
+	}
+	return out;
 }
 
 export default {
