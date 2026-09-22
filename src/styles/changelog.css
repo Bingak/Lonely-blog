@@ -28,12 +28,47 @@
 	white-space: nowrap;
 }
 
+/* ── 工具栏：左侧类型筛选，右侧分组粒度切换 ── */
+.changelog-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem 0.75rem;
+	margin-bottom: 1rem;
+}
+
 /* ── 类型筛选胶囊 ── */
 .changelog-filter {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.5rem;
-	margin-bottom: 1rem;
+	min-width: 0;
+}
+
+/* ── 分组粒度切换（按月 / 按天）：套在底槽里的分段控件 ── */
+.changelog-view {
+	display: inline-flex;
+	gap: 0.15rem;
+	padding: 0.2rem;
+	border-radius: 9999px;
+	background: var(--btn-regular-bg);
+}
+
+.changelog-view .changelog-pill {
+	padding: 0.25rem 0.7rem;
+	background: transparent;
+}
+
+.changelog-view .changelog-pill:hover {
+	background: var(--btn-regular-bg-hover);
+	color: var(--primary);
+}
+
+.changelog-view .changelog-pill[data-active],
+.changelog-view .changelog-pill[data-active]:hover {
+	background: var(--primary);
+	color: #fff;
 }
 
 .changelog-pill {
@@ -284,6 +319,42 @@
 	padding: 0 1.25rem 1rem;
 	border-top: 1px solid var(--line-divider);
 	margin-top: 0.25rem;
+}
+
+/* ── 按月视图：月卡片复用日卡片的头部与展开样式，仅月份标题大一号 ── */
+.changelog-month .changelog-day-date {
+	font-size: 1.05rem;
+}
+
+.changelog-month-body {
+	gap: 0.75rem;
+}
+
+/* 月内按天分段：一条虚分隔线 + 当天日期与合计，下面是当天的提交 */
+.changelog-subday {
+	display: flex;
+	flex-direction: column;
+}
+
+.changelog-subday-head {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	margin: 0;
+	padding: 0.5rem 0 0.4rem;
+	border-bottom: 1px dashed color-mix(in srgb, var(--line-divider) 70%, transparent);
+	font-size: 0.82rem;
+	font-weight: 700;
+	color: var(--deep-text);
+	font-variant-numeric: tabular-nums;
+}
+
+.changelog-subday-head .changelog-day-stats {
+	margin-left: auto;
+}
+
+:global(:root.dark) .changelog-subday-head {
+	color: #ffffff;
 }
 
 /* ── 展开后的单条提交 ── */

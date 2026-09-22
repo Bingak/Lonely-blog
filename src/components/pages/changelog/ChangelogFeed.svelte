@@ -11,7 +11,11 @@
  * 现在改为走 Worker 的批量接口 `/api/commits/stats?shas=…`，一次问一批，
  * 并把 maxItems 全量补齐；仍取不到的行显示 `—`，与真实的 0 区分开。
  *
- * 同一天的提交聚合成一张日卡片，点击展开显示当日所有完整提交信息。
+ * 分组支持两档粒度，右上角胶囊可切换（默认按月）：
+ *   - 按月：同月的所有日期合并成一张月卡片，头部是该月合计，
+ *           展开展示月内按天分段的提交列表（列表长了也不会刷出一屏日卡片）；
+ *   - 按天：同一天的提交聚合成一张日卡片，点击展开显示当日完整提交。
+ * 两档共用同一套日聚合逻辑，口径一致，不会出现"某天数字对不上"。
  * 没有提交的日子不会显示卡片。
  *
  * 为什么走同源 API 而不是浏览器直连 GitHub：
@@ -71,6 +75,25 @@ interface DayGroup {
 	statsLoaded: boolean;
 }
 
+/** 按月聚合后的结构：一个月一张卡片，内部仍保留日分组 */
+interface MonthGroup {
+	/** 月份键，格式 YYYY-MM */
+	month: string;
+	/** 展示用标题，如「2026 年 9 月」 */
+	label: string;
+	/** 月内按天聚合的结果（倒序），展开后逐天展示 */
+	days: DayGroup[];
+	/** 该月提交总数 */
+	commitCount: number;
+	/** 该月出现的提交类型集合 */
+	kinds: CommitKind[];
+	/** 该月增删行数合计 */
+	totalAdditions: number;
+	totalDeletions: number;
+	/** 该月所有提交的 stats 是否都已取到；false 时显示 — 而非合计值 */
+	statsLoaded: boolean;
+}
+
 /** GitHub commit API 的原始结构（只声明用到的字段） */
 interface GithubCommit {
 	sha?: string;
@@ -108,8 +131,12 @@ let loading = $state(true);
 let failed = $state(false);
 let currentPage = $state(1);
 let activeKind = $state<CommitKind | "all">("all");
+/** 分组粒度：按月或按天，默认按月（同月合并成一张卡片） */
+let groupMode = $state<"day" | "month">("month");
 /** 当前展开的日期键，null 表示全部收起 */
 let expandedDate = $state<string | null>(null);
+/** 当前展开的月份键（按月视图），格式 YYYY-MM，null 表示全部收起 */
+let expandedMonth = $state<string | null>(null);
 
 /** 提交标题前缀 → 类型。[feat] / feat: / 🐛 都归一到同一类 */
 const KIND_PATTERNS: Array<{ kind: CommitKind; re: RegExp }> = [
@@ -339,7 +366,7 @@ async function loadCommits(): Promise<void> {
 
 		commits = normalized;
 		currentPage = 1;
-		expandedDate = null;
+		collapseAll();
 	} catch {
 		failed = true;
 		commits = [];
@@ -359,10 +386,13 @@ const filtered = $derived(
 		: commits.filter((item) => item.kind === activeKind),
 );
 
-/** 按天聚合：把筛选后的 commits 按日期分组，倒序排列 */
-const groupedByDate = $derived.by(() => {
+/**
+ * 把一组 commits 按天聚合，返回倒序排列的日分组。
+ * 按月视图复用同一段逻辑（月卡片内部的日分段），两档粒度的口径完全一致。
+ */
+function groupDays(items: CommitItem[]): DayGroup[] {
 	const groups: Record<string, CommitItem[]> = {};
-	for (const commit of filtered) {
+	for (const commit of items) {
 		const key = formatDate(commit.date);
 		if (!groups[key]) groups[key] = [];
 		groups[key].push(commit);
@@ -390,12 +420,59 @@ const groupedByDate = $derived.by(() => {
 			} as DayGroup;
 		})
 		.sort((a, b) => b.date.localeCompare(a.date));
+}
+
+/** 按天聚合（按天视图）：一天一张卡片 */
+const groupedByDate = $derived(groupDays(filtered));
+
+/**
+ * 按月聚合（按月视图）：同月的所有日期合并成一张月卡片。
+ * 月内仍保留日分组，展开后按天分段展示，信息量与按天视图一致。
+ */
+const groupedByMonth = $derived.by(() => {
+	const buckets: Record<string, CommitItem[]> = {};
+	for (const commit of filtered) {
+		const key = `${commit.date.getFullYear()}-${padStart2(commit.date.getMonth() + 1)}`;
+		if (!buckets[key]) buckets[key] = [];
+		buckets[key].push(commit);
+	}
+	return Object.entries(buckets)
+		.map(([month, monthCommits]) => {
+			const days = groupDays(monthCommits);
+			const kindSet = new Set<CommitKind>();
+			let totalAdd = 0;
+			let totalDel = 0;
+			let statsLoaded = true;
+			for (const c of monthCommits) {
+				kindSet.add(c.kind);
+				totalAdd += c.additions;
+				totalDel += c.deletions;
+				if (!c.hasStats) statsLoaded = false;
+			}
+			const [year, monthNumber] = month.split("-");
+			return {
+				month,
+				label: `${year} 年 ${Number(monthNumber)} 月`,
+				days,
+				commitCount: monthCommits.length,
+				kinds: [...kindSet],
+				totalAdditions: totalAdd,
+				totalDeletions: totalDel,
+				statsLoaded,
+			} as MonthGroup;
+		})
+		.sort((a, b) => b.month.localeCompare(a.month));
 });
 
-/** 分页基于天数，每天一张卡片 */
-const totalPages = $derived(Math.max(1, Math.ceil(groupedByDate.length / itemsPerPage)));
+/** 分页基于"组"：按月视图是月数，按天视图是天数 */
+const groupCount = $derived(
+	groupMode === "month" ? groupedByMonth.length : groupedByDate.length,
+);
 const pagedDays = $derived(
 	groupedByDate.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage),
+);
+const pagedMonths = $derived(
+	groupedByMonth.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage),
 );
 
 /** 只保留实际出现过的类型，避免空筛选按钮 */
@@ -405,30 +482,102 @@ const availableKinds = $derived(
 	),
 );
 
+/** 收起所有已展开的卡片（切筛选 / 切粒度 / 翻页时统一处理） */
+function collapseAll(): void {
+	expandedDate = null;
+	expandedMonth = null;
+}
+
 function selectKind(kind: CommitKind | "all"): void {
 	activeKind = kind;
 	currentPage = 1;
-	expandedDate = null;
+	collapseAll();
+}
+
+/** 切换分组粒度。两档的"组数"不同，所以顺带回到第一页 */
+function selectGroupMode(mode: "day" | "month"): void {
+	if (groupMode === mode) return;
+	groupMode = mode;
+	currentPage = 1;
+	collapseAll();
 }
 
 function toggleDay(date: string): void {
 	expandedDate = expandedDate === date ? null : date;
 }
 
+function toggleMonth(month: string): void {
+	expandedMonth = expandedMonth === month ? null : month;
+}
+
+function padStart2(value: number): string {
+	return String(value).padStart(2, "0");
+}
+
 function formatDate(date: Date): string {
-	const pad = (value: number) => String(value).padStart(2, "0");
-	return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+	return `${date.getFullYear()}-${padStart2(date.getMonth() + 1)}-${padStart2(date.getDate())}`;
 }
 
 function handlePageChange(page: number): void {
 	currentPage = page;
-	expandedDate = null;
+	collapseAll();
 	// 翻页后回到列表顶部，避免停在半空
 	document
 		.querySelector(".changelog-page")
 		?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 </script>
+
+<!--
+	单条提交卡片。按天视图与按月视图的日分段共用同一个 snippet，
+	避免两处渲染逻辑漂移（改了一处忘了另一处）。
+-->
+{#snippet commitCard(commit: CommitItem)}
+	<article class="changelog-commit" data-kind={commit.kind}>
+		<header class="changelog-commit-head">
+			<span class="changelog-kind" data-kind={commit.kind}>
+				<Icon icon={KIND_META[commit.kind].icon} />
+				{KIND_META[commit.kind].label}
+			</span>
+			<code class="changelog-sha">{commit.shortSha}</code>
+		</header>
+
+		<h3 class="changelog-title">
+			<a href={commit.url} target="_blank" rel="noopener noreferrer">
+				{commit.title}
+			</a>
+		</h3>
+
+		{#if showBody && commit.body}
+			<p class="changelog-body">{commit.body}</p>
+		{/if}
+
+		<footer class="changelog-foot">
+			<a
+				class="changelog-author"
+				href={commit.authorUrl}
+				target="_blank"
+				rel="noopener noreferrer"
+				title={commit.author}
+			>
+				{#if commit.avatar}
+					<img src={commit.avatar} alt="" loading="lazy" decoding="async" />
+				{/if}
+				<span>{commit.author}</span>
+			</a>
+			{#if showStats}
+				<span class="changelog-stats" aria-hidden="true">
+					{#if commit.hasStats}
+						<em>+{commit.additions}</em>
+						<i>-{commit.deletions}</i>
+					{:else}
+						<span class="changelog-stats-pending">—</span>
+					{/if}
+				</span>
+			{/if}
+		</footer>
+	</article>
+{/snippet}
 
 <!-- 加载中骨架 -->
 {#if loading}
@@ -463,135 +612,197 @@ function handlePageChange(page: number): void {
 		<p>{i18n(I18nKey.changelogEmpty)}</p>
 	</div>
 {:else}
-	<!-- 类型筛选（全部 + 实际出现的类型） -->
-	<div class="changelog-filter">
-		<button
-			type="button"
-			class="changelog-pill"
-			data-active={activeKind === "all" ? "" : undefined}
-			onclick={() => selectKind("all")}
-		>
-			{i18n(I18nKey.changelogAll)}
-			<span class="changelog-pill-count">{commits.length}</span>
-		</button>
-		{#each availableKinds as kind (kind)}
-			{@const meta = KIND_META[kind]}
-			{@const count = commits.filter((item) => item.kind === kind).length}
+	<!-- 类型筛选 + 分组粒度切换 -->
+	<div class="changelog-toolbar">
+		<div class="changelog-filter">
 			<button
 				type="button"
 				class="changelog-pill"
-				data-kind={kind}
-				data-active={activeKind === kind ? "" : undefined}
-				onclick={() => selectKind(kind)}
+				data-active={activeKind === "all" ? "" : undefined}
+				onclick={() => selectKind("all")}
 			>
-				<Icon icon={meta.icon} />
-				{meta.label}
-				<span class="changelog-pill-count">{count}</span>
+				{i18n(I18nKey.changelogAll)}
+				<span class="changelog-pill-count">{commits.length}</span>
 			</button>
-		{/each}
-	</div>
-
-	<!-- 日卡片列表：同一天的提交聚合成一张卡片，点击展开 -->
-	<div class="changelog-day-list">
-		{#each pagedDays as day (day.date)}
-			<section class="changelog-day card-base" class:is-expanded={expandedDate === day.date}>
+			{#each availableKinds as kind (kind)}
+				{@const meta = KIND_META[kind]}
+				{@const count = commits.filter((item) => item.kind === kind).length}
 				<button
 					type="button"
-					class="changelog-day-header"
-					onclick={() => toggleDay(day.date)}
-					aria-expanded={expandedDate === day.date}
+					class="changelog-pill"
+					data-kind={kind}
+					data-active={activeKind === kind ? "" : undefined}
+					onclick={() => selectKind(kind)}
 				>
-					<time class="changelog-day-date" datetime={day.date}>
-						{day.date}
-					</time>
-					<span class="changelog-day-count">
-						{day.commits.length} 次提交
-					</span>
-					<!-- 当日出现的类型徽章 -->
-					<span class="changelog-day-kinds">
-						{#each day.kinds as kind (kind)}
-							<span class="changelog-kind" data-kind={kind}>
-								<Icon icon={KIND_META[kind].icon} />
-								{KIND_META[kind].label}
-							</span>
-						{/each}
-					</span>
-					{#if showStats}
-						<span class="changelog-day-stats">
-							{#if day.statsLoaded}
-								<em>+{day.totalAdditions}</em>
-								<i>-{day.totalDeletions}</i>
-							{:else}
-								<span
-									class="changelog-stats-pending"
-									title="增删行数未取到，显示为 — 以区别于真实的 0"
-								>—</span>
-							{/if}
-						</span>
-					{/if}
-					<!-- 展开/收起指示器 -->
-					<span class="changelog-day-chevron" aria-hidden="true">
-						<Icon icon="material-symbols:keyboard-arrow-down" />
-					</span>
+					<Icon icon={meta.icon} />
+					{meta.label}
+					<span class="changelog-pill-count">{count}</span>
 				</button>
+			{/each}
+		</div>
 
-				{#if expandedDate === day.date}
-					<div class="changelog-day-body">
-						{#each day.commits as commit (commit.sha)}
-							<article class="changelog-commit" data-kind={commit.kind}>
-								<header class="changelog-commit-head">
-									<span class="changelog-kind" data-kind={commit.kind}>
-										<Icon icon={KIND_META[commit.kind].icon} />
-										{KIND_META[commit.kind].label}
-									</span>
-									<code class="changelog-sha">{commit.shortSha}</code>
-								</header>
-
-								<h3 class="changelog-title">
-									<a href={commit.url} target="_blank" rel="noopener noreferrer">
-										{commit.title}
-									</a>
-								</h3>
-
-								{#if showBody && commit.body}
-									<p class="changelog-body">{commit.body}</p>
-								{/if}
-
-								<footer class="changelog-foot">
-									<a
-										class="changelog-author"
-										href={commit.authorUrl}
-										target="_blank"
-										rel="noopener noreferrer"
-										title={commit.author}
-									>
-										{#if commit.avatar}
-											<img src={commit.avatar} alt="" loading="lazy" decoding="async" />
-										{/if}
-										<span>{commit.author}</span>
-									</a>
-									{#if showStats}
-										<span class="changelog-stats" aria-hidden="true">
-											{#if commit.hasStats}
-												<em>+{commit.additions}</em>
-												<i>-{commit.deletions}</i>
-											{:else}
-												<span class="changelog-stats-pending">—</span>
-											{/if}
-										</span>
-									{/if}
-								</footer>
-							</article>
-						{/each}
-					</div>
-				{/if}
-			</section>
-		{/each}
+		<!-- 分组粒度：按月把同月的日期合并成一张卡片，按天则一天一张 -->
+		<div class="changelog-view" role="group" aria-label="分组方式">
+			<button
+				type="button"
+				class="changelog-pill"
+				data-active={groupMode === "month" ? "" : undefined}
+				aria-pressed={groupMode === "month"}
+				onclick={() => selectGroupMode("month")}
+			>
+				按月
+			</button>
+			<button
+				type="button"
+				class="changelog-pill"
+				data-active={groupMode === "day" ? "" : undefined}
+				aria-pressed={groupMode === "day"}
+				onclick={() => selectGroupMode("day")}
+			>
+				按天
+			</button>
+		</div>
 	</div>
 
-	<!-- 分页：按天数分页 -->
+	<div class="changelog-day-list">
+		{#if groupMode === "month"}
+			<!-- 月卡片：同月的所有日期合并成一张，展开后按天分段展示 -->
+			{#each pagedMonths as month (month.month)}
+				<section
+					class="changelog-day changelog-month card-base"
+					class:is-expanded={expandedMonth === month.month}
+				>
+					<button
+						type="button"
+						class="changelog-day-header"
+						onclick={() => toggleMonth(month.month)}
+						aria-expanded={expandedMonth === month.month}
+					>
+						<time class="changelog-day-date" datetime={month.month}>
+							{month.label}
+						</time>
+						<span class="changelog-day-count">
+							{month.commitCount} 次提交 · {month.days.length} 天有改动
+						</span>
+						<!-- 该月出现过的类型徽章 -->
+						<span class="changelog-day-kinds">
+							{#each month.kinds as kind (kind)}
+								<span class="changelog-kind" data-kind={kind}>
+									<Icon icon={KIND_META[kind].icon} />
+									{KIND_META[kind].label}
+								</span>
+							{/each}
+						</span>
+						{#if showStats}
+							<span class="changelog-day-stats">
+								{#if month.statsLoaded}
+									<em>+{month.totalAdditions}</em>
+									<i>-{month.totalDeletions}</i>
+								{:else}
+									<span
+										class="changelog-stats-pending"
+										title="增删行数未取到，显示为 — 以区别于真实的 0"
+									>—</span>
+								{/if}
+							</span>
+						{/if}
+						<!-- 展开/收起指示器 -->
+						<span class="changelog-day-chevron" aria-hidden="true">
+							<Icon icon="material-symbols:keyboard-arrow-down" />
+						</span>
+					</button>
+
+					{#if expandedMonth === month.month}
+						<div class="changelog-day-body changelog-month-body">
+							{#each month.days as day (day.date)}
+								<section class="changelog-subday">
+									<h4 class="changelog-subday-head">
+										<time datetime={day.date}>{day.date.slice(5)}</time>
+										<span class="changelog-day-count">
+											{day.commits.length} 次提交
+										</span>
+										{#if showStats}
+											<span class="changelog-day-stats">
+												{#if day.statsLoaded}
+													<em>+{day.totalAdditions}</em>
+													<i>-{day.totalDeletions}</i>
+												{:else}
+													<span
+														class="changelog-stats-pending"
+														title="增删行数未取到，显示为 — 以区别于真实的 0"
+													>—</span>
+												{/if}
+											</span>
+										{/if}
+									</h4>
+									{#each day.commits as commit (commit.sha)}
+										{@render commitCard(commit)}
+									{/each}
+								</section>
+							{/each}
+						</div>
+					{/if}
+				</section>
+			{/each}
+		{:else}
+			<!-- 日卡片列表：同一天的提交聚合成一张卡片，点击展开 -->
+			{#each pagedDays as day (day.date)}
+				<section class="changelog-day card-base" class:is-expanded={expandedDate === day.date}>
+					<button
+						type="button"
+						class="changelog-day-header"
+						onclick={() => toggleDay(day.date)}
+						aria-expanded={expandedDate === day.date}
+					>
+						<time class="changelog-day-date" datetime={day.date}>
+							{day.date}
+						</time>
+						<span class="changelog-day-count">
+							{day.commits.length} 次提交
+						</span>
+						<!-- 当日出现的类型徽章 -->
+						<span class="changelog-day-kinds">
+							{#each day.kinds as kind (kind)}
+								<span class="changelog-kind" data-kind={kind}>
+									<Icon icon={KIND_META[kind].icon} />
+									{KIND_META[kind].label}
+								</span>
+							{/each}
+						</span>
+						{#if showStats}
+							<span class="changelog-day-stats">
+								{#if day.statsLoaded}
+									<em>+{day.totalAdditions}</em>
+									<i>-{day.totalDeletions}</i>
+								{:else}
+									<span
+										class="changelog-stats-pending"
+										title="增删行数未取到，显示为 — 以区别于真实的 0"
+									>—</span>
+								{/if}
+							</span>
+						{/if}
+						<!-- 展开/收起指示器 -->
+						<span class="changelog-day-chevron" aria-hidden="true">
+							<Icon icon="material-symbols:keyboard-arrow-down" />
+						</span>
+					</button>
+
+					{#if expandedDate === day.date}
+						<div class="changelog-day-body">
+							{#each day.commits as commit (commit.sha)}
+								{@render commitCard(commit)}
+							{/each}
+						</div>
+					{/if}
+				</section>
+			{/each}
+		{/if}
+	</div>
+
+	<!-- 分页：按月视图按月数分页，按天视图按天数分页 -->
 	<ClientPagination
-		totalItems={groupedByDate.length}
+		totalItems={groupCount}
 		{itemsPerPage}
 		{currentPage}
 		onPageChange={handlePageChange}
