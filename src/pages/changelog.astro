@@ -2,9 +2,10 @@
 /**
  * 更新日志页面
  *
- * 数据不来自内容集合，而是由客户端组件 ChangelogFeed 调 GitHub REST API 获取，
+ * 数据不来自内容集合，而是由客户端组件 ChangelogFeed 调同源 API `/api/commits` 获取，
+ * 该 API 由 worker/index.js 在服务端带上 GITHUB_TOKEN 回源 GitHub，
  * 因此本页只负责：页面开关校验、标题面板、挂载组件。
- * 详见 src/config/changelogConfig.ts（仓库 / 分支 / 分页 / Token）。
+ * 详见 src/config/changelogConfig.ts（仓库 / 分支 / 分页）。
  */
 import { Icon } from "astro-icon/components";
 import ChangelogFeed from "@/components/pages/changelog/ChangelogFeed.svelte";
@@ -68,7 +69,6 @@ const repoSite = `${config.webBase}/${config.repo}`;
 			client:load
 			repo={config.repo}
 			branch={config.branch}
-			token={config.token}
 			itemsPerPage={config.itemsPerPage}
 			maxItems={config.maxItems}
 			showBody={config.showBody}

@@ -34,11 +34,13 @@
 
 - **胶囊导航栏**：菜单收进胶囊容器，悬停时滑动指示器平滑跟随鼠标，导航栏自带鼠标聚光灯高光，站名与按钮悬停时有圆角到胶囊形的过渡动画.
 - **站名悬停资料卡**：鼠标悬停左上角站名弹出浮层卡片——头像/昵称/签名/社交链接，加当年发文贡献热力图（12 月 × 5 周，构建期按文章发布日期统计色阶），加建站以来实时运行时间（年/月/日/时/分/秒每秒刷新）与本月/今年进度条，点击头像区跳转关于页.
+- **全局主题色系统**：基于 `oklch()` 色空间，通过 `siteConfig.ts` 中的 `hue` 变量控制全站配色，改一个数字即可切换整体色调（本站当前为青蓝色 hue 200）.
+- **文章卡片蓝色细边框**：首页文章卡片带 1.5px 青蓝色边框（`oklch()` 自适应亮暗模式），增强壁纸上的视觉层次感.
 - **不蒜子（Busuanzi）访问统计**：页脚全站 PV / UV，文章页单篇阅读量，以及「本站已存活 X 天 X 时 X 分 X 秒」的实时计时（自 2026.9.12 起算），全部零后端实现.
 - **项目页评论区**：项目展示页接入评论系统，每个项目可在 frontmatter 用 `comment` 字段单独开关.
 - **全屏随机壁纸 + 名言**：全屏壁纸模式接入多个随机图 API，每次刷新换图，底部附带随机中文名言.
 - **在线写作**：配置 `.pages.yml`（Pages CMS），可在 GitHub 网页端直接写文章、发动态.
-- **更新日志页**：客户端组件调 GitHub REST API 拉取仓库 commit 记录，按类型（新功能/修复/优化等）分类筛选与分页，无需重新构建即可看到最新改动.
+- **更新日志页**：客户端组件请求同源 `/api/commits`，由 `worker/index.js` 在服务端带上 `GITHUB_TOKEN` 回源 GitHub 拉取 commit 记录，按类型（新功能/修复/优化等）宽松分类（支持中英文 commit message 多种前缀）与分页，无需重新构建即可看到最新改动. token 只存在于服务端 Secret，前端产物里不会有凭据.
 - **个性化配置**：相册、打赏页、看板娘、评论区等均替换为自己的内容与账号.
 
 顺便说一句：本文只是魔改记录，不是主题发行版. 想用原版请移步 [Firefly 仓库](https://github.com/CuteLeaf/Firefly)，使用文档在 [docs-firefly.cuteleaf.cn](https://docs-firefly.cuteleaf.cn/).
@@ -106,15 +108,27 @@
 
 | 检查项 | 说明 |
 |--------|------|
-| 托管平台 | 构建产物 `dist/` 为纯静态站点，可部署到 Vercel、Cloudflare Pages、Netlify、Nginx 等 |
+| 托管平台 | 构建产物 `dist/` 为纯静态站点，可部署到 Vercel、Cloudflare Pages、Netlify、Nginx 等；更新日志页依赖同源 Worker，见下节 |
 | 评论系统 | 本站评论区使用 Giscus，仓库指向 `Bingak/Lonely-blog`，需在 `src/config/commentConfig.ts` 中配置 |
 | 访问统计 | 页脚不蒜子 PV/UV 与存活计时为零后端方案，无需部署；更细的分析可在 `siteConfig.ts` 的 analytics 中接入 |
 | 内容写作 | 已配置 `.pages.yml`，可通过 Pages CMS 在 GitHub 网页端在线写作 |
-| 更新日志 | 客户端拉取 GitHub commit，匿名限流 60 次/小时/IP，如频繁报错可在部署平台配 `PUBLIC_CHANGELOG_GITHUB_TOKEN` 环境变量 |
+| 更新日志 | 前端请求同源 `/api/commits`，由 `worker/index.js` 在服务端带上 `GITHUB_TOKEN` 回源 GitHub，并在边缘缓存（列表 5 分钟 / 单个提交 7 天） |
+
+### 更新日志的 GitHub Token
+
+token **不放前端**。前端产物里出现的任何凭据都是公开的（F12 就能拿走），而且 `import.meta.env.PUBLIC_*` 只会被构建期内联成字符串字面量，Cloudflare 控制台的「变量和机密」是 Worker 运行时变量，前端永远读不到。正确做法是把 token 交给 Worker：
+
+```bash
+npx wrangler secret put GITHUB_TOKEN   # 粘贴 fine-grained token（只需目标仓库的 Contents: Read）
+pnpm build
+npx wrangler deploy
+```
+
+未配置 `GITHUB_TOKEN` 时代理会匿名访问，限流 60 次/小时/边缘 IP；配置后为 5000 次/小时，且多访客共享边缘缓存，几乎不会回源。
 
 ## 静态部署方案
 
-没有任何服务端依赖：不需要 Cloudflare Worker、D1、向量库这类东西，`dist/` 丢给任意静态托管平台就能跑. 本站当前部署于静态托管平台并绑定独立域名.
+`dist/` 本身仍是纯静态站点，丢给 Vercel、Netlify、Nginx 也能跑，但**更新日志页需要同源 API**：`wrangler.jsonc` 现在指向 `worker/index.js`，只有当托管平台提供该 Worker（Cloudflare Workers）时才会带 token 回源。在纯静态平台上，组件会检测到 `/api/commits` 不存在并自动回落到浏览器直连 GitHub 的匿名模式（60 次/小时/IP）。
 
 ## Live2D 版权声明
 

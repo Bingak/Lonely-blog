@@ -2,15 +2,18 @@
 /**
  * 更新日志（按天聚合版）（客户端组件）
  *
- * 数据链路：浏览器 → GitHub REST API /repos/{owner}/{repo}/commits（JSON）
+ * 数据链路：浏览器 → 同源 API `/api/commits` → Cloudflare Worker → GitHub REST API
  *   → 归一化为 CommitItem → 按类型分类 → 按天聚合 → 分页切片 → 渲染日卡片
  *
  * 同一天的提交聚合成一张日卡片，点击展开显示当日所有完整提交信息。
  * 没有提交的日子不会显示卡片。
  *
- * 为什么放在客户端而不是构建期：
- *   GitHub 匿名 API 限流只有 60 次/小时/IP，构建期拉取会在构建机上吃到限流；
- *   放客户端则每个访客用自己的 IP 额度，且分支有新提交时无需重新构建即可看到。
+ * 为什么走同源 API 而不是浏览器直连 GitHub：
+ *   GitHub token 只能存在服务端才安全。前端读不到 Cloudflare 的运行时环境变量
+ *   （`import.meta.env.PUBLIC_*` 只会构建期内联成公开字符串），
+ *   所以由 Worker（worker/index.js）带上 Secret 里的 GITHUB_TOKEN 回源，
+ *   顺带在边缘做缓存，多个访客共享同一份限额。
+ *   若托管平台没有这个 Worker（纯静态部署），会自动回落到浏览器直连 GitHub 的匿名模式。
  */
 import { onMount } from "svelte";
 import ClientPagination from "@/components/common/ClientPagination.svelte";
@@ -73,7 +76,6 @@ interface GithubCommit {
 interface Props {
 	repo?: string;
 	branch?: string;
-	token?: string;
 	itemsPerPage?: number;
 	maxItems?: number;
 	showBody?: boolean;
@@ -84,7 +86,6 @@ interface Props {
 let {
 	repo = changelogConfig.repo,
 	branch = changelogConfig.branch,
-	token = changelogConfig.token,
 	itemsPerPage = changelogConfig.itemsPerPage,
 	maxItems = changelogConfig.maxItems,
 	showBody = changelogConfig.showBody,
@@ -160,26 +161,50 @@ function normalize(raw: GithubCommit, base: string): CommitItem {
 	};
 }
 
+/** 同源代理不可用时的直连地址（纯静态托管场景，匿名限流 60 次/小时/IP） */
+const GITHUB_API = "https://api.github.com";
+
+/**
+ * 代理可用性：null 未知，true 可用，false 已确认不可用（后续不再重试）
+ * 只有「路由不存在」才判定为不可用；限流 / 凭据错误会照常抛出，不做静默降级。
+ */
+let proxyAvailable: boolean | null = null;
+
+async function requestViaProxy(path: string): Promise<Response | null> {
+	if (proxyAvailable === false) return null;
+	const response = await fetch(path, {
+		headers: { Accept: "application/json" },
+	});
+	if (response.status === 404 || response.status === 405 || response.status === 501) {
+		proxyAvailable = false;
+		console.warn(
+			"[changelog] 同源代理 /api/commits 不可用（当前托管平台未部署 worker/index.js），已回落到浏览器直连 GitHub，匿名限流 60 次/小时/IP",
+		);
+		return null;
+	}
+	proxyAvailable = true;
+	return response;
+}
+
 /**
  * 拉取最新 N 条 commits（N = maxItems）
- * GitHub API 单页上限 100，配置超过 100 会自动分页累积拉取。
+ * 走同源代理 `/api/commits`，GitHub 单页上限 100，配置超过 100 会自动分页累积拉取。
  */
 async function fetchAllCommits(): Promise<GithubCommit[]> {
-	const headers: Record<string, string> = {
-		Accept: "application/vnd.github+json",
-	};
-	if (token) headers.Authorization = `Bearer ${token}`;
-
 	const perPage = 100;
 	const pages = Math.ceil(maxItems / perPage);
 	const all: GithubCommit[] = [];
 
 	for (let page = 1; page <= pages; page++) {
-		const api = `https://api.github.com/repos/${repo}/commits?per_page=${perPage}&page=${page}`;
-		const url = branch ? `${api}&sha=${encodeURIComponent(branch)}` : api;
+		const query = `per_page=${perPage}&page=${page}${branch ? `&sha=${encodeURIComponent(branch)}` : ""}`;
 
-		const response = await fetch(url, { headers });
-		if (!response.ok) throw new Error(`GitHub API ${response.status}`);
+		let response = await requestViaProxy(`/api/commits?${query}`);
+		if (!response) {
+			response = await fetch(`${GITHUB_API}/repos/${repo}/commits?${query}`, {
+				headers: { Accept: "application/vnd.github+json" },
+			});
+		}
+		if (!response.ok) throw new Error(`changelog API ${response.status}`);
 
 		const batch = (await response.json()) as GithubCommit[];
 		if (batch.length === 0) break; // 没有更多提交了
@@ -191,17 +216,16 @@ async function fetchAllCommits(): Promise<GithubCommit[]> {
 	return all.slice(0, maxItems);
 }
 
-/** 获取单个 commit 的 stats（additions/deletions） */
+/** 获取单个 commit 的 stats（additions/deletions），走同源代理并带长缓存 */
 async function fetchCommitStats(
 	sha: string,
 ): Promise<{ additions: number; deletions: number }> {
-	const headers: Record<string, string> = {
-		Accept: "application/vnd.github+json",
-	};
-	if (token) headers.Authorization = `Bearer ${token}`;
-
-	const url = `https://api.github.com/repos/${repo}/commits/${sha}`;
-	const response = await fetch(url, { headers });
+	let response = await requestViaProxy(`/api/commits/${sha}`);
+	if (!response) {
+		response = await fetch(`${GITHUB_API}/repos/${repo}/commits/${sha}`, {
+			headers: { Accept: "application/vnd.github+json" },
+		});
+	}
 	if (!response.ok) return { additions: 0, deletions: 0 };
 
 	const data = await response.json();
@@ -221,9 +245,9 @@ async function loadCommits(): Promise<void> {
 		// 归一化所有 commits
 		const normalized = allRaw.map((item) => normalize(item, webBase));
 
-		// 第二步：批量获取 stats（仅对前 N 个 commit，避免过多 API 调用）
-		// 有 token 时限制 50 个，无 token 时限制 30 个
-		const statsLimit = token ? 50 : 30;
+		// 第二步：批量获取 stats（仅对前 N 个 commit，避免过多请求）
+		// 服务端已按 sha 做 7 天长缓存，这里限制 50 个足够覆盖当前可见范围
+		const statsLimit = 50;
 		const commitsNeedingStats = normalized
 			.filter((c) => c.additions === 0 && c.deletions === 0)
 			.slice(0, statsLimit);
