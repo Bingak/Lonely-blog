@@ -74,6 +74,12 @@ export const siteConfig: SiteConfig = {
 		hue: 200,
 		// 默认模式："light" 亮色，"dark" 暗色，"system" 跟随系统
 		defaultMode: "system",
+		// 默认配色风格（M3 九种风格）：tonalSpot / vibrant / content / expressive /
+		// rainbow / fruitSalad / monochrome / neutral / fidelity
+		// 设置面板可运行时切换；保持默认值时站点使用主题原生 oklch 配色
+		style: "tonalSpot",
+		// 默认配色规范："2021"（MD3 2021）或 "2025"（M3 Expressive 2025）
+		spec: "2025",
 	},
 
 	// 页面整体宽度（单位：rem）

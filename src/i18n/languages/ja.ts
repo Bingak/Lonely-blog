@@ -389,6 +389,14 @@ export const ja: Translation = {
 	[Key.wallpaperOverlayMode]: "透明",
 	[Key.wallpaperNoneMode]: "単色背景",
 
+	[Key.texturePreset]: "背景テクスチャ",
+	[Key.textureNone]: "なし",
+	[Key.textureStarlight]: "星明かり",
+	[Key.textureCyberDots]: "サイバードット",
+	[Key.textureTopography]: "流れる等高線",
+	[Key.textureGeometric]: "ジオメトリック",
+	[Key.textureSakura]: "桜の花びら",
+
 	// 壁紙設定
 	[Key.wallpaperSettings]: "壁紙設定",
 	[Key.wallpaperTitle]: "ホーム壁紙タイトル",
@@ -406,6 +414,21 @@ export const ja: Translation = {
 	[Key.settingsTabAppearance]: "外観",
 	[Key.settingsTabWallpaper]: "壁紙",
 	[Key.settingsTabEffects]: "エフェクト",
+
+	// M3 ダイナミックカラー
+	[Key.colorStyle]: "配色スタイル",
+	[Key.colorSpec]: "配色仕様",
+	[Key.spec2021]: "MD3 2021",
+	[Key.spec2025]: "M3E 2025",
+	[Key.styleTonalSpot]: "トーナルスポット",
+	[Key.styleVibrant]: "ビブラント",
+	[Key.styleContent]: "コンテンツ",
+	[Key.styleExpressive]: "エクスプレッシブ",
+	[Key.styleRainbow]: "レインボー",
+	[Key.styleFruitSalad]: "フルーツサラダ",
+	[Key.styleMonochrome]: "モノクロ",
+	[Key.styleNeutral]: "ニュートラル",
+	[Key.styleFidelity]: "フィデリティ",
 
 	// カードスタイル
 	[Key.cardSettings]: "カードスタイル",

@@ -392,6 +392,14 @@ export const en: Translation = {
 	[Key.wallpaperOverlayMode]: "Overlay Wallpaper",
 	[Key.wallpaperNoneMode]: "None Wallpaper",
 
+	[Key.texturePreset]: "Background Texture",
+	[Key.textureNone]: "No Texture",
+	[Key.textureStarlight]: "Starlight",
+	[Key.textureCyberDots]: "Cyber Dots",
+	[Key.textureTopography]: "Topography",
+	[Key.textureGeometric]: "Geometric",
+	[Key.textureSakura]: "Sakura Petals",
+
 	// Wallpaper Settings
 	[Key.wallpaperSettings]: "Wallpaper Settings",
 	[Key.wallpaperTitle]: "Home Wallpaper Title",
@@ -409,6 +417,21 @@ export const en: Translation = {
 	[Key.settingsTabAppearance]: "Appearance",
 	[Key.settingsTabWallpaper]: "Wallpaper",
 	[Key.settingsTabEffects]: "Effects",
+
+	// M3 Dynamic Color
+	[Key.colorStyle]: "Color Style",
+	[Key.colorSpec]: "Color Spec",
+	[Key.spec2021]: "MD3 2021",
+	[Key.spec2025]: "M3E 2025",
+	[Key.styleTonalSpot]: "Tonal Spot",
+	[Key.styleVibrant]: "Vibrant",
+	[Key.styleContent]: "Content",
+	[Key.styleExpressive]: "Expressive",
+	[Key.styleRainbow]: "Rainbow",
+	[Key.styleFruitSalad]: "Fruit Salad",
+	[Key.styleMonochrome]: "Monochrome",
+	[Key.styleNeutral]: "Neutral",
+	[Key.styleFidelity]: "Fidelity",
 
 	// Card Style
 	[Key.cardSettings]: "Card Style",

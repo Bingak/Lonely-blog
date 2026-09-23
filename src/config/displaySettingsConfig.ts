@@ -20,13 +20,19 @@ export const displaySettingsConfig: DisplaySettingsConfig =
 		// 除了改这里，也可以在部署平台（Vercel / Cloudflare 等）配置环境变量开启，
 		// 无需改动本文件：PUBLIC_DISPLAY_SETTINGS=true
 		// 环境变量优先级更高，未设置或取值无法识别时使用这里的值
-		// 生产环境建议默认关闭，只在开发调试环境开启用来预览效果
-		enable: false,
+		// 本站生产环境开启；如需压缩构建体积可改回 false，或用环境变量覆盖
+		enable: true,
 
 		// ── 外观 (Appearance) ──────────────────────────────────
 
 		// 主题色选择器开关
 		themeColorSwitchable: true,
+
+		// 配色风格切换开关（M3 九种风格，实现借鉴自 Shirone）
+		colorStyleSwitchable: true,
+
+		// 配色规范切换开关（MD3 2021 / M3E 2025）
+		colorSpecSwitchable: true,
 
 		// 文章列表布局切换开关
 		layoutSwitchable: true,
@@ -44,6 +50,10 @@ export const displaySettingsConfig: DisplaySettingsConfig =
 
 		// 全屏壁纸布局切换开关（classic / hero）
 		fullscreenLayoutSwitchable: true,
+
+		// 背景纹理切换开关（无纹理 / 星芒光斑 / 极客点阵 / 流光等高线 / 几何晶体 / 落樱微瓣）
+		// 仅在纯色背景模式下显示，图案实现借鉴自 Shirone
+		textureSwitchable: true,
 
 		// 水波纹动画开关
 		wavesSwitchable: true,

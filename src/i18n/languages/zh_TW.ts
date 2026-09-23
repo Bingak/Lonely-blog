@@ -384,6 +384,14 @@ export const zh_TW: Translation = {
 	[Key.wallpaperOverlayMode]: "覆蓋透明",
 	[Key.wallpaperNoneMode]: "純色背景",
 
+	[Key.texturePreset]: "背景紋理",
+	[Key.textureNone]: "無紋理",
+	[Key.textureStarlight]: "星芒光斑",
+	[Key.textureCyberDots]: "極客點陣",
+	[Key.textureTopography]: "流光等高線",
+	[Key.textureGeometric]: "幾何晶體",
+	[Key.textureSakura]: "落櫻微瓣",
+
 	// 壁紙設置
 	[Key.wallpaperSettings]: "壁紙設置",
 	[Key.wallpaperTitle]: "首頁壁紙標題",
@@ -401,6 +409,21 @@ export const zh_TW: Translation = {
 	[Key.settingsTabAppearance]: "外觀",
 	[Key.settingsTabWallpaper]: "壁紙",
 	[Key.settingsTabEffects]: "特效",
+
+	// M3 動態配色
+	[Key.colorStyle]: "配色風格",
+	[Key.colorSpec]: "配色規範",
+	[Key.spec2021]: "MD3 2021",
+	[Key.spec2025]: "M3E 2025",
+	[Key.styleTonalSpot]: "色調點",
+	[Key.styleVibrant]: "鮮豔",
+	[Key.styleContent]: "內容",
+	[Key.styleExpressive]: "表現",
+	[Key.styleRainbow]: "彩虹",
+	[Key.styleFruitSalad]: "水果沙拉",
+	[Key.styleMonochrome]: "單色",
+	[Key.styleNeutral]: "中性",
+	[Key.styleFidelity]: "保真",
 
 	// 卡片樣式
 	[Key.cardSettings]: "卡片樣式",

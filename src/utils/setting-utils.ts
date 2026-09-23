@@ -88,6 +88,12 @@ export function setHue(hue: number): void {
 		return;
 	}
 	r.style.setProperty("--hue", String(hue));
+	refreshMcScheme();
+}
+
+// 色相/明暗变化后重算 M3 配色方案（动态导入：面板关闭时 M3 引擎不进主包）
+function refreshMcScheme(): void {
+	void import("@utils/mc-theme-utils").then((m) => m.applyCurrentScheme());
 }
 
 export function applyThemeToDocument(theme: LIGHT_DARK_MODE): void {
@@ -149,6 +155,9 @@ export function applyThemeToDocument(theme: LIGHT_DARK_MODE): void {
 	if (needsCodeThemeUpdate) {
 		document.documentElement.setAttribute("data-theme", expectedTheme);
 	}
+
+	// 明暗变化后重算 M3 配色方案
+	refreshMcScheme();
 }
 
 // 系统主题监听器引用
@@ -213,6 +222,9 @@ export function setupSystemThemeListener(): void {
 			? expressiveCodeConfig.darkTheme
 			: expressiveCodeConfig.lightTheme;
 		document.documentElement.setAttribute("data-theme", expressiveTheme);
+
+		// 明暗变化后重算 M3 配色方案
+		refreshMcScheme();
 
 		// 触发自定义事件通知其他组件（仅在真正切换时触发）
 		window.dispatchEvent(new CustomEvent("theme-change"));

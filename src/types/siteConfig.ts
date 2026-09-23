@@ -9,6 +9,7 @@ import type {
 } from "../constants/constants";
 import type { ImmersiveReadingConfig } from "./immersiveReadingConfig";
 import type { NsfwMode } from "./nsfw";
+import type { McSpec, McStyle } from "../utils/mc-utils";
 
 export type LIGHT_DARK_MODE =
 	| typeof LIGHT_MODE
@@ -41,6 +42,8 @@ export type SiteConfig = {
 	themeColor: {
 		hue: number;
 		defaultMode?: LIGHT_DARK_MODE; // 默认模式：浅色、深色或跟随系统
+		style?: McStyle; // 默认配色风格（M3 九种风格），设置面板可运行时切换
+		spec?: McSpec; // 默认配色规范："2021"（MD3）或 "2025"（M3 Expressive）
 	};
 
 	// 页面整体宽度（单位：rem）

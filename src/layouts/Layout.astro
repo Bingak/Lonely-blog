@@ -39,6 +39,7 @@ import { getOgLocale } from "@/utils/site-config-utils";
 import { getCanonicalUrl, url } from "@/utils/url-utils";
 
 import "@/styles/main.css";
+import "@/styles/textures.css";
 import "@/styles/immersive-reading.css";
 import "@/styles/variables.styl";
 import "@rehype-callouts-theme";
@@ -351,6 +352,7 @@ const ogImageAlt = propsOgImageAlt ?? pageTitle;
           displaySettingsConfig.wallpaperModeSwitchable,
         isFullscreenLayoutSwitchable:
           displaySettingsConfig.fullscreenLayoutSwitchable,
+        isTextureSwitchable: displaySettingsConfig.textureSwitchable,
         darkTheme: expressiveCodeConfig.darkTheme,
         lightTheme: expressiveCodeConfig.lightTheme,
         baseUrl: import.meta.env.BASE_URL,
@@ -437,6 +439,14 @@ const ogImageAlt = propsOgImageAlt ?? pageTitle;
         "data-wallpaper-mode",
         wallpaperMode
       );
+
+      // 背景纹理：首帧前恢复，避免刷新时纹理晚一步出现
+      const texturePreset = isTextureSwitchable
+        ? localStorage.getItem("texturePreset") || "none"
+        : "none";
+      if (texturePreset !== "none") {
+        document.documentElement.dataset.texturePreset = texturePreset;
+      }
 
       // 初始化期间禁用 content-panel/wrapper 过渡，避免加载时布局/变量变化产生内容移动动画；
       // load 后移除（仅首次设置，swup 切页重跑脚本时不再重复）。布局已由 CSS 接管，无需 rAF 校正
@@ -532,6 +542,9 @@ const ogImageAlt = propsOgImageAlt ?? pageTitle;
     </script>
 
     <div id="progress-bar"></div>
+
+    <!-- 背景纹理层（纯色模式下由 CSS 属性选择器点亮，见 styles/textures.css） -->
+    <div id="texture-canvas" aria-hidden="true"></div>
 
     {/* 卡片样式：根据 localStorage 覆盖默认配置 */}
     <script is:inline define:vars={{

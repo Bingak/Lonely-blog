@@ -390,6 +390,14 @@ export const ko: Translation = {
 	[Key.wallpaperOverlayMode]: "오버레이 배경화면",
 	[Key.wallpaperNoneMode]: "배경화면 없음",
 
+	[Key.texturePreset]: "배경 텍스처",
+	[Key.textureNone]: "없음",
+	[Key.textureStarlight]: "별빛 스파클",
+	[Key.textureCyberDots]: "사이버 도트",
+	[Key.textureTopography]: "흐르는 등고선",
+	[Key.textureGeometric]: "기하학적 무늬",
+	[Key.textureSakura]: "벚꽃 꽃잎",
+
 	// Wallpaper Settings
 	[Key.wallpaperSettings]: "배경화면 설정",
 	[Key.wallpaperTitle]: "홈 배경화면 제목",
@@ -407,6 +415,21 @@ export const ko: Translation = {
 	[Key.settingsTabAppearance]: "외형",
 	[Key.settingsTabWallpaper]: "배경화면",
 	[Key.settingsTabEffects]: "효과",
+
+	// M3 동적 배색
+	[Key.colorStyle]: "배색 스타일",
+	[Key.colorSpec]: "배색 규격",
+	[Key.spec2021]: "MD3 2021",
+	[Key.spec2025]: "M3E 2025",
+	[Key.styleTonalSpot]: "토널 스폿",
+	[Key.styleVibrant]: "비브런트",
+	[Key.styleContent]: "콘텐츠",
+	[Key.styleExpressive]: "익스프레시브",
+	[Key.styleRainbow]: "레인보우",
+	[Key.styleFruitSalad]: "프루트 샐러드",
+	[Key.styleMonochrome]: "모노크롬",
+	[Key.styleNeutral]: "뉴트럴",
+	[Key.styleFidelity]: "피델리티",
 
 	// 카드 스타일
 	[Key.cardSettings]: "카드 스타일",

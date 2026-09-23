@@ -20,6 +20,12 @@ export type DisplaySettingsConfig = {
 	// 主题色选择器开关
 	themeColorSwitchable: boolean;
 
+	// 配色风格切换开关（M3 九种风格：TonalSpot / Vibrant / Content …）
+	colorStyleSwitchable: boolean;
+
+	// 配色规范切换开关（MD3 2021 / M3E 2025）
+	colorSpecSwitchable: boolean;
+
 	// 文章列表布局切换开关
 	layoutSwitchable: boolean;
 
@@ -36,6 +42,9 @@ export type DisplaySettingsConfig = {
 
 	// 全屏壁纸布局切换开关（classic / hero）
 	fullscreenLayoutSwitchable: boolean;
+
+	// 背景纹理切换开关（仅纯色背景模式下可见，实现借鉴自 Shirone）
+	textureSwitchable: boolean;
 
 	// 水波纹动画开关
 	wavesSwitchable: boolean;

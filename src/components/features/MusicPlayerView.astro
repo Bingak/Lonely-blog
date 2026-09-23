@@ -59,6 +59,24 @@ const viewConfigStr = JSON.stringify({
     var mgr = window.__fireflyMusic;
     if (!mgr) return;
 
+    // ── 波浪进度条几何（移植自 Shirone 的 wavy-progress.ts，源自 M3 Expressive LinearWavy）──
+    var WAVE_LEN = 40, WAVE_H = 24, WAVE_STROKE = 3;
+    function _fmt(n) { return Math.round(n * 100) / 100; }
+    function _wavePath(w, amp, startX) {
+        var hw = WAVE_LEN / 2, cy0 = ((WAVE_H - WAVE_STROKE) / 2) * amp;
+        var d = 'M ' + _fmt(startX) + ' ' + _fmt(WAVE_H / 2);
+        var ax = startX + hw, cx = startX + hw / 2;
+        var k = Math.round(startX / hw), cy = k % 2 === 0 ? cy0 : -cy0;
+        while (ax <= w) {
+            d += ' Q ' + _fmt(cx) + ' ' + _fmt(WAVE_H / 2 + cy) + ', ' + _fmt(ax) + ' ' + _fmt(WAVE_H / 2);
+            ax += hw; cx += hw; cy *= -1;
+        }
+        return d;
+    }
+    function _linePath(x1, x2) {
+        return 'M ' + _fmt(x1) + ' ' + _fmt(WAVE_H / 2) + ' L ' + _fmt(x2) + ' ' + _fmt(WAVE_H / 2);
+    }
+
     var initScheduled = false;
     function scheduleInit() {
         if (initScheduled) return;
@@ -94,6 +112,9 @@ const viewConfigStr = JSON.stringify({
             progressBar: widget.querySelector('.progress-bar'),
             progressThumb: widget.querySelector('.progress-thumb'),
             progressContainer: widget.querySelector('.progress-container'),
+            waveSvg: widget.querySelector('.progress-wave'),
+            waveBar: widget.querySelector('.wave-bar'),
+            waveTrack: widget.querySelector('.wave-track'),
             currentTime: widget.querySelector('.current-time'),
             totalTime: widget.querySelector('.total-time'),
             btnPlay: widget.querySelector('.btn-play'),
@@ -146,6 +167,13 @@ const viewConfigStr = JSON.stringify({
             }
         };
 
+        // ── 波浪进度条状态（提前声明：UI 更新函数与 ResizeObserver 回调会用到）──
+        var waveW = 300;      // 容器像素宽（viewBox 与之一致，1 用户单位 = 1px）
+        var lastProgress = 0; // 0..100
+        var amp = 0;          // 当前波浪振幅 0..1（暂停→直线）
+        var ampTarget = 0;
+        var ampRaf = 0;
+
         // ── UI update functions ──────────────────────────────────
         function setLoading(bool) {
             if (bool) {
@@ -156,6 +184,8 @@ const viewConfigStr = JSON.stringify({
         }
 
         function updatePlayStateUI(isPlaying) {
+            if (ui.waveBar) ui.waveBar.classList.toggle('wave-flowing', isPlaying);
+            tweenAmp(isPlaying ? 1 : 0);
             if (isPlaying) {
                 ui.btnPlay.classList.add('bg-(--primary)', 'text-white', 'hover:brightness-110');
                 ui.btnPlay.classList.remove('bg-(--btn-regular-bg)', 'hover:bg-(--btn-regular-bg-hover)', 'active:bg-(--btn-regular-bg-active)', 'text-(--primary)');
@@ -252,7 +282,52 @@ const viewConfigStr = JSON.stringify({
             ui.progressContainer.setAttribute('aria-valuenow', '0');
             ui.currentTime.innerText = '0:00';
             ui.totalTime.innerText = '0:00';
+            lastProgress = 0;
+            renderWave();
         }
+
+        // ── 波浪进度条渲染 ────────────────────────────────────────
+        function measureWave() {
+            var w = ui.progressContainer.clientWidth;
+            if (w > 0 && w !== waveW) {
+                waveW = w;
+                ui.waveSvg.setAttribute('viewBox', '0 0 ' + waveW + ' ' + WAVE_H);
+            }
+        }
+
+        function renderWave() {
+            if (!ui.waveBar) return;
+            var head = waveW * (lastProgress / 100);
+            ui.waveBar.setAttribute('d', _wavePath(Math.max(head, 0.01), amp, -WAVE_LEN));
+            if (head < waveW - 1) {
+                ui.waveTrack.setAttribute('d', _linePath(head, waveW));
+                ui.waveTrack.style.display = '';
+            } else {
+                ui.waveTrack.style.display = 'none';
+            }
+        }
+
+        // 振幅补间：播放时波浪涌起，暂停时 500ms 缓落到直线
+        function tweenAmp(target) {
+            ampTarget = target;
+            if (ampRaf) return;
+            var last = performance.now();
+            function step(now) {
+                var dt = now - last; last = now;
+                var speed = ampTarget > amp ? 1 / 0.4 : 1 / 0.5; // 升起快、落下慢
+                amp += (ampTarget - amp) * Math.min(1, dt * speed);
+                if (Math.abs(ampTarget - amp) < 0.01) amp = ampTarget;
+                renderWave();
+                if (amp !== ampTarget) ampRaf = requestAnimationFrame(step);
+                else ampRaf = 0;
+            }
+            ampRaf = requestAnimationFrame(step);
+        }
+
+        if (typeof ResizeObserver !== 'undefined' && ui.progressContainer) {
+            new ResizeObserver(function () { measureWave(); renderWave(); }).observe(ui.progressContainer);
+        }
+        measureWave();
 
         // ── Virtual scroll helpers (absolute-position based) ──────
         var PRIMARY_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#6366f1';
@@ -501,12 +576,18 @@ const viewConfigStr = JSON.stringify({
 
             // Progress
             if (s.duration > 0) {
+                lastProgress = s.progress;
                 ui.progressBar.style.width = s.progress + '%';
                 ui.progressThumb.style.left = s.progress + '%';
                 ui.progressContainer.setAttribute('aria-valuenow', Math.round(s.progress).toString());
                 ui.currentTime.innerText = s.currentTimeStr;
                 ui.totalTime.innerText = s.durationStr;
             }
+            // 波浪状态直接同步（late-mount 不做补间）
+            amp = s.isPlaying ? 1 : 0;
+            ampTarget = amp;
+            if (ui.waveBar) ui.waveBar.classList.toggle('wave-flowing', s.isPlaying);
+            renderWave();
 
             // Lyrics
             renderLyricsUI(s.lyrics, s.lyrics.length > 0 ? 'loaded' : 'none');
@@ -552,11 +633,13 @@ const viewConfigStr = JSON.stringify({
 
         on('fm:time', function (e) {
             var d = e.detail;
+            lastProgress = d.progress;
             ui.progressBar.style.width = d.progress + '%';
             ui.progressThumb.style.left = d.progress + '%';
             ui.progressContainer.setAttribute('aria-valuenow', Math.round(d.progress).toString());
             ui.currentTime.innerText = d.currentTimeStr;
             ui.totalTime.innerText = d.durationStr;
+            renderWave();
         });
 
         on('fm:volume', function (e) {
@@ -593,11 +676,37 @@ const viewConfigStr = JSON.stringify({
             mgr.setVolume(val);
         });
 
-        ui.progressContainer.addEventListener('click', function (e) {
+        // 进度条：点击 + 拖拽 seek（按下即冻结波浪流动，拖动实时预览）
+        function seekFromEvent(e) {
             var rect = ui.progressContainer.getBoundingClientRect();
-            var clickX = e.clientX - rect.left;
-            var percent = Math.min(Math.max(clickX / rect.width, 0), 1);
-            mgr.seek(percent);
+            var percent = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
+            lastProgress = percent * 100;
+            ui.progressBar.style.width = percent * 100 + '%';
+            ui.progressThumb.style.left = percent * 100 + '%';
+            ui.progressContainer.setAttribute('aria-valuenow', Math.round(percent * 100).toString());
+            renderWave();
+            return percent;
+        }
+
+        var _dragging = false;
+        ui.progressContainer.addEventListener('pointerdown', function (e) {
+            _dragging = true;
+            if (ui.waveBar) ui.waveBar.classList.add('wave-dragging');
+            try { ui.progressContainer.setPointerCapture(e.pointerId); } catch (_) {}
+            seekFromEvent(e);
+        });
+        ui.progressContainer.addEventListener('pointermove', function (e) {
+            if (_dragging) seekFromEvent(e);
+        });
+        ui.progressContainer.addEventListener('pointerup', function (e) {
+            if (!_dragging) return;
+            _dragging = false;
+            if (ui.waveBar) ui.waveBar.classList.remove('wave-dragging');
+            mgr.seek(seekFromEvent(e));
+        });
+        ui.progressContainer.addEventListener('pointercancel', function () {
+            _dragging = false;
+            if (ui.waveBar) ui.waveBar.classList.remove('wave-dragging');
         });
 
         // ── Drawer logic (local state) ───────────────────────────

@@ -47,7 +47,29 @@ import {
 	setWallpaperMode,
 	setWavesEnabled,
 } from "@utils/setting-utils";
+import {
+	MC_SPECS,
+	MC_STYLES,
+	type McSpec,
+	type McStyle,
+	resolveScheme,
+} from "@utils/mc-utils";
+import {
+	getDefaultSpec,
+	getDefaultStyle,
+	getSpec,
+	getStyle,
+	setSpec,
+	setStyle,
+} from "@utils/mc-theme-utils";
 import { onMount } from "svelte";
+import {
+	DEFAULT_TEXTURE_PRESET,
+	getStoredTexturePreset,
+	resetTexturePreset,
+	setTexturePreset,
+	type TexturePreset,
+} from "@utils/texture-utils";
 import Icon from "@/components/common/Icon.svelte";
 import {
 	backgroundWallpaper,
@@ -73,6 +95,14 @@ type TabKey = "appearance" | "wallpaper" | "effects";
 
 let hue = $state(getHue());
 const defaultHue = getDefaultHue();
+let mcStyle = $state<McStyle>(getStyle());
+const defaultMcStyle = getDefaultStyle();
+let mcSpec = $state<McSpec>(getSpec());
+const defaultMcSpec = getDefaultSpec();
+let darkMode = $state(
+	typeof document !== "undefined" &&
+		document.documentElement.classList.contains("dark"),
+);
 let wallpaperMode: WALLPAPER_MODE = $state(backgroundWallpaper.mode);
 const defaultWallpaperMode = backgroundWallpaper.mode;
 let fullscreenLayout: FullscreenWallpaperLayout = $state(
@@ -114,6 +144,8 @@ let cardBorderEnabled = $state(false);
 const defaultCardBorderEnabled = getDefaultCardBorderEnabled();
 let cardFollowThemeEnabled = $state(false);
 const defaultCardFollowThemeEnabled = getDefaultCardFollowThemeEnabled();
+let texturePreset: TexturePreset = $state(DEFAULT_TEXTURE_PRESET);
+const defaultTexturePreset = DEFAULT_TEXTURE_PRESET;
 
 const isWallpaperSwitchable = displaySettingsConfig.wallpaperModeSwitchable;
 const isFullscreenLayoutSwitchable = $derived(
@@ -138,6 +170,45 @@ const isSakuraSwitchable = displaySettingsConfig.sakuraSwitchable;
 const isCardBorderSwitchable = displaySettingsConfig.cardBorderSwitchable;
 const isCardFollowThemeSwitchable =
 	displaySettingsConfig.cardFollowThemeSwitchable;
+const isColorStyleSwitchable = displaySettingsConfig.colorStyleSwitchable;
+const isColorSpecSwitchable = displaySettingsConfig.colorSpecSwitchable;
+const isTextureSwitchable = displaySettingsConfig.textureSwitchable;
+// 纹理是纯色背景的装饰，切到壁纸模式后自动隐藏
+const isTextureSectionVisible = $derived(
+	isTextureSwitchable && wallpaperMode === WALLPAPER_NONE,
+);
+const textureOptions = $derived([
+	{
+		value: "none" as TexturePreset,
+		icon: "material-symbols:block",
+		label: i18n(I18nKey.textureNone),
+	},
+	{
+		value: "starlight" as TexturePreset,
+		icon: "material-symbols:auto-awesome-outline-rounded",
+		label: i18n(I18nKey.textureStarlight),
+	},
+	{
+		value: "cyber-dots" as TexturePreset,
+		icon: "material-symbols:grid-view-rounded",
+		label: i18n(I18nKey.textureCyberDots),
+	},
+	{
+		value: "topography" as TexturePreset,
+		icon: "material-symbols:waves-rounded",
+		label: i18n(I18nKey.textureTopography),
+	},
+	{
+		value: "geometric" as TexturePreset,
+		icon: "material-symbols:category-outline-rounded",
+		label: i18n(I18nKey.textureGeometric),
+	},
+	{
+		value: "sakura" as TexturePreset,
+		icon: "material-symbols:local-florist-outline-rounded",
+		label: i18n(I18nKey.textureSakura),
+	},
+]);
 // 是否有任何横幅设置可显示（后续添加新设置时在此处添加条件）
 const hasBannerSettings =
 	isWavesSwitchable ||
@@ -196,6 +267,7 @@ const hasAnyContent = $derived(
 	showThemeColor ||
 		isWallpaperSwitchable ||
 		isFullscreenLayoutSwitchable ||
+		isTextureSectionVisible ||
 		allowLayoutSwitch ||
 		hasBannerSettings ||
 		hasOverlaySettings ||
@@ -207,11 +279,14 @@ const hasAppearanceTab = $derived(
 	showThemeColor ||
 		allowLayoutSwitch ||
 		isCardBorderSwitchable ||
-		isCardFollowThemeSwitchable,
+		isCardFollowThemeSwitchable ||
+		isColorStyleSwitchable ||
+		isColorSpecSwitchable,
 );
 const hasWallpaperTab = $derived(
 	isWallpaperSwitchable ||
 		isFullscreenLayoutSwitchable ||
+		isTextureSectionVisible ||
 		((wallpaperMode === WALLPAPER_OVERLAY ||
 			wallpaperMode === WALLPAPER_FULLSCREEN) &&
 			hasOverlaySettings) ||
@@ -324,6 +399,56 @@ function resetHue() {
 	requestAnimationFrame(refreshAllRangeProgress);
 }
 
+function styleKey(s: McStyle): I18nKey {
+	switch (s) {
+		case "tonalSpot":
+			return I18nKey.styleTonalSpot;
+		case "vibrant":
+			return I18nKey.styleVibrant;
+		case "content":
+			return I18nKey.styleContent;
+		case "expressive":
+			return I18nKey.styleExpressive;
+		case "rainbow":
+			return I18nKey.styleRainbow;
+		case "fruitSalad":
+			return I18nKey.styleFruitSalad;
+		case "monochrome":
+			return I18nKey.styleMonochrome;
+		case "neutral":
+			return I18nKey.styleNeutral;
+		case "fidelity":
+			return I18nKey.styleFidelity;
+	}
+}
+
+/** 某个风格在当前色相/明暗/规范下的 primary/secondary/tertiary 预览色 */
+function styleColors(s: McStyle, h: number, d: boolean, sp: McSpec) {
+	const scheme = resolveScheme(h, d, s, sp);
+	return {
+		primary: scheme.primary ?? "#888",
+		secondary: scheme.secondary ?? "#888",
+		tertiary: scheme.tertiary ?? "#888",
+	};
+}
+
+/** 9 个风格的色卡预览（3×3 网格） */
+const stylePreviews = $derived(
+	MC_STYLES.map((s) => ({
+		style: s,
+		label: i18n(styleKey(s)),
+		colors: styleColors(s, hue, darkMode, mcSpec),
+	})),
+);
+
+function resetMcStyle() {
+	mcStyle = defaultMcStyle;
+}
+
+function resetMcSpec() {
+	mcSpec = defaultMcSpec;
+}
+
 function resetWallpaperMode() {
 	wallpaperMode = defaultWallpaperMode;
 	setWallpaperMode(defaultWallpaperMode);
@@ -338,6 +463,17 @@ function switchFullscreenLayout(layout: FullscreenWallpaperLayout) {
 	if (fullscreenLayout === layout) return;
 	fullscreenLayout = layout;
 	setFullscreenLayout(layout);
+}
+
+function switchTexturePreset(preset: TexturePreset) {
+	if (texturePreset === preset) return;
+	texturePreset = preset;
+	setTexturePreset(preset);
+}
+
+function resetTexturePresetToDefault() {
+	texturePreset = defaultTexturePreset;
+	resetTexturePreset();
 }
 
 function resetLayout() {
@@ -535,6 +671,9 @@ onMount(() => {
 	// 从localStorage读取保存的全屏壁纸布局
 	fullscreenLayout = getStoredFullscreenLayout();
 
+	// 从localStorage读取保存的背景纹理预设
+	texturePreset = getStoredTexturePreset();
+
 	// 从localStorage读取水波纹动画状态
 	wavesEnabled = getStoredWavesEnabled();
 
@@ -625,10 +764,29 @@ onMount(() => {
 	};
 });
 
+// 监听明暗切换（配色风格预览色卡需要跟随明暗重算）
+onMount(() => {
+	const html = document.documentElement;
+	const observer = new MutationObserver(() => {
+		darkMode = html.classList.contains("dark");
+	});
+	observer.observe(html, { attributes: true, attributeFilter: ["class"] });
+
+	return () => observer.disconnect();
+});
+
 $effect(() => {
 	if (hue || hue === 0) {
 		setHue(hue);
 	}
+});
+
+$effect(() => {
+	setStyle(mcStyle);
+});
+
+$effect(() => {
+	setSpec(mcSpec);
 });
 
 $effect(() => {
@@ -703,6 +861,71 @@ $effect(() => {
 			<div class="hue-slider-shell w-full h-6 px-1 bg-[oklch(0.80_0.10_0)] dark:bg-[oklch(0.70_0.10_0)] rounded-md select-none">
 				<input aria-label={i18n(I18nKey.themeColor)} type="range" min="0" max="360" bind:value={hue}
 					   class="slider" id="colorSlider" step="5" style="width: 100%">
+			</div>
+		</div>
+		{/if}
+
+		<!-- Color Style Section: M3 九种配色风格（3×3 色卡网格） -->
+		{#if isColorStyleSwitchable}
+		<div class="mt-3">
+			<div class="section-title">
+				{i18n(I18nKey.colorStyle)}
+				<button aria-label="Reset to Default" class="btn-regular rounded-md active:scale-90"
+						class:opacity-0={mcStyle === defaultMcStyle} class:pointer-events-none={mcStyle === defaultMcStyle}
+						disabled={mcStyle === defaultMcStyle} aria-hidden={mcStyle === defaultMcStyle ? "true" : undefined} onclick={resetMcStyle}>
+					<div class="text-(--btn-content)">
+						<Icon icon="fa7-solid:arrow-rotate-left" class="text-[0.75rem]"></Icon>
+					</div>
+				</button>
+			</div>
+			<div class="grid grid-cols-3 gap-2" role="radiogroup" aria-label={i18n(I18nKey.colorStyle)}>
+				{#each stylePreviews as p (p.style)}
+					<button
+						type="button"
+						role="radio"
+						aria-checked={mcStyle === p.style}
+						title={p.label}
+						aria-label={p.label}
+						class="btn-regular rounded-md py-2 px-1 flex flex-col items-center gap-1.5 active:scale-95 transition-all"
+						class:bg-(--btn-regular-bg-hover)={mcStyle === p.style}
+						onclick={() => (mcStyle = p.style)}
+					>
+						<span class="flex gap-1">
+							<span class="w-2.5 h-2.5 rounded-full" style="background: {p.colors.primary}"></span>
+							<span class="w-2.5 h-2.5 rounded-full" style="background: {p.colors.secondary}"></span>
+							<span class="w-2.5 h-2.5 rounded-full" style="background: {p.colors.tertiary}"></span>
+						</span>
+						<span class="text-[0.65rem] font-medium w-full text-center truncate text-(--btn-content)">{p.label}</span>
+					</button>
+				{/each}
+			</div>
+		</div>
+		{/if}
+
+		<!-- Color Spec Section: MD3 2021 / M3E 2025 -->
+		{#if isColorSpecSwitchable}
+		<div class="mt-3">
+			<div class="section-title">
+				{i18n(I18nKey.colorSpec)}
+				<button aria-label="Reset to Default" class="btn-regular rounded-md active:scale-90"
+						class:opacity-0={mcSpec === defaultMcSpec} class:pointer-events-none={mcSpec === defaultMcSpec}
+						disabled={mcSpec === defaultMcSpec} aria-hidden={mcSpec === defaultMcSpec ? "true" : undefined} onclick={resetMcSpec}>
+					<div class="text-(--btn-content)">
+						<Icon icon="fa7-solid:arrow-rotate-left" class="text-[0.75rem]"></Icon>
+					</div>
+				</button>
+			</div>
+			<div class="flex gap-2">
+				{#each MC_SPECS as s (s)}
+					<button
+						class="flex-1 btn-regular rounded-md py-2 px-3 flex items-center justify-center gap-2 active:scale-95 transition-all"
+						class:opacity-60={mcSpec !== s}
+						class:bg-(--btn-regular-bg-hover)={mcSpec === s}
+						onclick={() => (mcSpec = s)}
+					>
+						<span class="text-xs font-medium">{s === "2021" ? i18n(I18nKey.spec2021) : i18n(I18nKey.spec2025)}</span>
+					</button>
+				{/each}
 			</div>
 		</div>
 		{/if}
@@ -858,6 +1081,37 @@ $effect(() => {
 					<Icon icon="material-symbols:hide-image-outline" class="text-[1.25rem] shrink-0"></Icon>
 					<span class="text-xs font-medium">{i18n(I18nKey.wallpaperNoneMode)}</span>
 				</button>
+			</div>
+		</div>
+		{/if}
+
+		<!-- Texture Section（仅纯色背景模式可见） -->
+		{#if isTextureSectionVisible}
+		<div>
+			<div class="section-title">
+				{i18n(I18nKey.texturePreset)}
+				<button aria-label="Reset to Default" class="btn-regular rounded-md active:scale-90"
+						class:opacity-0={texturePreset === defaultTexturePreset} class:pointer-events-none={texturePreset === defaultTexturePreset}
+						disabled={texturePreset === defaultTexturePreset} aria-hidden={texturePreset === defaultTexturePreset ? "true" : undefined} onclick={resetTexturePresetToDefault}>
+					<div class="text-(--btn-content)">
+						<Icon icon="fa7-solid:arrow-rotate-left" class="text-[0.75rem]"></Icon>
+					</div>
+				</button>
+			</div>
+			<div class="grid grid-cols-3 gap-2" role="radiogroup" aria-label={i18n(I18nKey.texturePreset)}>
+				{#each textureOptions as opt (opt.value)}
+					<button
+						class="btn-regular rounded-md py-2 px-1 flex flex-col items-center justify-center gap-1 active:scale-95 transition-all"
+						class:bg-(--btn-regular-bg-hover)={texturePreset === opt.value}
+						class:font-bold={texturePreset === opt.value}
+						role="radio"
+						aria-checked={texturePreset === opt.value}
+						onclick={() => switchTexturePreset(opt.value)}
+					>
+						<Icon icon={opt.icon} class="text-[1.35rem] shrink-0"></Icon>
+						<span class="text-[0.7rem] leading-tight text-center">{opt.label}</span>
+					</button>
+				{/each}
 			</div>
 		</div>
 		{/if}

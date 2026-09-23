@@ -393,6 +393,14 @@ export const ru: Translation = {
 	[Key.wallpaperOverlayMode]: "Прозрачный",
 	[Key.wallpaperNoneMode]: "Однотонный фон",
 
+	[Key.texturePreset]: "Текстура фона",
+	[Key.textureNone]: "Без текстуры",
+	[Key.textureStarlight]: "Звёздные искры",
+	[Key.textureCyberDots]: "Гик-точки",
+	[Key.textureTopography]: "Потоковые линии",
+	[Key.textureGeometric]: "Геометрия",
+	[Key.textureSakura]: "Лепестки сакуры",
+
 	// Настройки обоев
 	[Key.wallpaperSettings]: "Настройки обоев",
 	[Key.wallpaperTitle]: "Заголовок главных обоев",
@@ -410,6 +418,21 @@ export const ru: Translation = {
 	[Key.settingsTabAppearance]: "Оформление",
 	[Key.settingsTabWallpaper]: "Обои",
 	[Key.settingsTabEffects]: "Эффекты",
+
+	// Динамическая палитра M3
+	[Key.colorStyle]: "Стиль палитры",
+	[Key.colorSpec]: "Спецификация",
+	[Key.spec2021]: "MD3 2021",
+	[Key.spec2025]: "M3E 2025",
+	[Key.styleTonalSpot]: "Тональная",
+	[Key.styleVibrant]: "Яркая",
+	[Key.styleContent]: "Контент",
+	[Key.styleExpressive]: "Экспрессивная",
+	[Key.styleRainbow]: "Радуга",
+	[Key.styleFruitSalad]: "Фруктовый салат",
+	[Key.styleMonochrome]: "Монохром",
+	[Key.styleNeutral]: "Нейтральная",
+	[Key.styleFidelity]: "Точная",
 
 	// Стиль карточек
 	[Key.cardSettings]: "Стиль карточек",

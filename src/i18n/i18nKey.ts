@@ -378,6 +378,15 @@ enum I18nKey {
 	wallpaperOverlayMode = "wallpaperOverlayMode",
 	wallpaperNoneMode = "wallpaperNoneMode",
 
+	// 背景纹理（纯色模式下，实现借鉴自 Shirone）
+	texturePreset = "texturePreset",
+	textureNone = "textureNone",
+	textureStarlight = "textureStarlight",
+	textureCyberDots = "textureCyberDots",
+	textureTopography = "textureTopography",
+	textureGeometric = "textureGeometric",
+	textureSakura = "textureSakura",
+
 	// 壁纸设置
 	wallpaperSettings = "wallpaperSettings",
 	wallpaperTitle = "wallpaperTitle",
@@ -395,6 +404,21 @@ enum I18nKey {
 	settingsTabAppearance = "settingsTabAppearance",
 	settingsTabWallpaper = "settingsTabWallpaper",
 	settingsTabEffects = "settingsTabEffects",
+
+	// M3 动态配色（配色风格 / 配色规范）
+	colorStyle = "colorStyle",
+	colorSpec = "colorSpec",
+	spec2021 = "spec2021",
+	spec2025 = "spec2025",
+	styleTonalSpot = "styleTonalSpot",
+	styleVibrant = "styleVibrant",
+	styleContent = "styleContent",
+	styleExpressive = "styleExpressive",
+	styleRainbow = "styleRainbow",
+	styleFruitSalad = "styleFruitSalad",
+	styleMonochrome = "styleMonochrome",
+	styleNeutral = "styleNeutral",
+	styleFidelity = "styleFidelity",
 
 	// 卡片样式
 	cardSettings = "cardSettings",

@@ -1,12 +1,12 @@
 # 关于我 / About Me
 
-你好！我是 **LonelyBing**，一个在数字世界里默默无闻的一片叶子、普普通通的大学生~ 欢迎来到我的小窝.
+你好喵~ 我是 **LonelyBing**，一个在数字世界里默默无闻的一片叶子、普普通通的大学生~ 欢迎来到我的小窝.
 
 ## 🛠️ 关于本站
 
 本站使用 **Astro** 框架构建，主题采用的是 [Firefly](https://github.com/CuteLeaf/Firefly)（V6.16.8）——一款基于 [Fuwari](https://github.com/saicaca/fuwari) 二次开发的清新美观且现代化个人博客主题模板，在此感谢 [CuteLeaf](https://github.com/CuteLeaf) 与 [saicaca](https://github.com/saicaca) 的开源贡献.
 
-在原版主题的基础上，我按自己的喜好做了一些魔改（大部分折腾过程都写成博客了，感兴趣的可以翻翻），主要改动如下：
+在原版主题的基础上，我按自己的喜好做了一些魔改（大部分折腾过程都写成博客了，感兴趣的可以翻翻），主要改动如下喵~
 
 ### ✨ 导航栏与交互
 
@@ -19,6 +19,14 @@
 
 - **全局主题色系统**：基于 `oklch()` 色空间，通过一个 `--hue` 变量控制全站配色——改一个数字就能切换整个站点的色调（本站当前为青蓝色 hue 200）.
 - **文章卡片蓝色细边框**：首页文章卡片带一圈 1.5px 的青蓝色边框，暗色模式下自动调整亮度，让卡片在壁纸上更有层次感.
+- **显示设置面板**：点导航栏的调色盘按钮会弹出浮层面板，可以在**不刷新、不重新构建**的情况下切换壁纸四模式（纯色 / 横幅 / 全屏 / 覆盖透明）、全屏布局、文章列表的列表/网格排布、主题色相、卡片样式与樱花特效. 偏好全部存在 localStorage 里，刷新也不会丢喵~
+- **Material 3 动态配色**：面板里能切 9 种配色风格（TonalSpot / Vibrant / Content / Expressive / Rainbow / Fruit Salad / Monochrome / Neutral / Fidelity）和 2 种配色规范（MD3 2021 / M3E 2025），背后是 HCT 色空间引擎实时重算主色与次色容器色. 默认那一档**不会注入任何覆盖变量**，所以本站看着还是原生 oklch 的味道——只有你主动切了才会换上 M3 配色（这部分配色引擎的实现借鉴自 [Shirone](https://github.com/LyraVoid/Shirone)，感谢 [LyraVoid](https://github.com/LyraVoid) 的开源分享喵~）.
+- **背景纹理**：纯色背景模式下可以多叠一层装饰纹理，六种可选——无纹理、星芒光斑、极客点阵、流光等高线、几何晶体、落樱微瓣. 实现是一层 `position: fixed` 的 SVG mask 叠加层，取色全部由 `--hue` 推导，所以换主题色时纹理会自己跟着变；星芒会呼吸浮动、等高线会横向流光、樱花会斜着飘落，`prefers-reduced-motion` 下自动静止. 切到壁纸模式时纹理会自动让位（不然跟图片打架）. 图案与动画同样借鉴自 [Shirone](https://github.com/LyraVoid/Shirone).
+
+### 🎵 音乐播放器
+
+- **波浪进度条**：播放时是一条涌动的正弦波，暂停时会缓缓落成一条直线（升起快、落下慢，500ms 缓动），支持点击和**按住拖动**实时预览进度，颜色跟着主题色走. 波形路径用的是 M3 Expressive LinearWavy 的算法，借鉴自 [Shirone](https://github.com/LyraVoid/Shirone) 的 `wavy-progress` 实现喵~
+- 歌单、歌词、播放模式等逻辑仍是本站原有的 Meting 方案，这次只重画了 UI 层.
 
 ### 📊 访问统计
 
@@ -41,6 +49,7 @@
 - **⭐ Firefly 开源地址：[https://github.com/CuteLeaf/Firefly](https://github.com/CuteLeaf/Firefly)**
 - **⭐ Fuwari 开源地址：[https://github.com/saicaca/fuwari](https://github.com/saicaca/fuwari)**
 - **📝 Firefly 使用文档：[https://docs-firefly.cuteleaf.cn](https://docs-firefly.cuteleaf.cn/)**
+- **🎨 Shirone 开源地址（配色引擎与波浪进度条的来源）：[https://github.com/LyraVoid/Shirone](https://github.com/LyraVoid/Shirone)**
 
 ::github{repo="CuteLeaf/Firefly"}
 
@@ -48,4 +57,4 @@
 
 ---
 
-*感谢你的来访！希望在这里能找到对你有用的内容！*
+*感谢你的来访！希望在这里能找到对你有用的内容喵~*
