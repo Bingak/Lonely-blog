@@ -35,6 +35,10 @@ A heavily customized fork based on Firefly V6.16.8. Key changes include:
 - **Capsule Navbar**: Menu items housed in a capsule container with a sliding indicator that smoothly follows the mouse on hover. Built-in mouse spotlight effect, plus rounded-to-capsule transition animations on hover with press feedback.
 - **Hover Profile Card**: Hovering over the site name (top-left) pops up a floating card — avatar / nickname / bio / social links, plus a yearly contribution heatmap (12 months × 5 weeks, color-coded by article publish dates during build), real-time site uptime counter (years/months/days/hours/minutes/seconds, refreshing every second), and month/year progress bars. Clicking the avatar area navigates to the About page.
 - **Global Theme Color System**: Built on the `oklch()` color space — a single `hue` variable in `siteConfig.ts` controls the entire site's color scheme. Change one number to shift the whole palette (currently set to cyan-blue, hue 200).
+- **Display Settings Panel**: A palette button in the navbar opens a floating panel for runtime switching of wallpaper modes (banner / fullscreen / transparent overlay / solid color), fullscreen layout (classic / hero), post list layout (list / grid), theme hue, card styles, and sakura effects. Preferences persist in localStorage across reloads.
+- **Material 3 Dynamic Color**: The panel offers 9 palette styles (Tonal Spot / Vibrant / Content / Expressive / Rainbow / Fruit Salad / Monochrome / Neutral / Fidelity) and 2 color specs (MD3 2021 / M3E 2025); an HCT color-space engine recomputes the global primary and secondary-container colors in real time. With the default style the site keeps its native oklch look — M3 colors only kick in once you switch. The color engine implementation is borrowed from [Shirone](https://github.com/LyraVoid/Shirone) — thanks to [LyraVoid](https://github.com/LyraVoid) for the open-source contribution~
+- **Wavy Music Player Progress Bar**: A sine wave flows while playing and settles into a straight line when paused; supports click and drag-to-seek, colored by the theme. The wave path algorithm (M3 Expressive LinearWavy) is borrowed from [Shirone](https://github.com/LyraVoid/Shirone)'s `wavy-progress` implementation.
+- **Background Textures**: In solid-color mode you can overlay one of six decorative textures (None / Starlight / Cyber Dots / Topography / Geometric / Sakura Petals). Single-layer SVG masks whose colors derive from `--hue`, so they follow the theme color automatically; three carry slow animations that stop under `prefers-reduced-motion`. Patterns and animations are borrowed from [Shirone](https://github.com/LyraVoid/Shirone)'s `textures.css`.
 - **Blue Card Borders**: Homepage post cards feature a 1.5px cyan-blue border (`oklch()` adaptive for light/dark mode), adding visual depth against the wallpaper background.
 - **Busuanzi Visitor Stats**: Footer shows site-wide PV / UV, article pages show per-post read counts, plus a real-time "Site alive for X days X hours X minutes X seconds" counter (counting from 2026.9.12). All zero-backend implementation.
 - **Project Page Comments**: Project showcase page integrates a comment system, each project can toggle comments individually via `comment` field in frontmatter.
@@ -132,6 +136,7 @@ The Live2D model is from Bilibili user [木果阿木果](https://space.bilibili.
 
 - [Firefly](https://github.com/CuteLeaf/Firefly) — Theme used by this site (customization baseline)
 - [fuwari](https://github.com/saicaca/fuwari) — Firefly's upstream template
+- [Shirone](https://github.com/LyraVoid/Shirone) — Source of the Material 3 palette style / spec dynamic-switching, wavy progress bar and background texture implementations
 - [hexo-theme-shoka](https://github.com/amehime/hexo-theme-shoka)
 - [astro-koharu](https://github.com/cosZone/astro-koharu)
 - [Mizuki](https://github.com/matsuzaka-yuki/Mizuki)
@@ -144,6 +149,7 @@ This project is licensed under the [MIT license](https://mit-license.org/), see 
 
 - Copyright (c) 2024 [saicaca](https://github.com/saicaca) - [fuwari](https://github.com/saicaca/fuwari)
 - Copyright (c) 2025 [CuteLeaf](https://github.com/CuteLeaf) - [Firefly](https://github.com/CuteLeaf/Firefly)
+- Copyright (c) 2026 [LyraVoid](https://github.com/LyraVoid) - [Shirone](https://github.com/LyraVoid/Shirone) (ported Material 3 color engine, wavy progress bar and background texture portions)
 - Copyright (c) 2026 [LonelyBing](https://github.com/Bingak) - Customizations in this repository
 
 Under the MIT license, you are free to use, modify, and distribute the code, provided the above copyright notices are retained.

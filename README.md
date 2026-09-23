@@ -35,6 +35,10 @@
 - **胶囊导航栏**：菜单收进胶囊容器，悬停时滑动指示器平滑跟随鼠标，导航栏自带鼠标聚光灯高光，站名与按钮悬停时有圆角到胶囊形的过渡动画.
 - **站名悬停资料卡**：鼠标悬停左上角站名弹出浮层卡片——头像/昵称/签名/社交链接，加当年发文贡献热力图（12 月 × 5 周，构建期按文章发布日期统计色阶），加建站以来实时运行时间（年/月/日/时/分/秒每秒刷新）与本月/今年进度条，点击头像区跳转关于页.
 - **全局主题色系统**：基于 `oklch()` 色空间，通过 `siteConfig.ts` 中的 `hue` 变量控制全站配色，改一个数字即可切换整体色调（本站当前为青蓝色 hue 200）.
+- **显示设置面板**：导航栏调色盘按钮打开浮层面板，运行时切换壁纸四模式（横幅 / 全屏 / 覆盖透明 / 纯色）、全屏布局（classic / hero）、文章列表列表/网格、主题色相、卡片样式与樱花特效，偏好存 localStorage，刷新不丢.
+- **Material 3 动态配色**：面板里可切换 9 种配色风格（TonalSpot / Vibrant / Content / Expressive / Rainbow / Fruit Salad / Monochrome / Neutral / Fidelity）与两种配色规范（MD3 2021 / M3E 2025），HCT 色空间引擎实时重算全局主色与次色容器色；保持默认风格时站点仍是原生 oklch 观感，切了才启用 M3 配色. 配色引擎的实现借鉴自 [Shirone](https://github.com/LyraVoid/Shirone)，在此感谢 [LyraVoid](https://github.com/LyraVoid) 的开源贡献喵~
+- **音乐播放器波浪进度条**：播放时正弦波涌动、暂停时缓落成直线，支持点击与拖拽 seek，配色跟随主题色. 波浪路径算法（M3 Expressive LinearWavy）借鉴自 [Shirone](https://github.com/LyraVoid/Shirone) 的 `wavy-progress` 实现.
+- **背景纹理**：纯色背景模式下可叠加六层装饰纹理（无纹理 / 星芒光斑 / 极客点阵 / 流光等高线 / 几何晶体 / 落樱微瓣），SVG mask 单层实现、取色由 `--hue` 推导自动跟随主题色，三种带缓慢动画且 `prefers-reduced-motion` 下静止. 图案与动画实现借鉴自 [Shirone](https://github.com/LyraVoid/Shirone) 的 `textures.css`.
 - **文章卡片蓝色细边框**：首页文章卡片带 1.5px 青蓝色边框（`oklch()` 自适应亮暗模式），增强壁纸上的视觉层次感.
 - **不蒜子（Busuanzi）访问统计**：页脚全站 PV / UV，文章页单篇阅读量，以及「本站已存活 X 天 X 时 X 分 X 秒」的实时计时（自 2026.9.12 起算），全部零后端实现.
 - **项目页评论区**：项目展示页接入评论系统，每个项目可在 frontmatter 用 `comment` 字段单独开关.
@@ -144,6 +148,7 @@ npx wrangler deploy
 
 - [Firefly](https://github.com/CuteLeaf/Firefly) —— 本站使用的主题（魔改基线）
 - [fuwari](https://github.com/saicaca/fuwari) —— Firefly 的上游模板
+- [Shirone](https://github.com/LyraVoid/Shirone) —— Material 3 配色风格 / 配色规范动态切换、波浪进度条、背景纹理实现的来源
 - [hexo-theme-shoka](https://github.com/amehime/hexo-theme-shoka)
 - [astro-koharu](https://github.com/cosZone/astro-koharu)
 - [Mizuki](https://github.com/matsuzaka-yuki/Mizuki)
@@ -156,6 +161,7 @@ npx wrangler deploy
 
 - Copyright (c) 2024 [saicaca](https://github.com/saicaca) - [fuwari](https://github.com/saicaca/fuwari)
 - Copyright (c) 2025 [CuteLeaf](https://github.com/CuteLeaf) - [Firefly](https://github.com/CuteLeaf/Firefly)
+- Copyright (c) 2026 [LyraVoid](https://github.com/LyraVoid) - [Shirone](https://github.com/LyraVoid/Shirone)（移植的 Material 3 配色引擎、波浪进度条与背景纹理部分）
 - Copyright (c) 2026 [LonelyBing](https://github.com/Bingak) - 本仓库的魔改部分
 
 根据 MIT 开源协议，可自由使用、修改、分发代码，但需保留上述版权声明.
