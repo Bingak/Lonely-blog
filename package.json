@@ -5,7 +5,7 @@
   "engines": {
     "node": ">=22.23.0"
   },
-  "packageManager": "pnpm@11.22.0",
+  "packageManager": "pnpm@12.5.1",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -45,6 +45,7 @@
     "@iconify/svelte": "^5.2.2",
     "@iconify/types": "^2.0.0",
     "@iconify/utils": "^3.1.7",
+    "@material/material-color-utilities": "^0.4.0",
     "@mermanjs/web": "0.8.0-alpha.3",
     "@napi-rs/wasm-runtime": "^1.2.2",
     "@swup/astro": "^1.8.0",
