@@ -46,6 +46,8 @@
 - **在线写作**：配置 `.pages.yml`（Pages CMS），可在 GitHub 网页端直接写文章、发动态.
 - **更新日志页**：客户端组件请求同源 `/api/commits`，由 `worker/index.js` 在服务端带上 `GITHUB_TOKEN` 回源 GitHub 拉取 commit 记录，按类型（新功能/修复/优化等）宽松分类（支持中英文 commit message 多种前缀）与分页，无需重新构建即可看到最新改动. token 只存在于服务端 Secret，前端产物里不会有凭据.
 - **友链自动申请**：友链页「申请友链」按钮弹出表单（站点名称 / 链接 / 头像 / 描述），通过 Cloudflare Turnstile 人机验证后，`worker/index.js` 的 `POST /api/friend-apply` 会读取 `src/data/friends.json`、做去重与链接合法性校验，再在仓库新建分支并自动开一个 PR，站长点合并即上线，无需手动改代码. 友链数据也因此从 TS 迁移到 JSON，便于服务端读写.
+- **墨驿内容工坊（后台）**：零依赖、离线可用的静态后台（`public/ink-studio/`），表单化 FrontMatter 配置（引号/冒号自动转义、无需手写 YAML）、自动保存刷新不丢、内置多文档库与浅色/深色/跟随系统主题、本地 Markdown 导入、写作快捷键（Ctrl+B 等），写完一键经 GitHub Contents API 提交仓库、Cloudflare 自动构建上线；支持 post / project / dynamic / gallery 四类内容，其中 gallery 按相册模型写入 `src/config/galleryConfig.ts` 与 `public/gallery/{id}/urls.txt`.
+- **后台登录安全**：用户名/密码存于 Worker Secrets（`ADMIN_USER` / `ADMIN_PASS`），前端永远拿不到明文；登录走 `POST /api/admin-login`，强制 Cloudflare Turnstile 人机验证、常数时间比较与同 IP 限流，成功后签发 12 小时 TTL 的 HMAC-SHA256 签名会话；入口藏在导航栏「链接」下拉菜单，地址不直观.
 - **个性化配置**：相册、打赏页、看板娘、评论区等均替换为自己的内容与账号.
 
 顺便说一句：本文只是魔改记录，不是主题发行版. 想用原版请移步 [Firefly 仓库](https://github.com/CuteLeaf/Firefly)，使用文档在 [docs-firefly.cuteleaf.cn](https://docs-firefly.cuteleaf.cn/).
@@ -152,6 +154,22 @@ npx wrangler secret put FRIEND_APPLY_GITHUB_TOKEN
 
 `PUBLIC_*` 是构建时内联进产物的，配成 Worker 运行时变量前端永远读不到；而 `.env` 在 `.gitignore` 里，Workers Builds 在云端构建时读不到它——本站的兜底是把 site key（本来就是公开的）写死在 `friendApplyConfig.ts` 里，环境变量存在时仍然优先.
 
+### 后台登录凭据
+
+墨驿后台（`/ink-studio/`）的凭据同样**只存 Worker 运行时 Secret**，前端产物里没有任何密码痕迹：
+
+| 名称 | 类型 | 说明 |
+|------|------|------|
+| `ADMIN_USER` | Worker **运行时** Secret | 后台登录用户名 |
+| `ADMIN_PASS` | Worker **运行时** Secret | 后台登录密码；未配置 `ADMIN_SESSION_SECRET` 时也用作会话签名密钥 |
+| `ADMIN_SESSION_SECRET` | Worker **运行时** Secret（可选） | 会话签名密钥，配置后改密码不会使已签发会话失效 |
+
+```bash
+npx wrangler secret put ADMIN_USER
+npx wrangler secret put ADMIN_PASS
+```
+
+人机校验复用友链申请的 `TURNSTILE_SECRET_KEY`；登录接口另带同 IP 60 秒 10 次的内存限流与常数时间比较，防暴力破解.
 ## 静态部署方案
 
 `dist/` 本身仍是纯静态站点，丢给 Vercel、Netlify、Nginx 也能跑，但**更新日志与友链申请两个接口都需要同源 API**：`wrangler.jsonc` 现在指向 `worker/index.js`，只有当托管平台提供该 Worker（Cloudflare Workers）时才会带 token 回源、才会开 PR。在纯静态平台上，更新日志组件会检测到 `/api/commits` 不存在并自动回落到浏览器直连 GitHub 的匿名模式（60 次/小时/IP），而 `/api/friend-apply` 会直接 404——此时把 `friendApplyConfig.ts` 的 `enable` 关掉，友链页就不会再显示申请按钮.
