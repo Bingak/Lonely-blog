@@ -2,7 +2,7 @@
 export interface FriendApplyConfig {
 	// 是否启用申请表单（关闭后友链页不渲染按钮）
 	enable: boolean;
-	// Cloudflare Turnstile 站点密钥（公开值，构建时由 .env 的 PUBLIC_TURNSTILE_SITE_KEY 内联）；为空时表单不渲染
+	// Cloudflare Turnstile 站点密钥（公开值）；为空时表单不渲染
 	turnstileSiteKey: string;
 	// 友链数据所在仓库，服务端在此仓库开 PR
 	githubRepo: string;
@@ -14,8 +14,9 @@ export interface FriendApplyConfig {
 
 export const friendApplyConfig: FriendApplyConfig = {
 	enable: true,
-	// `?.` 是必需的：scripts/ 下的构建脚本经 src/config/index.ts 导入本文件时跑在纯 Node 里，没有 import.meta.env
-	turnstileSiteKey: import.meta.env?.PUBLIC_TURNSTILE_SITE_KEY ?? "",
+	// Turnstile 站点密钥本身就是公开值（会出现在页面 HTML 里），所以直接写死兜底：
+	// CI（Workers Builds）读不到 gitignored 的 .env，只靠环境变量会让按钮整块消失
+	turnstileSiteKey: import.meta.env?.PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAFCFMk3cJMZKa-Q3",
 	githubRepo: "Bingak/Lonely-blog",
 	baseBranch: "main",
 	dataPath: "src/data/friends.json",
