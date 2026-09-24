@@ -115,6 +115,7 @@ const viewConfigStr = JSON.stringify({
             waveSvg: widget.querySelector('.progress-wave'),
             waveBar: widget.querySelector('.wave-bar'),
             waveTrack: widget.querySelector('.wave-track'),
+            waveClipRect: widget.querySelector('.wave-clip-rect'),
             currentTime: widget.querySelector('.current-time'),
             totalTime: widget.querySelector('.total-time'),
             btnPlay: widget.querySelector('.btn-play'),
@@ -298,7 +299,10 @@ const viewConfigStr = JSON.stringify({
         function renderWave() {
             if (!ui.waveBar) return;
             var head = waveW * (lastProgress / 100);
-            ui.waveBar.setAttribute('d', _wavePath(Math.max(head, 0.01), amp, -WAVE_LEN));
+            // 波形画满整宽再多画一个波长：流动动画是平移整条路径，
+            // 只画到 head 的话平移过程中头部右侧会空出来，改由 clip rect 裁到 head
+            ui.waveBar.setAttribute('d', _wavePath(waveW + WAVE_LEN, amp, -WAVE_LEN));
+            if (ui.waveClipRect) ui.waveClipRect.setAttribute('width', _fmt(Math.max(head, 0)));
             if (head < waveW - 1) {
                 ui.waveTrack.setAttribute('d', _linePath(head, waveW));
                 ui.waveTrack.style.display = '';

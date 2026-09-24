@@ -16,10 +16,17 @@
  *   GET /api/commits/{sha}                   -> 单个 commit 详情（含 stats 增删行数）
  *   GET /api/commits/stats?shas=a,b,c        -> 批量取 stats，形如 { sha: { additions, deletions } }
  *
+ * 另有友链申请接口（前端 src/pages/friends.astro 的申请表单依赖）：
+ *   POST /api/friend-apply  { title, siteurl, imgurl, desc, cf-turnstile-response }
+ *     -> 200 { ok: true, url: "PR 链接" }；校验失败 4xx，上游失败 502，未配置 503
+ *     流程：Turnstile 校验 -> 字段校验与去重 -> 建分支改 src/data/friends.json -> 开 PR，站长合并后才上线
+ *
  * 可用环境变量：
  *   GITHUB_TOKEN   建议用 wrangler secret put GITHUB_TOKEN 写入；缺省则匿名请求（60 次/小时/边缘 IP）
  *   GITHUB_REPO    目标仓库，默认 Bingak/Lonely-blog（客户端不允许覆盖，避免变成公开代理）
  *   GITHUB_BRANCH  默认分支，默认 main；客户端可用 ?sha= 指定同一仓库的其它分支/引用
+ *   FRIEND_APPLY_GITHUB_TOKEN   友链申请专用 token，需 Contents 读写 + Pull requests 读写；与只读的 GITHUB_TOKEN 分开
+ *   TURNSTILE_SECRET_KEY        Cloudflare Turnstile 的 Secret Key（Site Key 是构建期的 PUBLIC_TURNSTILE_SITE_KEY，见 src/config/friendApplyConfig.ts）
  */
 
 const GITHUB_API = "https://api.github.com";
@@ -296,6 +303,206 @@ async function handleStatsBatch(env, ctx, url) {
 	return jsonResponse(payload, 200, { "X-Changelog-Auth": authMode, "Cache-Control": `public, max-age=${LIST_TTL}` });
 }
 
+/* ---------------------------------------------------------------------------
+ * 友链申请：POST /api/friend-apply
+ * ------------------------------------------------------------------------- */
+
+const FRIEND_DATA_PATH = "src/data/friends.json";
+const FRIEND_LIMITS = { title: 40, desc: 120 };
+const TURNSTILE_VERIFY = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+
+/** 只接受公网可访问的 http(s) 地址，挡掉 localhost / 内网 / 无点主机 */
+function parsePublicUrl(raw) {
+	if (typeof raw !== "string") return null;
+	let url;
+	try {
+		url = new URL(raw.trim());
+	} catch {
+		return null;
+	}
+	if (url.protocol !== "https:" && url.protocol !== "http:") return null;
+	const host = url.hostname.toLowerCase();
+	if (host === "localhost" || host.endsWith(".local") || !host.includes(".")) return null;
+	url.hash = "";
+	return url;
+}
+
+/** 站点去重键：忽略大小写与结尾斜杠 */
+function siteKeyOf(url) {
+	return `${url.origin}${url.pathname.replace(/\/+$/, "")}`.toLowerCase();
+}
+
+function decodeBase64(input) {
+	const bin = atob(input.replace(/\s/g, ""));
+	const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+	return new TextDecoder().decode(bytes);
+}
+
+function encodeBase64(text) {
+	let bin = "";
+	for (const byte of new TextEncoder().encode(text)) bin += String.fromCharCode(byte);
+	return btoa(bin);
+}
+
+/** 调 GitHub REST：统一带上鉴权头，并把响应解析成 { status, data } */
+async function ghJson(token, path, options) {
+	const res = await fetch(`${GITHUB_API}${path}`, {
+		...options,
+		headers: {
+			...upstreamHeaders(token),
+			...(options?.body ? { "Content-Type": "application/json" } : {}),
+		},
+	});
+	let data = null;
+	try {
+		data = JSON.parse(await res.text());
+	} catch {
+		data = null;
+	}
+	return { status: res.status, data };
+}
+
+/** 向 Cloudflare 校验访客提交的 Turnstile token */
+async function verifyTurnstile(secret, response, remoteIp) {
+	const res = await fetch(TURNSTILE_VERIFY, {
+		method: "POST",
+		headers: { "content-type": "application/json" },
+		body: JSON.stringify({ secret, response, remoteip: remoteIp || undefined }),
+	});
+	if (!res.ok) return false;
+	const data = await res.json().catch(() => null);
+	return data?.success === true;
+}
+
+async function handleFriendApply(request, env) {
+	const secret = env.TURNSTILE_SECRET_KEY;
+	const token = env.FRIEND_APPLY_GITHUB_TOKEN;
+	if (!secret || !token) {
+		return jsonResponse(
+			{ ok: false, message: "服务端未配置 TURNSTILE_SECRET_KEY 或 FRIEND_APPLY_GITHUB_TOKEN" },
+			503,
+		);
+	}
+
+	let payload;
+	try {
+		payload = await request.json();
+	} catch {
+		return jsonResponse({ ok: false, message: "请求体不是合法 JSON" }, 400);
+	}
+
+	const turnstileToken = payload?.["cf-turnstile-response"];
+	if (typeof turnstileToken !== "string" || !turnstileToken) {
+		return jsonResponse({ ok: false, message: "缺少人机验证结果，请完成验证后重试" }, 400);
+	}
+	const remoteIp = request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for");
+	if (!(await verifyTurnstile(secret, turnstileToken, remoteIp))) {
+		return jsonResponse({ ok: false, message: "人机验证未通过，请重试" }, 403);
+	}
+
+	const title = typeof payload.title === "string" ? payload.title.trim() : "";
+	const desc = typeof payload.desc === "string" ? payload.desc.trim() : "";
+	const siteUrl = parsePublicUrl(payload.siteurl);
+	const imgUrl = parsePublicUrl(payload.imgurl);
+	if (!title || title.length > FRIEND_LIMITS.title) {
+		return jsonResponse({ ok: false, message: `站点名称需为 1-${FRIEND_LIMITS.title} 个字符` }, 400);
+	}
+	if (!desc || desc.length > FRIEND_LIMITS.desc) {
+		return jsonResponse({ ok: false, message: `站点描述需为 1-${FRIEND_LIMITS.desc} 个字符` }, 400);
+	}
+	if (!siteUrl) return jsonResponse({ ok: false, message: "站点链接需为可公网访问的 http(s) 地址" }, 400);
+	if (!imgUrl) return jsonResponse({ ok: false, message: "头像链接需为可公网访问的 http(s) 地址" }, 400);
+
+	const { repo } = resolveTarget(env, null);
+	const base = env.GITHUB_BRANCH && REF_RE.test(env.GITHUB_BRANCH) ? env.GITHUB_BRANCH : DEFAULT_BRANCH;
+
+	const file = await ghJson(token, `/repos/${repo}/contents/${FRIEND_DATA_PATH}?ref=${base}`);
+	if (file.status !== 200 || !file.data?.content || !file.data?.sha) {
+		return jsonResponse(
+			{ ok: false, message: `读取 ${FRIEND_DATA_PATH} 失败：${file.data?.message ?? file.status}` },
+			502,
+		);
+	}
+
+	let friends;
+	try {
+		friends = JSON.parse(decodeBase64(file.data.content));
+	} catch {
+		return jsonResponse({ ok: false, message: `${FRIEND_DATA_PATH} 不是合法 JSON 数组` }, 502);
+	}
+	if (!Array.isArray(friends)) {
+		return jsonResponse({ ok: false, message: `${FRIEND_DATA_PATH} 不是合法 JSON 数组` }, 502);
+	}
+	const wanted = siteKeyOf(siteUrl);
+	if (friends.some((f) => siteKeyOf(new URL(f.siteurl)) === wanted)) {
+		return jsonResponse({ ok: false, message: "该站点已在友链列表中，无需重复申请" }, 409);
+	}
+
+	// weight 0 让新友链排在末尾，是否上线由站长合并 PR 决定
+	friends.push({ title, imgurl: imgUrl.href, desc, siteurl: siteUrl.href, weight: 0, enabled: true });
+
+	const baseRef = await ghJson(token, `/repos/${repo}/git/ref/heads/${base}`);
+	const baseSha = baseRef.data?.object?.sha;
+	if (baseRef.status !== 200 || !baseSha) {
+		return jsonResponse(
+			{ ok: false, message: `读取分支 ${base} 失败：${baseRef.data?.message ?? baseRef.status}` },
+			502,
+		);
+	}
+
+	const branch = `friend-apply/${Date.now()}`;
+	const refRes = await ghJson(token, `/repos/${repo}/git/refs`, {
+		method: "POST",
+		body: JSON.stringify({ ref: `refs/heads/${branch}`, sha: baseSha }),
+	});
+	if (refRes.status !== 201) {
+		return jsonResponse(
+			{ ok: false, message: `创建分支失败：${refRes.data?.message ?? refRes.status}` },
+			502,
+		);
+	}
+
+	const commitRes = await ghJson(token, `/repos/${repo}/contents/${FRIEND_DATA_PATH}`, {
+		method: "PUT",
+		body: JSON.stringify({
+			message: `feat(friends): 友链申请「${title}」`,
+			content: encodeBase64(`${JSON.stringify(friends, null, "\t")}\n`),
+			sha: file.data.sha,
+			branch,
+		}),
+	});
+	if (commitRes.status !== 200 && commitRes.status !== 201) {
+		return jsonResponse(
+			{ ok: false, message: `提交失败：${commitRes.data?.message ?? commitRes.status}` },
+			502,
+		);
+	}
+
+	const pr = await ghJson(token, `/repos/${repo}/pulls`, {
+		method: "POST",
+		body: JSON.stringify({
+			title: `feat(friends): 新增友链「${title}」`,
+			head: branch,
+			base,
+			body: [
+				"## 友链申请",
+				"",
+				`- 站点名称：${title}`,
+				`- 站点描述：${desc}`,
+				`- 站点链接：${siteUrl.href}`,
+				`- 头像链接：${imgUrl.href}`,
+				"",
+				`提交时间：${new Date().toISOString()}（已通过 Cloudflare Turnstile 人机校验）`,
+			].join("\n"),
+		}),
+	});
+	if (pr.status !== 201 || !pr.data?.html_url) {
+		return jsonResponse({ ok: false, message: `创建 PR 失败：${pr.data?.message ?? pr.status}` }, 502);
+	}
+
+	return jsonResponse({ ok: true, url: pr.data.html_url });
+}
+
 export default {
 	async fetch(request, env, ctx) {
 		const url = new URL(request.url);
@@ -317,6 +524,13 @@ export default {
 				return handleCommit(request, env, ctx, rest);
 			}
 			return handleList(request, env, ctx);
+		}
+
+		if (url.pathname === "/api/friend-apply") {
+			if (request.method !== "POST") {
+				return jsonResponse({ error: "仅支持 POST" }, 405, { Allow: "POST" });
+			}
+			return handleFriendApply(request, env);
 		}
 
 		// 静态资源默认已被优先匹配；走到这里说明没有对应文件，

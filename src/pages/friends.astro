@@ -5,6 +5,7 @@ import Markdown from "@components/common/Markdown.astro";
 import { Icon } from "astro-icon/components";
 import {
 	commentConfig,
+	friendApplyConfig,
 	friendsPageConfig,
 	getEnabledFriends,
 	siteConfig,
@@ -36,6 +37,9 @@ const isCommentEnabled =
 const items = getEnabledFriends();
 const allTags = [...new Set(items.flatMap((item) => item.tags || []))].sort();
 
+// 申请表单：开关打开且配置了 Turnstile 站点密钥才渲染
+const showApply = friendApplyConfig.enable && !!friendApplyConfig.turnstileSiteKey;
+
 // 页面标题和描述
 const title = friendsPageConfig.title || i18n(I18nKey.friends);
 const description =
@@ -58,6 +62,17 @@ const description =
           <div class="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
             {title}
           </div>
+          {
+            showApply && (
+              <button
+                id="friend-apply-open"
+                class="ml-auto flex items-center gap-1.5 px-4 py-2 rounded-full bg-(--primary) text-white dark:text-black/70 text-sm font-medium hover:opacity-85 transition-opacity cursor-pointer"
+              >
+                <Icon name="material-symbols:add-link" class="text-lg" />
+                申请友链
+              </button>
+            )
+          }
         </div>
         {
           description && (
@@ -188,6 +203,92 @@ const description =
     </div>
   )}
 
+  <!-- 友链申请弹窗 -->
+  {
+    showApply && (
+      <dialog
+        id="friend-apply-dialog"
+        data-sitekey={friendApplyConfig.turnstileSiteKey}
+        class="card-base m-auto max-h-[85vh] w-[min(92vw,26rem)] overflow-y-auto rounded-(--radius-large) p-6"
+      >
+        <div class="flex items-center justify-between mb-4">
+          <div class="text-lg font-bold text-neutral-900 dark:text-neutral-100">
+            申请友链
+          </div>
+          <button
+            id="friend-apply-close"
+            type="button"
+            aria-label="关闭"
+            class="w-8 h-8 flex items-center justify-center rounded-lg text-neutral-500 dark:text-neutral-400 hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
+          >
+            <Icon name="material-symbols:close" class="text-xl" />
+          </button>
+        </div>
+        <form id="friend-apply-form" class="flex flex-col gap-4">
+          <label class="flex flex-col gap-1.5 text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+            网站名称 <span class="text-red-500">*</span>
+            <input
+              id="fa-title"
+              name="title"
+              type="text"
+              maxlength="40"
+              placeholder="例如：My Blog"
+              required
+              class="font-normal w-full px-4 py-2.5 rounded-xl border border-(--line-divider) bg-transparent text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:border-(--primary) focus:ring-1 focus:ring-(--primary) outline-none transition-all duration-200 text-sm"
+            />
+          </label>
+          <label class="flex flex-col gap-1.5 text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+            网站链接 <span class="text-red-500">*</span>
+            <input
+              id="fa-siteurl"
+              name="siteurl"
+              type="url"
+              placeholder="https://example.com"
+              required
+              class="font-normal w-full px-4 py-2.5 rounded-xl border border-(--line-divider) bg-transparent text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:border-(--primary) focus:ring-1 focus:ring-(--primary) outline-none transition-all duration-200 text-sm"
+            />
+          </label>
+          <label class="flex flex-col gap-1.5 text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+            头像链接 <span class="text-red-500">*</span>
+            <input
+              id="fa-imgurl"
+              name="imgurl"
+              type="url"
+              placeholder="https://example.com/avatar.jpg"
+              required
+              class="font-normal w-full px-4 py-2.5 rounded-xl border border-(--line-divider) bg-transparent text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:border-(--primary) focus:ring-1 focus:ring-(--primary) outline-none transition-all duration-200 text-sm"
+            />
+          </label>
+          <label class="flex flex-col gap-1.5 text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+            网站描述 <span class="text-red-500">*</span>
+            <input
+              id="fa-desc"
+              name="desc"
+              type="text"
+              maxlength="120"
+              placeholder="一句话描述"
+              required
+              class="font-normal w-full px-4 py-2.5 rounded-xl border border-(--line-divider) bg-transparent text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:border-(--primary) focus:ring-1 focus:ring-(--primary) outline-none transition-all duration-200 text-sm"
+            />
+          </label>
+          <div id="friend-apply-turnstile" class="flex justify-center"></div>
+          <button
+            id="friend-apply-submit"
+            type="submit"
+            class="w-full py-2.5 rounded-xl bg-(--primary) text-white dark:text-black/70 text-sm font-medium hover:opacity-85 transition-opacity cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            提交申请
+          </button>
+          <p
+            id="friend-apply-status"
+            role="status"
+            class="text-sm text-neutral-500 dark:text-neutral-400 break-all empty:hidden"
+          ></p>
+        </form>
+      </dialog>
+    )
+  }
+
   <!-- 评论区 -->
   {isCommentEnabled && (
     <div class="mt-4">
@@ -278,11 +379,144 @@ const description =
     }
   </script>
 
+  <script is:inline>
+    (function () {
+      const dialog = document.getElementById("friend-apply-dialog");
+      if (!dialog || dialog.dataset.bound) return;
+      dialog.dataset.bound = "1";
+
+      const siteKey = dialog.dataset.sitekey || "";
+      const openBtn = document.getElementById("friend-apply-open");
+      const closeBtn = document.getElementById("friend-apply-close");
+      const form = document.getElementById("friend-apply-form");
+      const statusEl = document.getElementById("friend-apply-status");
+      const submitBtn = document.getElementById("friend-apply-submit");
+      const turnstileBox = document.getElementById("friend-apply-turnstile");
+      let widgetId = null;
+      let turnstileToken = "";
+
+      function setStatus(message, kind) {
+        statusEl.textContent = "";
+        statusEl.classList.remove("text-red-500", "text-green-600", "dark:text-green-400");
+        if (!message) return;
+        if (kind === "err") statusEl.classList.add("text-red-500");
+        if (kind === "ok") statusEl.classList.add("text-green-600", "dark:text-green-400");
+        statusEl.appendChild(document.createTextNode(message));
+      }
+
+      function appendLink(url) {
+        const a = document.createElement("a");
+        a.href = url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = "查看 PR";
+        a.className = "underline break-all";
+        statusEl.appendChild(document.createTextNode(" "));
+        statusEl.appendChild(a);
+      }
+
+      function ensureWidget() {
+        if (widgetId !== null || !window.turnstile) return;
+        widgetId = window.turnstile.render(turnstileBox, {
+          sitekey: siteKey,
+          theme: document.documentElement.classList.contains("dark") ? "dark" : "light",
+          callback: (token) => {
+            turnstileToken = token;
+          },
+          "expired-callback": () => {
+            turnstileToken = "";
+          },
+        });
+      }
+
+      function loadTurnstile() {
+        if (window.turnstile) {
+          ensureWidget();
+          return;
+        }
+        window.__turnstileQueue = window.__turnstileQueue || [];
+        window.__turnstileQueue.push(ensureWidget);
+        if (!document.getElementById("cf-turnstile-script")) {
+          window.__turnstileOnload = function () {
+            (window.__turnstileQueue || []).forEach((fn) => fn());
+            window.__turnstileQueue = [];
+          };
+          const script = document.createElement("script");
+          script.id = "cf-turnstile-script";
+          script.src =
+            "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=__turnstileOnload&render=explicit";
+          script.async = true;
+          document.head.appendChild(script);
+        }
+      }
+
+      openBtn?.addEventListener("click", () => {
+        dialog.showModal();
+        loadTurnstile();
+      });
+      closeBtn?.addEventListener("click", () => dialog.close());
+      dialog.addEventListener("click", (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+
+      form?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!turnstileToken) {
+          setStatus("请先完成人机验证喵", "err");
+          return;
+        }
+        const payload = {
+          title: document.getElementById("fa-title").value.trim(),
+          siteurl: document.getElementById("fa-siteurl").value.trim(),
+          imgurl: document.getElementById("fa-imgurl").value.trim(),
+          desc: document.getElementById("fa-desc").value.trim(),
+          "cf-turnstile-response": turnstileToken,
+        };
+        submitBtn.disabled = true;
+        setStatus("提交中…");
+        fetch("/api/friend-apply", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(payload),
+        })
+          .then((res) =>
+            res.json().then((data) => ({ res, data })).catch(() => ({ res, data: {} })),
+          )
+          .then(({ res, data }) => {
+            if (data.ok) {
+              setStatus("申请已提交，等站长合并后就上线：", "ok");
+              if (data.url) appendLink(data.url);
+              form.reset();
+            } else {
+              setStatus(data.message || `提交失败（${res.status}）`, "err");
+            }
+            if (!data.ok && widgetId !== null && window.turnstile) {
+              window.turnstile.reset(widgetId);
+              turnstileToken = "";
+            }
+          })
+          .catch(() => setStatus("网络错误，请稍后再试", "err"))
+          .finally(() => {
+            submitBtn.disabled = false;
+          });
+      });
+    })();
+  </script>
+
   <style is:global>
     .friends-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 0.75rem;
+    }
+
+    #friend-apply-dialog {
+      border: none;
+    }
+
+    #friend-apply-dialog::backdrop {
+      background: rgb(0 0 0 / 0.55);
+      backdrop-filter: blur(2px);
     }
   </style>
 </MainGridLayout>

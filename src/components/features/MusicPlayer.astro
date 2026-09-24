@@ -15,16 +15,13 @@ const config = musicPlayerConfig;
 
 const widgetId =
 	id || `music-widget-${Math.random().toString(36).substring(2, 9)}`;
+const waveClipId = `${widgetId}-wave-clip`;
 ---
 
 <div id={widgetId} class:list={["music-player-widget w-full relative transition-all duration-300", className]} style={style} role="region" aria-label={i18n(I18nKey.music)}>
 
-	<!-- 标题行：强调条 + 名称 + 歌词开关 -->
-	<div class="flex items-center justify-between mb-3 px-1">
-		<div class="flex items-center gap-2">
-			<span class="music-heading-bar w-1 h-4 rounded-full bg-(--primary)" aria-hidden="true"></span>
-			<span class="text-sm font-bold text-neutral-800 dark:text-neutral-100">{i18n(I18nKey.music)}</span>
-		</div>
+	<!-- 标题行：只留歌词开关（组件名由侧栏小部件标题给出，避免重复） -->
+	<div class="flex items-center justify-end mb-3 px-1">
 		<button class={`btn-lrc-toggle hover:text-(--primary) transition-all duration-300 p-0.5 transform active:scale-95 text-neutral-400 shrink-0 ${!config.showLyrics ? 'hidden' : ''}`} title={i18n(I18nKey.musicLyrics)} aria-label={i18n(I18nKey.musicLyrics)}>
 			<Icon name="material-symbols:subtitles-off-outline-rounded" class="icon-lrc-off text-xl" aria-hidden="true" />
 			<Icon name="material-symbols:subtitles-outline-rounded" class="icon-lrc-on text-xl hidden" aria-hidden="true" />
@@ -68,9 +65,17 @@ const widgetId =
 	<!-- 波浪进度条：SVG 波形借鉴 Shirone 的 M3 Expressive LinearWavy 实现 -->
 	<div class="px-1">
 		<div class="progress-container relative w-full h-6 cursor-pointer touch-none group mt-1 mb-1" role="slider" aria-label={i18n(I18nKey.musicProgress)} aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-			<svg class="progress-wave absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-				<path d="" class="wave-bar" vector-effect="non-scaling-stroke" />
+			<svg class="progress-wave absolute inset-0 w-full h-full" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+				<defs>
+					<!-- 把波形裁到已播长度：流动动画平移整条路径，靠这层裁切贴住进度头部，否则头部右侧会空出一截 -->
+					<clipPath id={waveClipId} clipPathUnits="userSpaceOnUse">
+						<rect class="wave-clip-rect" x="0" y="0" width="0" height="24" />
+					</clipPath>
+				</defs>
 				<path d="" class="wave-track" vector-effect="non-scaling-stroke" />
+				<g clip-path={`url(#${waveClipId})`}>
+					<path d="" class="wave-bar" vector-effect="non-scaling-stroke" />
+				</g>
 			</svg>
 			<div class="progress-bar absolute left-0 top-0 h-full w-0 opacity-0 pointer-events-none" aria-hidden="true"></div>
 			<div class="progress-thumb absolute top-1/2 -mt-[7px] -ml-[7px] w-3.5 h-3.5 bg-(--primary) ring-2 ring-white dark:ring-neutral-800 rounded-full shadow-md transition-[left] duration-100"></div>
