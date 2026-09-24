@@ -4,7 +4,9 @@
 		"imgurl": "https://weavatar.com/avatar/d252655d40d6874417a720bad0a6c5f77f8f6a1fd2f882f8f338402dc37e4190?s=640",
 		"desc": "飞萤之火自无梦的长夜亮起，绽放在终竟的明天。",
 		"siteurl": "https://blog.cuteleaf.cn",
-		"tags": ["Blog"],
+		"tags": [
+			"Blog"
+		],
 		"weight": 10,
 		"enabled": true
 	},
@@ -13,7 +15,9 @@
 		"imgurl": "https://docs-firefly.cuteleaf.cn/logo.png",
 		"desc": "Firefly主题模板文档",
 		"siteurl": "https://docs-firefly.cuteleaf.cn",
-		"tags": ["Docs"],
+		"tags": [
+			"Docs"
+		],
 		"weight": 9,
 		"enabled": true
 	},
@@ -22,8 +26,18 @@
 		"imgurl": "https://avatars.githubusercontent.com/u/44914786?v=4&s=640",
 		"desc": "The web framework for content-driven websites. ⭐️ Star to support our work!",
 		"siteurl": "https://github.com/withastro/astro",
-		"tags": ["Framework"],
+		"tags": [
+			"Framework"
+		],
 		"weight": 8,
+		"enabled": true
+	},
+	{
+		"title": "213",
+		"imgurl": "https://img.lonelybing.top/file/%E5%A4%B4%E5%83%8F/1789400498937.jpg",
+		"desc": "LonelyBingの小窝",
+		"siteurl": "https://lonelybing.top/",
+		"weight": 0,
 		"enabled": true
 	}
 ]
