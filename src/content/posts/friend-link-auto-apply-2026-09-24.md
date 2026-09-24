@@ -11,13 +11,14 @@ tags:
   - 记录
 category: 博客搭建
 slug: friend-link-auto-apply-2026-09-24
+series: "博客"
 ---
 
 ## 起因
 
 以前加友链的流程是这样的：访客在评论区留言 → 本尊手动往 `src/config/friendsConfig.ts` 里粘一段对象 → 提交 → 等构建。四步里三步是本尊干的（恼）
 
-本尊寻思想自动化，最省事的方案是存数据库或者写文件到 KV——但那样友链数据就脱离仓库了，本尊想要的是**访客提交 → 直接变成一条可审的 PR**，站长看一眼合并完事，全程不用打开编辑器。
+本尊寻思想自动化，最省事的方案是存数据库或者写文件到 KV——但那样友链数据就脱离仓库了，本尊想要的是**访客提交 → 直接变成一条可审的 PR**，这样我只需要点一下按钮就行了()。
 
 于是最终形状定成这样：
 
@@ -36,7 +37,7 @@ slug: friend-link-auto-apply-2026-09-24
 
 ## 一、先把友链数据搬出 TS
 
-服务端要能读写这份数据，所以不能继续以 TypeScript 数组的形式存在——`friendsConfig.ts` 里手写一坨对象，机器改起来要么正则（怕写坏），要么 AST（太重）。换成纯 JSON 就干净多了：整份文件重新序列化一遍，diff 也永远只动这一个文件。
+服务端要能读写这份数据，所以不能继续以 TypeScript 数组的形式存在——`friendsConfig.ts` 里手写一坨对象，机器改起来要么正则（怕坏），要么 AST（太重）。换成纯 JSON 就干净多了：整份文件重新序列化一遍，diff 也永远只动这一个文件。
 
 新文件 `src/data/friends.json`：
 
@@ -54,7 +55,7 @@ slug: friend-link-auto-apply-2026-09-24
 ]
 ```
 
-`friendsConfig.ts` 那一坨字面量替换成三行：
+`friendsConfig.ts` 那字面量替换成三行：
 
 ```typescript
 import friendsData from "../data/friends.json";
@@ -63,21 +64,21 @@ import friendsData from "../data/friends.json";
 export const friendsConfig: FriendLink[] = friendsData;
 ```
 
-排序逻辑（`getEnabledFriends`）一行没动，构建时 Astro 直接把 JSON 当模块吃进去喵~
+排序逻辑（`getEnabledFriends`）没修改，构建时 Astro 直接把 JSON 吃进去喵~
 
 ---
 
 ## 二、表单弹窗：用原生 `<dialog>`
 
-点击顶部按钮弹一个浮层，四个必填项：网站名称 / 网站链接 / 头像链接 / 网站描述。
+点击顶部按钮弹一个浮层，包含四个必填项：网站名称 / 网站链接 / 头像链接 / 网站描述。
 
-本来打算自己写一套遮罩 + Esc 关闭 + 焦点管理的，后来想到 `<dialog>` 原生就有这些行为，`showModal()` 一行搞定，于是全删了：
+本来打算写一套遮罩 + Esc 关闭 + 焦点管理的，后来想到 `<dialog>` 原生就有这些行为，`showModal()` 一行搞定，于是全删了（）：
 
 ```astro
 <dialog id="friend-apply-dialog" data-sitekey={friendApplyConfig.turnstileSiteKey} class="card-base m-auto max-h-[85vh] w-[min(92vw,26rem)] overflow-y-auto rounded-(--radius-large) p-6">
 ```
 
-配点背景修饰就完事：
+配点背景修饰一下完事：
 
 ```css
 #friend-apply-dialog {
@@ -95,7 +96,7 @@ export const friendsConfig: FriendLink[] = friendsData;
 
 ### 坑 2：`form.title` 不是输入框
 
-读值时想当然写了 `form.title.value`——`title` 是 `HTMLElement` 上的全局属性，`form.title` 返回的是表单的 title 字符串，不是那个名为 `title` 的输入框（笑）。改成老老实实按 id 取喵~
+读值时想当然写了 `form.title.value`——`title` 是 `HTMLElement` 上的全局属性，`form.title` 返回的是表单的 title 字符串，不是那个名为 `title` 的输入框（）。改成老老实实按 id 取喵~
 
 ```js
 const payload = {
@@ -147,7 +148,7 @@ widgetId = window.turnstile.render(turnstileBox, {
 
 ## 四、Worker 端：一个路由 + 五步 GitHub API
 
-本站是部署在 Cloudflare **Workers**（不是 Pages），所以逻辑直接加在已有的 `worker/index.js` 上，`handleFriends` 旁边多一条路由：
+本站是部署在 Cloudflare **Workers**，所以逻辑直接加在已有的 `worker/index.js` 上，`handleFriends` 旁边多一条路由：
 
 ```js
 if (url.pathname === "/api/friend-apply") {
@@ -226,7 +227,7 @@ GitHub 返回的 `html_url` 一路带回前端，成功后直接给访客一个�
 
 ## 五、密钥与两种"环境变量"
 
-这套东西要三个凭据，**全都是运行时的**，用 `wrangler secret put` 或控制台 Variables 配：
+这套东西要三个凭据，**而且全都是运行时的**，用 `wrangler secret put` 或控制台 Variables 配：
 
 | 名称 | 位置 | 说明 |
 | --- | --- | --- |
@@ -275,6 +276,6 @@ turnstileSiteKey: import.meta.env?.PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAFCFMk3
 - Worker 只往 `src/data/friends.json` 这一个文件写，不会碰仓库其他内容；给它的 PAT 也只有 Contents + Pull requests 两项权限
 - 合并 PR 之后 Workers Builds 会自动重新构建部署，站长不需要再做任何手动操作
 - 重复提交同一个站点会被 409 挡掉；想改已上线的友链还是直接改 JSON 比较快
-- 欢迎反馈问题与建议：**LonelyBing@outlook.com**
+- 欢迎反馈问题与建议：**support@lonelybing.top**
 
 就这样~ 现在加友链对本尊来说只剩下点一下 Merge 的手速了，本尊可以继续摸鱼了喵~

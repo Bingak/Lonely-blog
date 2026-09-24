@@ -11,6 +11,7 @@ tags:
   - 记录
 category: 博客搭建
 slug: blog-major-update-2026-09-20
+series: "博客"
 ---
 
 ## 这几天到底干了啥？

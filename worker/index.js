@@ -18,6 +18,8 @@
  *
  * 另有友链申请接口（前端 src/pages/friends.astro 的申请表单依赖）：
  *   POST /api/friend-apply  { title, siteurl, imgurl, desc, cf-turnstile-response }
+ *   POST /api/admin-login  { user, pass, token } -> { ok, session }  后台登录（凭据存 Worker Secrets）
+ *   POST /api/admin-session  { session } -> { ok }  校验后台会话签名与有效期
  *     -> 200 { ok: true, url: "PR 链接" }；校验失败 4xx，上游失败 502，未配置 503
  *     流程：Turnstile 校验 -> 字段校验与去重 -> 建分支改 src/data/friends.json -> 开 PR，站长合并后才上线
  *
@@ -503,6 +505,121 @@ async function handleFriendApply(request, env) {
 	return jsonResponse({ ok: true, url: pr.data.html_url });
 }
 
+/* ---------------------------------------------------------------------------
+ * 后台登录：POST /api/admin-login 与 POST /api/admin-session
+ *
+ * 用户名 / 密码存于 Worker Secrets（wrangler secret put ADMIN_USER / ADMIN_PASS），
+ * 前端永远拿不到凭据明文，只能拿到一个有时效的 HMAC 签名会话。
+ * 会话格式：<过期毫秒时间戳>.<HMAC-SHA256(时间戳, 密钥) 的 base64url>
+ * 密钥取 ADMIN_SESSION_SECRET，未配置时退化为 ADMIN_PASS。
+ * ------------------------------------------------------------------------- */
+const ADMIN_SESSION_TTL = 12 * 3600 * 1000; // 会话 12 小时有效
+
+/** 简单内存限流：同一 IP 60 秒内最多 10 次登录尝试（Worker 实例级，隔离重启即清空） */
+const loginHits = new Map();
+function loginRateLimited(ip) {
+	const now = Date.now();
+	const rec = loginHits.get(ip) || { n: 0, t: now };
+	if (now - rec.t > 60_000) {
+		rec.n = 0;
+		rec.t = now;
+	}
+	rec.n += 1;
+	loginHits.set(ip, rec);
+	if (loginHits.size > 10_000) loginHits.clear();
+	return rec.n > 10;
+}
+
+/** 常数时间字符串比较，避免时序侧信道 */
+function safeEqual(a, b) {
+	if (typeof a !== "string" || typeof b !== "string") return false;
+	const ab = new TextEncoder().encode(a);
+	const bb = new TextEncoder().encode(b);
+	if (ab.length !== bb.length) return false;
+	let diff = 0;
+	for (let i = 0; i < ab.length; i++) diff |= ab[i] ^ bb[i];
+	return diff === 0;
+}
+
+async function sessionKey(env) {
+	const secret = env.ADMIN_SESSION_SECRET || env.ADMIN_PASS;
+	return crypto.subtle.importKey(
+		"raw",
+		new TextEncoder().encode(secret),
+		{ name: "HMAC", hash: "SHA-256" },
+		false,
+		["sign"],
+	);
+}
+
+async function signSession(env, expires) {
+	const key = await sessionKey(env);
+	const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(String(expires)));
+	const b64 = btoa(String.fromCharCode(...new Uint8Array(sig)))
+		.replace(/\+/g, "-")
+		.replace(/\//g, "_")
+		.replace(/=+$/, "");
+	return `${expires}.${b64}`;
+}
+
+async function handleAdminLogin(request, env) {
+	const ip = request.headers.get("cf-connecting-ip") || "unknown";
+	if (loginRateLimited(ip)) {
+		return jsonResponse({ ok: false, message: "尝试过于频繁，请稍后再试" }, 429);
+	}
+	if (!env.ADMIN_USER || !env.ADMIN_PASS) {
+		return jsonResponse(
+			{ ok: false, message: "服务端未配置 ADMIN_USER / ADMIN_PASS（wrangler secret put）" },
+			503,
+		);
+	}
+	let payload;
+	try {
+		payload = await request.json();
+	} catch {
+		return jsonResponse({ ok: false, message: "请求体不是合法 JSON" }, 400);
+	}
+	const { user, pass, token } = payload || {};
+	if (typeof user !== "string" || typeof pass !== "string" || !user || !pass) {
+		return jsonResponse({ ok: false, message: "请输入用户名和密码" }, 400);
+	}
+	// 人机验证：配置了 TURNSTILE_SECRET_KEY 时强制
+	if (env.TURNSTILE_SECRET_KEY) {
+		if (typeof token !== "string" || !token) {
+			return jsonResponse({ ok: false, message: "请先完成人机验证" }, 400);
+		}
+		if (!(await verifyTurnstile(env.TURNSTILE_SECRET_KEY, token, ip === "unknown" ? undefined : ip))) {
+			return jsonResponse({ ok: false, message: "人机验证未通过，请重试" }, 403);
+		}
+	}
+	if (!safeEqual(user, env.ADMIN_USER) || !safeEqual(pass, env.ADMIN_PASS)) {
+		return jsonResponse({ ok: false, message: "用户名或密码错误" }, 401);
+	}
+	const session = await signSession(env, Date.now() + ADMIN_SESSION_TTL);
+	return jsonResponse({ ok: true, session });
+}
+
+async function handleAdminSession(request, env) {
+	if (!env.ADMIN_USER || !env.ADMIN_PASS) {
+		return jsonResponse({ ok: false, message: "服务端未配置 ADMIN_USER / ADMIN_PASS" }, 503);
+	}
+	let payload;
+	try {
+		payload = await request.json();
+	} catch {
+		return jsonResponse({ ok: false }, 400);
+	}
+	const session = payload?.session;
+	if (typeof session !== "string" || !session.includes(".")) return jsonResponse({ ok: false }, 401);
+	const [expStr, sig] = session.split(".");
+	const expires = Number(expStr);
+	if (!Number.isFinite(expires) || expires < Date.now()) {
+		return jsonResponse({ ok: false, message: "会话已过期" }, 401);
+	}
+	const expected = await signSession(env, expires);
+	return jsonResponse({ ok: safeEqual(expected, `${expStr}.${sig}`) });
+}
+
 export default {
 	async fetch(request, env, ctx) {
 		const url = new URL(request.url);
@@ -531,6 +648,15 @@ export default {
 				return jsonResponse({ error: "仅支持 POST" }, 405, { Allow: "POST" });
 			}
 			return handleFriendApply(request, env);
+		}
+
+		if (url.pathname === "/api/admin-login" || url.pathname === "/api/admin-session") {
+			if (request.method !== "POST") {
+				return jsonResponse({ error: "仅支持 POST" }, 405, { Allow: "POST" });
+			}
+			return url.pathname === "/api/admin-login"
+				? handleAdminLogin(request, env)
+				: handleAdminSession(request, env);
 		}
 
 		// 静态资源默认已被优先匹配；走到这里说明没有对应文件，

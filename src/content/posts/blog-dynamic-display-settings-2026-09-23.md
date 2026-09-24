@@ -11,6 +11,7 @@ tags:
   - 记录
 category: 博客搭建
 slug: blog-dynamic-display-settings-2026-09-23
+series: "博客"
 ---
 
 ## 一、添加设置面板

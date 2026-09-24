@@ -10,6 +10,7 @@ tags:
   - 教程
 category: 博客搭建
 slug: blog-visitor-counter-busuanzi
+series: "博客"
 ---
 
 ## 为啥要加这个?
