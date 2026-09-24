@@ -11,7 +11,7 @@
   /* ================= 常量 ================= */
   const LS = { docs: "inkpost.docs.v1", current: "inkpost.current", settings: "inkpost.settings" };
   const TYPE_NAME = { post: "文章", project: "项目", dynamic: "动态", gallery: "画廊" };
-  const COLLECTION = { post: "posts", project: "projects", dynamic: "dynamic", gallery: "posts" };
+  const COLLECTION = { post: "posts", project: "projects", dynamic: "dynamic" }; // gallery 走 ghPushGallery，不经此表
   const LICENSES = [
     ["", "不使用"], ["MIT", "MIT License", "https://opensource.org/licenses/MIT"],
     ["Apache-2.0", "Apache License 2.0", "https://www.apache.org/licenses/LICENSE-2.0"],
@@ -28,11 +28,7 @@
     ["CC-BY-NC-SA-4.0", "CC BY-NC-SA 4.0", "https://creativecommons.org/licenses/by-nc-sa/4.0/"],
     ["CC0-1.0", "CC0 1.0", "https://creativecommons.org/publicdomain/zero/1.0/"],
   ];
-  const COVER_APIS = [
-    "https://img.lonelybing.top/random.php",
-    "https://api.lonelybing.top/random.php",
-    "自定义…",
-  ];
+
 
   /* ================= 状态 ================= */
   const TS_SITEKEY_DEFAULT = "0x4AAAAAAFCFMk3cJMZKa-Q3"; // Cloudflare Turnstile 公开 Site Key
@@ -106,7 +102,7 @@
       out.push({ k: "link", v: f.links || [], t: "links" });
       S("lang", f.lang);
       if (f.comment === false) out.push({ k: "comment", v: false, t: "bool" });
-    } else { // post / gallery
+    } else { // post（gallery 不走 FrontMatter，见 ghPushGallery）
       S("title", f.title);
       out.push({ k: "published", v: f.published, t: "date" });
       out.push({ k: "updated", v: f.updated, t: "date" });
@@ -134,8 +130,9 @@
 
   function galleryBody(d) {
     if (d.type !== "gallery" || !d.galleryImgs.length) return d.body;
-    const items = d.galleryImgs.map(g => `- ![${g.alt || ""}](${g.src})`).join("\n");
-    return `[grid cols=${d.fm.gridCols || 3}]\n${items}\n[/grid]\n\n` + (d.body || "").replace(/^\n+/, "");
+    // 博客 remark-image-grid 只认 [grid]（列数按图片数自动计算，最多 4 列），图片不带列表前缀
+    const items = d.galleryImgs.map(g => `![${g.alt || ""}](${g.src})`).join("\n");
+    return `[grid]\n${items}\n[/grid]\n\n` + (d.body || "").replace(/^\n+/, "");
   }
 
   function galleryUrlsTxt(d) {
@@ -185,9 +182,7 @@
         <button data-v="custom" class="${mode === "custom" ? "on" : ""}">自定义</button>
       </div>
       <div data-cover-rand ${isRand ? "" : "hidden"} style="margin-top:8px">
-        <select data-f="_coverApi">${COVER_APIS.map(a => `<option ${f._coverApi === a ? "selected" : ""}>${a}</option>`).join("")}</select>
-        <input data-f="_coverApiCustom" ${f._coverApi === "自定义…" ? "" : "hidden"} value="${MD.esc(f._coverApiCustom || "")}" placeholder="自定义 API 地址" style="margin-top:6px">
-        <input data-f="_coverId" value="${MD.esc(f._coverId || "")}" placeholder="随机图 id（如 06 或 id=06）" style="margin-top:6px">
+        <div class="hint" style="margin:4px 0">发布后 FrontMatter 写入 <code>image: "api"</code>，博客按 coverImageConfig 的 API 列表依次尝试随机图。</div>
       </div>
       <input data-f="image" ${mode === "custom" ? "" : "hidden"} value="${MD.esc(mode === "custom" ? f.image || "" : "")}" placeholder="图片地址 https://…" style="margin-top:8px">`);
   }
@@ -443,10 +438,10 @@
 
   function resolveCover(f) {
     if (f._coverMode === "random") {
-      const api = f._coverApi === "自定义…" ? (f._coverApiCustom || "") : (f._coverApi || COVER_APIS[0]);
-      if (!api) return "";
-      if (!f._coverId) return api;
-      return api + (api.includes("?") ? "&" : "?") + (/^\d+$/.test(f._coverId) ? f._coverId : f._coverId);
+      // 博客的随机封面机制：FrontMatter 里写 image: "api"，构建后依次尝试
+      // coverImageConfig.randomCoverImage.apis（见 src/config/coverImageConfig.ts），
+      // 不支持指定图片编号
+      return "api";
     }
     return f.image || "";
   }
@@ -542,7 +537,7 @@
         d.custom.push({ k, v: typeof fm[k] === "string" ? fm[k] : JSON.stringify(fm[k]) });
       }
     }
-    if (fm.image && /random\.php\?/.test(fm.image)) { d.fm._coverMode = "random"; }
+    if (fm.image === "api") { d.fm._coverMode = "random"; }
     else if (fm.image) d.fm._coverMode = "custom";
     docs.push(d);
     openDoc(d.id);
@@ -843,10 +838,24 @@
     const m = src.match(/albums\s*:\s*\[/);
     if (!m) return null;
     const arrStart = m.index + m[0].length - 1; // 指向 [
-    let depth = 0, arrEnd = -1;
-    for (let i = arrStart; i < src.length; i++) {
-      if (src[i] === "[") depth++;
-      else if (src[i] === "]") { depth--; if (depth === 0) { arrEnd = i; break; } }
+    // 与 scanTopObjects 同样感知字符串与注释，避免描述/注释里的 [ ] 干扰定位
+    let depth = 0, arrEnd = -1, i = arrStart;
+    while (i < src.length) {
+      const c = src[i];
+      if (c === '"' || c === "'" || c === "`") {
+        const q = c; i++;
+        while (i < src.length) {
+          if (src[i] === "\\") { i += 2; continue; }
+          if (src[i] === q) { i++; break; }
+          i++;
+        }
+        continue;
+      }
+      if (c === "/" && src[i + 1] === "/") { while (i < src.length && src[i] !== "\n") i++; continue; }
+      if (c === "/" && src[i + 1] === "*") { i += 2; while (i < src.length && !(src[i] === "*" && src[i + 1] === "/")) i++; i += 2; continue; }
+      if (c === "[") depth++;
+      else if (c === "]") { depth--; if (depth === 0) { arrEnd = i; break; } }
+      i++;
     }
     if (arrEnd < 0) return null;
     const inner = src.slice(arrStart + 1, arrEnd);

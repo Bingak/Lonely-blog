@@ -174,14 +174,12 @@ window.InkEditor = (function () {
   }
   function gridInsert() {
     askModal("图片画廊", [
-      { k: "cols", label: "列数（1–6）", value: "3" },
-      { k: "imgs", label: "图片地址（每行一个，可用 | 分隔图注）", area: true },
+      { k: "imgs", label: "图片地址（每行一个，可用 | 分隔图注；列数按图片数自动计算，最多 4 列）", area: true },
     ], v => {
       if (!v.imgs) return;
-      const cols = Math.min(6, Math.max(1, parseInt(v.cols) || 2));
       const items = v.imgs.split("\n").map(l => l.trim()).filter(Boolean)
-        .map(l => { const [src, alt] = l.split("|").map(x => x.trim()); return `- ![${alt || ""}](${src})`; });
-      insertBlock(`\n[grid cols=${cols}]\n${items.join("\n")}\n[/grid]\n`);
+        .map(l => { const [src, alt] = l.split("|").map(x => x.trim()); return `![${alt || ""}](${src})`; });
+      insertBlock(`\n[grid]\n${items.join("\n")}\n[/grid]\n`);
     });
   }
   function videoInsert() {
