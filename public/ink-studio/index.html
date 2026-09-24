@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>墨驿 InkPost · 博客内容工坊</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<!-- ===================== 登录门 ===================== -->
+<div id="loginGate" class="gate">
+  <div class="gate-card">
+    <div class="gate-brand">
+      <div class="gate-logo">墨</div>
+      <div>
+        <h1>墨驿 InkPost</h1>
+        <p>LonelyBing 博客内容工坊</p>
+      </div>
+    </div>
+
+    <div id="gateLogin" hidden>
+      <p class="gate-tip">登录凭据存于 Cloudflare Worker Secrets，前端无法读取。</p>
+      <label>用户名<input id="loginUser" type="text" autocomplete="username"></label>
+      <label>密码<input id="loginPass" type="password" autocomplete="current-password"></label>
+      <div id="turnstileBox" class="turnstile-box"></div>
+      <button id="btnLogin" class="btn primary block">登 录</button>
+      <p id="loginMsg" class="gate-msg"></p>
+    </div>
+    <p class="gate-foot">Worker Secrets 凭据 · Turnstile 人机验证 · 离线可用</p>
+  </div>
+</div>
+
+<!-- ===================== 主界面 ===================== -->
+<div id="app" hidden>
+
+  <header id="topbar">
+    <button id="btnLibrary" class="tbtn" title="文档库 (Ctrl+O)">☰</button>
+    <div class="doc-title">
+      <span id="docTypeBadge" class="badge">POST</span>
+      <span id="docTitleView">未命名文章</span>
+      <span id="saveState" class="save-state">已保存</span>
+    </div>
+    <div class="top-actions">
+      <a href="/" class="tbtn" style="text-decoration:none" title="返回博客首页">← 博客</a>
+      <button id="btnImport" class="tbtn" title="导入本地 Markdown">导入</button>
+      <button id="btnGithub" class="tbtn" title="GitHub 仓库设置与发布">⇅ GitHub</button>
+      <button id="btnZen" class="tbtn" title="专注模式 (F11 样式)">专注</button>
+      <button id="btnTheme" class="tbtn" title="主题：浅色 / 深色 / 跟随系统">◐ 主题</button>
+      <button id="btnExport" class="btn primary" title="下载编辑后的 .md 文件">导出 MD</button>
+      <button id="btnLock" class="tbtn" title="锁定后台">🔒</button>
+    </div>
+  </header>
+
+  <div id="layout">
+
+    <!-- 左：表单配置 -->
+    <aside id="configPanel">
+      <div class="panel-head">
+        <span>文章配置</span>
+        <select id="docType" title="文章类型">
+          <option value="post">📄 文章 Post</option>
+          <option value="project">🧩 项目 Project</option>
+          <option value="dynamic">💬 动态 Dynamic</option>
+          <option value="gallery">🖼 画廊 Gallery</option>
+        </select>
+      </div>
+      <div id="formHost"><!-- 表单由 app.js 按类型生成 --></div>
+    </aside>
+
+    <!-- 中：编辑器 -->
+    <main id="editorPane">
+      <div id="toolbar"><!-- 由 editor.js 构建 --></div>
+
+      <div id="findbar" hidden>
+        <input id="findInput" type="text" placeholder="查找…">
+        <input id="replaceInput" type="text" placeholder="替换为…">
+        <label class="chk"><input id="findCase" type="checkbox">Aa</label>
+        <label class="chk"><input id="findRegex" type="checkbox">.*</label>
+        <button id="btnFindPrev" class="tbtn">↑</button>
+        <button id="btnFindNext" class="tbtn">↓</button>
+        <button id="btnReplace" class="tbtn">替换</button>
+        <button id="btnReplaceAll" class="tbtn">全部</button>
+        <span id="findCount" class="find-count"></span>
+        <button id="btnFindClose" class="tbtn">✕</button>
+      </div>
+
+      <div id="editorWrap">
+        <pre id="gutter" aria-hidden="true">1</pre>
+        <textarea id="editor" spellcheck="false" placeholder="# 开始写作… 输入 / 唤出快捷命令"></textarea>
+        <div id="slashMenu" hidden></div>
+      </div>
+
+      <div id="statusbar">
+        <span id="statWords">0 字</span>
+        <span id="statLines">1 行</span>
+        <span id="statCursor">行 1, 列 1</span>
+        <span id="statRead">约 0 分钟</span>
+        <span class="spacer"></span>
+        <span>Ctrl+B 加粗 · Ctrl+F 查找 · / 命令</span>
+      </div>
+    </main>
+
+    <!-- 右：预览 -->
+    <aside id="previewPane">
+      <div class="pv-tabs">
+        <button class="pv-tab active" data-pv="preview">预览</button>
+        <button class="pv-tab" data-pv="outline">大纲</button>
+        <button class="pv-tab" data-pv="yaml">YAML</button>
+        <button class="pv-tab" data-pv="source">源码</button>
+        <span class="spacer"></span>
+        <label class="chk small"><input id="scrollSync" type="checkbox" checked>滚动同步</label>
+        <button id="btnPrint" class="tbtn" title="打印 / 导出 PDF">🖨</button>
+        <button id="btnCopy" class="tbtn" title="复制全文">⧉</button>
+      </div>
+      <div id="pvPreview" class="pv-page md-body"></div>
+      <div id="pvOutline" class="pv-page" hidden></div>
+      <pre id="pvYaml" class="pv-page code-view" hidden></pre>
+      <pre id="pvSource" class="pv-page code-view" hidden></pre>
+    </aside>
+
+  </div>
+
+  <!-- 移动端底部切换 -->
+  <nav id="mobileTabs">
+    <button data-pane="config" class="active">配置</button>
+    <button data-pane="editor">编辑</button>
+    <button data-pane="preview">预览</button>
+  </nav>
+</div>
+
+<!-- ===================== 文档库抽屉 ===================== -->
+<div id="libraryBack" class="drawer-back" hidden>
+  <div id="libraryDrawer" class="drawer">
+    <div class="drawer-head">
+      <strong>文档库</strong>
+      <span class="spacer"></span>
+      <button id="btnNewDoc" class="btn primary small">＋ 新建</button>
+      <button id="btnCloseLibrary" class="tbtn">✕</button>
+    </div>
+    <div id="docList" class="doc-list"></div>
+    <div class="drawer-foot">
+      <button id="btnResetDoc" class="btn danger small">重置当前文档</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 通用弹窗 ===================== -->
+<div id="modalBack" class="modal-back" hidden>
+  <div id="modal" class="modal">
+    <div class="modal-head"><strong id="modalTitle">标题</strong><span class="spacer"></span><button id="modalClose" class="tbtn">✕</button></div>
+    <div id="modalBody" class="modal-body"></div>
+    <div id="modalFoot" class="modal-foot"></div>
+  </div>
+</div>
+
+<input id="filePicker" type="file" accept=".md,.markdown,.txt" hidden>
+<div id="toast"></div>
+
+<script src="js/markdown.js"></script>
+<script src="js/editor.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

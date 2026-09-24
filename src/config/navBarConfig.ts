@@ -124,6 +124,12 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 				external: true,
 				icon: "material-symbols:docs",
 			},
+			{
+				name: "墨斋",
+				url: "/ink-studio/index.html",
+				external: true,
+				icon: "material-symbols:edit-note",
+			},
 		],
 	});
 
