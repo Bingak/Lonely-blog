@@ -45,6 +45,7 @@
 - **全屏随机壁纸 + 名言**：全屏壁纸模式接入多个随机图 API，每次刷新换图，底部附带随机中文名言.
 - **在线写作**：配置 `.pages.yml`（Pages CMS），可在 GitHub 网页端直接写文章、发动态.
 - **更新日志页**：客户端组件请求同源 `/api/commits`，由 `worker/index.js` 在服务端带上 `GITHUB_TOKEN` 回源 GitHub 拉取 commit 记录，按类型（新功能/修复/优化等）宽松分类（支持中英文 commit message 多种前缀）与分页，无需重新构建即可看到最新改动. token 只存在于服务端 Secret，前端产物里不会有凭据.
+- **友链自动申请**：友链页「申请友链」按钮弹出表单（站点名称 / 链接 / 头像 / 描述），通过 Cloudflare Turnstile 人机验证后，`worker/index.js` 的 `POST /api/friend-apply` 会读取 `src/data/friends.json`、做去重与链接合法性校验，再在仓库新建分支并自动开一个 PR，站长点合并即上线，无需手动改代码. 友链数据也因此从 TS 迁移到 JSON，便于服务端读写.
 - **个性化配置**：相册、打赏页、看板娘、评论区等均替换为自己的内容与账号.
 
 顺便说一句：本文只是魔改记录，不是主题发行版. 想用原版请移步 [Firefly 仓库](https://github.com/CuteLeaf/Firefly)，使用文档在 [docs-firefly.cuteleaf.cn](https://docs-firefly.cuteleaf.cn/).
@@ -87,7 +88,8 @@
 | `pioConfig.ts` | Live2D / Spine 看板娘配置 |
 | `fontConfig.ts` | 自定义字体配置 |
 | `galleryConfig.ts` | 相册配置 |
-| `friendsConfig.ts` | 友链配置 |
+| `friendsConfig.ts` | 友链配置（数据本体在 `src/data/friends.json`，可由友链申请接口以 PR 形式追加） |
+| `friendApplyConfig.ts` | 友链申请表单配置（开关 / Turnstile site key / 目标仓库与分支 / 数据文件路径） |
 | `sponsorConfig.ts` | 赞赏页配置 |
 | `announcementConfig.ts` | 公告栏配置 |
 | `dynamicConfig.ts` | 动态页面配置（含 Memos 数据源对接） |
@@ -112,11 +114,12 @@
 
 | 检查项 | 说明 |
 |--------|------|
-| 托管平台 | 构建产物 `dist/` 为纯静态站点，可部署到 Vercel、Cloudflare Pages、Netlify、Nginx 等；更新日志页依赖同源 Worker，见下节 |
+| 托管平台 | 构建产物 `dist/` 为纯静态站点，可部署到 Vercel、Cloudflare Pages、Netlify、Nginx 等；更新日志与友链申请两个接口依赖同源 Worker，见下节 |
 | 评论系统 | 本站评论区使用 Giscus，仓库指向 `Bingak/Lonely-blog`，需在 `src/config/commentConfig.ts` 中配置 |
 | 访问统计 | 页脚不蒜子 PV/UV 与存活计时为零后端方案，无需部署；更细的分析可在 `siteConfig.ts` 的 analytics 中接入 |
 | 内容写作 | 已配置 `.pages.yml`，可通过 Pages CMS 在 GitHub 网页端在线写作 |
 | 更新日志 | 前端请求同源 `/api/commits`，由 `worker/index.js` 在服务端带上 `GITHUB_TOKEN` 回源 GitHub，并在边缘缓存（列表 5 分钟 / 单个提交 7 天） |
+| 友链申请 | 前端请求同源 `POST /api/friend-apply`，需要 Worker 上配置 `TURNSTILE_SECRET_KEY` 与 `FRIEND_APPLY_GITHUB_TOKEN`，并在 Cloudflare Turnstile 控制台注册本站域名拿到 site key，详见下节 |
 
 ### 更新日志的 GitHub Token
 
@@ -130,9 +133,28 @@ npx wrangler deploy
 
 未配置 `GITHUB_TOKEN` 时代理会匿名访问，限流 60 次/小时/边缘 IP；配置后为 5000 次/小时，且多访客共享边缘缓存，几乎不会回源。
 
+### 友链申请所需凭据
+
+三个值分属两种「环境变量」，搞混会让功能静默失效：
+
+| 名称 | 类型 | 说明 |
+|------|------|------|
+| `TURNSTILE_SECRET_KEY` | Worker **运行时** Secret | 服务端调 `siteverify` 校验访客，绝不能进前端产物 |
+| `FRIEND_APPLY_GITHUB_TOKEN` | Worker **运行时** Secret | fine-grained PAT，只需目标仓库的 `Contents: Read & write` + `Pull requests: Read & write` |
+| `PUBLIC_TURNSTILE_SITE_KEY` | **构建时**变量 | 前端渲染 widget 用，公开值 |
+
+```bash
+npx wrangler secret put TURNSTILE_SECRET_KEY
+npx wrangler secret put FRIEND_APPLY_GITHUB_TOKEN
+```
+
+两个 Secret 缺任一，接口都会返回 503 并说明缺哪个，不会静默写坏仓库.
+
+`PUBLIC_*` 是构建时内联进产物的，配成 Worker 运行时变量前端永远读不到；而 `.env` 在 `.gitignore` 里，Workers Builds 在云端构建时读不到它——本站的兜底是把 site key（本来就是公开的）写死在 `friendApplyConfig.ts` 里，环境变量存在时仍然优先.
+
 ## 静态部署方案
 
-`dist/` 本身仍是纯静态站点，丢给 Vercel、Netlify、Nginx 也能跑，但**更新日志页需要同源 API**：`wrangler.jsonc` 现在指向 `worker/index.js`，只有当托管平台提供该 Worker（Cloudflare Workers）时才会带 token 回源。在纯静态平台上，组件会检测到 `/api/commits` 不存在并自动回落到浏览器直连 GitHub 的匿名模式（60 次/小时/IP）。
+`dist/` 本身仍是纯静态站点，丢给 Vercel、Netlify、Nginx 也能跑，但**更新日志与友链申请两个接口都需要同源 API**：`wrangler.jsonc` 现在指向 `worker/index.js`，只有当托管平台提供该 Worker（Cloudflare Workers）时才会带 token 回源、才会开 PR。在纯静态平台上，更新日志组件会检测到 `/api/commits` 不存在并自动回落到浏览器直连 GitHub 的匿名模式（60 次/小时/IP），而 `/api/friend-apply` 会直接 404——此时把 `friendApplyConfig.ts` 的 `enable` 关掉，友链页就不会再显示申请按钮.
 
 ## Live2D 版权声明
 

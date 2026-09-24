@@ -44,7 +44,8 @@ A heavily customized fork based on Firefly V6.16.8. Key changes include:
 - **Project Page Comments**: Project showcase page integrates a comment system, each project can toggle comments individually via `comment` field in frontmatter.
 - **Full-screen Random Wallpaper + Quotes**: Full-screen wallpaper mode pulls from multiple random image APIs, refreshing on each page load, with a random Chinese quote at the bottom.
 - **Online Writing**: Configured with `.pages.yml` (Pages CMS) — write articles and post updates directly from GitHub's web UI.
-- **Changelog Page**: Client-side component fetches commit records from the GitHub REST API, with lenient classification (supports multiple Chinese/English commit prefixes for features/fixes/optimizations etc.) and pagination. No rebuild needed to see latest changes. Setting `PUBLIC_CHANGELOG_GITHUB_TOKEN` as a build-time environment variable raises the API rate limit from 60 to 5,000 requests/hour.
+- **Changelog Page**: The client requests the same-origin `/api/commits`; `worker/index.js` adds `GITHUB_TOKEN` server-side when fetching from GitHub, with lenient classification (multiple Chinese/English commit prefixes for features/fixes/optimizations etc.) and pagination. No rebuild needed to see latest changes. The token lives only in a Worker secret, never in the frontend bundle.
+- **Self-service Friend Links**: An "Apply" button on the friends page opens a form (name / site URL / avatar / description). After passing Cloudflare Turnstile, `POST /api/friend-apply` in `worker/index.js` reads `src/data/friends.json`, validates and de-duplicates the entry, then creates a branch and opens a pull request automatically — the owner just merges. Friend data moved from TS to JSON so the server can rewrite it.
 - **Personalized Config**: Gallery, sponsor page, live2d widget, comment section, etc. all replaced with custom content and accounts.
 
 Note: This repo is a customization log, not a theme distribution. For the original theme, visit [Firefly](https://github.com/CuteLeaf/Firefly). Documentation at [docs-firefly.cuteleaf.cn](https://docs-firefly.cuteleaf.cn/).
@@ -87,7 +88,8 @@ All configuration is centralized in `src/config/`, imported via `@/config` (barr
 | `pioConfig.ts` | Live2D / Spine widget config |
 | `fontConfig.ts` | Custom font config |
 | `galleryConfig.ts` | Gallery config |
-| `friendsConfig.ts` | Friend links config |
+| `friendsConfig.ts` | Friend links config (data lives in `src/data/friends.json`, appendable via the apply endpoint as a PR) |
+| `friendApplyConfig.ts` | Friend-link apply form config (toggle / Turnstile site key / target repo, branch and data path) |
 | `sponsorConfig.ts` | Sponsor page config |
 | `announcementConfig.ts` | Announcement bar config |
 | `dynamicConfig.ts` | Dynamic/memos page config (with Memos data source integration) |
@@ -112,15 +114,16 @@ The `image` field in article frontmatter supports three formats: relative paths 
 
 | Item | Notes |
 |------|-------|
-| Hosting | Build output `dist/` is a pure static site, deployable to Vercel, Cloudflare Pages, Netlify, Nginx, etc. |
+| Hosting | Build output `dist/` is a pure static site, deployable to Vercel, Cloudflare Pages, Netlify, Nginx, etc. The changelog and friend-link apply endpoints rely on a same-origin Worker — see below |
 | Comment system | This site uses Giscus, repo pointing to `Bingak/Lonely-blog`, configure in `src/config/commentConfig.ts` |
 | Visitor stats | Busuanzi PV/UV and uptime timer are zero-backend solutions, no deployment needed; finer analytics can be added via `siteConfig.ts` analytics settings |
 | Content writing | `.pages.yml` configured — write articles online via GitHub web UI with Pages CMS |
-| Changelog | Client-side GitHub commit fetching, anonymous rate limit 60 req/hour/IP. For frequent errors, set `PUBLIC_CHANGELOG_GITHUB_TOKEN` as a **build environment variable** (note: must be a Build env var, not a runtime var, since `PUBLIC_*` prefixed variables are inlined into JS at build time) |
+| Changelog | The client requests the same-origin `/api/commits`; `worker/index.js` fetches GitHub with `GITHUB_TOKEN` server-side and caches at the edge (list 5 min / single commit 7 days). Without a token it falls back to anonymous access, 60 req/hour/edge IP |
+| Friend link applications | The client requests `POST /api/friend-apply`, which needs two Worker secrets — `TURNSTILE_SECRET_KEY` and `FRIEND_APPLY_GITHUB_TOKEN` (fine-grained PAT with `Contents: Read & write` + `Pull requests: Read & write` on this repo only) — plus a Turnstile site key registered for your domain. Missing either secret returns a 503 that names it. `PUBLIC_TURNSTILE_SITE_KEY` is a **build-time** variable, not a runtime one; since `.env` is gitignored, the public site key is hardcoded in `friendApplyConfig.ts` as a fallback |
 
 ## Static Deployment
 
-No server-side dependencies: no Cloudflare Workers, D1, vector databases, etc. Just drop the `dist/` folder to any static hosting platform. This site is currently deployed on a static hosting platform with a custom domain.
+`dist/` is still a pure static site that runs on any static host, but **both same-origin APIs need the Worker**: `wrangler.jsonc` points at `worker/index.js`, so `/api/commits` and `/api/friend-apply` only work where that Worker is deployed (Cloudflare Workers — which is where this site lives, with Workers Builds auto-deploying on push to `main`). On a purely static host the changelog component detects the missing `/api/commits` and falls back to anonymous browser-side GitHub calls (60 req/hour/IP), while `/api/friend-apply` simply 404s — set `enable: false` in `friendApplyConfig.ts` to hide the apply button there.
 
 ## Live2D Copyright Notice
 
