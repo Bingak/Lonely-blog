@@ -170,7 +170,7 @@ function buildMarkdown(d) {
        <label class="chk small"><input type="checkbox" data-timeprec="${key}" ${wt ? "checked" : ""}> 包含时分秒</label>`);
   }
   function chips(key, arr, label) {
-    return fld(label, `<input data-chipin="${key}" placeholder="回车添加">
+    return fld(label, `<input data-chipin="${key}" list="existing-tags" placeholder="回车添加">
       <div class="chipbox" data-chips="${key}">${(arr || []).map(t => `<span class="chip">${MD.esc(t)}<b data-chipdel="${MD.esc(t)}">✕</b></span>`).join("")}</div>`);
   }
   function segCover(f) {
@@ -716,6 +716,50 @@ function buildMarkdown(d) {
   }
 
   /* ================= GitHub ================= */
+  /** 从仓库已有 posts/projects/gallery 中提取 tags，填充 #existing-tags datalist */
+  async function fetchExistingTags() {
+    const g = settings.github;
+    if (!g || !g.token || !g.owner || !g.repo) return;
+    const dl = $("#existing-tags");
+    if (!dl) return;
+    const dirs = [`${g.root}/posts`, `${g.root}/projects`, "src/content/gallery"];
+    const allTags = new Set();
+    for (const dir of dirs) {
+      try {
+        const r = await ghApi(`/contents/${ghPath(dir)}?ref=${encodeURIComponent(g.branch)}`);
+        if (!r.ok) continue;
+        const files = await r.json();
+        if (!Array.isArray(files)) continue;
+        const mds = files.filter(f => f.type === "file" && /\.md$/i.test(f.name));
+        for (const f of mds) {
+          try {
+            const content = await ghGetFile(f.path);
+            if (!content) continue;
+            const m = content.text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+            if (!m) continue;
+            const fmText = m[1];
+            const tm = fmText.match(/tags\s*:\s*\[([^\]]*)\]/);
+            if (tm) {
+              [...tm[1].matchAll(/["']([^"']*)["']/g)].forEach(x => x[1] && allTags.add(x[1]));
+            } else {
+              const lines = fmText.split(/\r?\n/);
+              let inTags = false;
+              for (const line of lines) {
+                if (/^tags\s*:/.test(line)) { inTags = true; continue; }
+                if (inTags) {
+                  const tm2 = line.match(/^\s*-\s+["']?([^"']+)["']?/);
+                  if (tm2) allTags.add(tm2[1]);
+                  else if (!/^\s/.test(line)) inTags = false;
+                }
+              }
+            }
+          } catch (e) {}
+        }
+      } catch (e) {}
+    }
+    dl.innerHTML = [...allTags].sort().map(t => `<option value="${MD.esc(t)}">`).join("");
+  }
+
   function ghSettings() {
     const g = settings.github;
     askModal("GitHub 仓库设置", [], () => {});
@@ -744,7 +788,7 @@ function buildMarkdown(d) {
       settings.turnstileKey = $("#ghTs").value.trim();
       persist();
     };
-    $("#ghSaveCfg").onclick = () => { collect(); closeModal(); toast("设置已保存", "ok"); };
+    $("#ghSaveCfg").onclick = () => { collect(); closeModal(); toast("设置已保存", "ok"); fetchExistingTags(); };
     $("#ghPush").onclick = async () => { collect(); await ghPush(); };
     $("#ghPull").onclick = async () => { collect(); ghPullAsk(); };
     $("#ghSync").onclick = async () => { collect(); ghSyncAsk(); };
@@ -1057,6 +1101,7 @@ function buildMarkdown(d) {
 
     bindMobile();
     openDoc(localStorage.getItem(LS.current) || (docs[0] && docs[0].id));
+    fetchExistingTags();
   }
   function switchPv(name) {
     $$(".pv-tab").forEach(b => b.classList.toggle("active", b.dataset.pv === name));
