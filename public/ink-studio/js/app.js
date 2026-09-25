@@ -493,6 +493,13 @@ function buildMarkdown(d) {
   }
 
   /* ================= 文档切换 ================= */
+  function updateEditorVisibility() {
+    document.body.classList.toggle("no-editor", cur && cur.type === "gallery");
+    // 移动端：相册模式隐藏「编辑」标签
+    const tab = document.querySelector('#mobileTabs button[data-pane="editor"]');
+    if (tab) tab.style.display = (cur && cur.type === "gallery") ? "none" : "";
+  }
+
   function openDoc(id) {
     cur = docs.find(d => d.id === id) || docs[0];
     if (!cur) { cur = newDoc("post"); docs.push(cur); }
@@ -500,6 +507,7 @@ function buildMarkdown(d) {
     cur.galleryImgs = cur.galleryImgs || [];
     $("#docType").value = cur.type;
     $("#editor").value = cur.body || "";
+    updateEditorVisibility();
     renderForm();
     window.InkEditor.updateGutter();
     updateStatus();
@@ -1036,6 +1044,7 @@ function buildMarkdown(d) {
     // 类型切换
     $("#docType").onchange = () => {
       cur.type = $("#docType").value;
+      updateEditorVisibility();
       renderForm(); touch();
     };
     // 预览页签

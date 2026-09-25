@@ -253,6 +253,8 @@ body.zen #editorWrap{max-width:860px;margin:0 auto;width:100%}
 @media (min-width:861px){
   body.no-preview #previewPane{display:none!important}
   body.no-preview #editorPane{flex:1 1 auto}
+  body.no-editor #editorPane{display:none!important}
+  body.no-editor #previewPane{flex:1;width:auto;min-width:0}
 }
 @media (max-width:860px){
   #layout{position:relative;height:calc(100% - 52px - 48px)}
