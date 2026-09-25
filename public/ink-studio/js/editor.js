@@ -281,7 +281,16 @@ window.InkEditor = (function () {
         b.onclick = ev => {
           ev.stopPropagation();
           document.querySelectorAll(".tb-group.open").forEach(x => x !== g && x.classList.remove("open"));
+          const willOpen = !g.classList.contains("open");
           g.classList.toggle("open");
+          if (willOpen) {
+            // 菜单右溢出编辑区时翻转为右对齐，避免被 overflow:hidden 裁掉
+            m.style.left = ""; m.style.right = "";
+            const r = m.getBoundingClientRect();
+            const pane = m.closest("#editorPane") || document.documentElement;
+            const pr = pane.getBoundingClientRect();
+            if (r.right > pr.right - 4) { m.style.left = "auto"; m.style.right = "0"; }
+          }
         };
         g.appendChild(b); g.appendChild(m); bar.appendChild(g);
       } else {
