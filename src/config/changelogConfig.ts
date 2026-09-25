@@ -26,6 +26,9 @@ export interface ChangelogConfig {
 	/** 最多拉取多少条（GitHub API 单页上限 100，配置超过 100 会自动分页累积拉取） */
 	maxItems: number;
 
+	/** 代码变更统计（增删行数）最多拉取多少条；列表展示全部，统计仅取最新 N 条 */
+	statsLimit: number;
+
 	/** 是否在卡片中显示 commit 摘要（正文首行） */
 	showBody: boolean;
 
@@ -51,11 +54,12 @@ export const changelogConfig: ChangelogConfig = {
 
 	// 页面文案
 	title: "更新日志",
-	description: "本站基于 Firefly 主题魔改，这里记录每一次改动",
+	description: "本站基于 Firefly 主题魔改，这里记录每一次 Commit，代码变更统计拉取最新 300 条",
 
-	// 分页：每页 12 天，最多拉取 200 条（GitHub API 单页上限 100，自动分 2 页拉取）
+	// 分页：每页 12 天；列表拉取全部提交，代码变更统计仅取最新 300 条
 	itemsPerPage: 12,
-	maxItems: 200,
+	maxItems: 10000,
+	statsLimit: 300,
 
 	// 卡片内容开关
 	showBody: true,

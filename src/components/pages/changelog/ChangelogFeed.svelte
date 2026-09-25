@@ -111,6 +111,7 @@ interface Props {
 	branch?: string;
 	itemsPerPage?: number;
 	maxItems?: number;
+	statsLimit?: number;
 	showBody?: boolean;
 	showStats?: boolean;
 	webBase?: string;
@@ -121,6 +122,7 @@ let {
 	branch = changelogConfig.branch,
 	itemsPerPage = changelogConfig.itemsPerPage,
 	maxItems = changelogConfig.maxItems,
+	statsLimit = changelogConfig.statsLimit ?? 300,
 	showBody = changelogConfig.showBody,
 	showStats = changelogConfig.showStats,
 	webBase = changelogConfig.webBase,
@@ -367,8 +369,8 @@ async function loadCommits(): Promise<void> {
 		// 归一化所有 commits
 		const normalized = allRaw.map((item) => normalize(item, webBase));
 
-		// 第二步：批量补齐 stats（一次请求带一批 sha，覆盖 maxItems 全量）
-		await loadStats(normalized);
+		// 第二步：批量补齐 stats —— 仅取最新 statsLimit 条（列表展示全部，统计有限）
+		await loadStats(normalized.slice(0, statsLimit));
 
 		commits = normalized;
 		currentPage = 1;
