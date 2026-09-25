@@ -95,6 +95,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .chip{display:inline-flex;align-items:center;gap:4px;background:var(--accent-bg);color:var(--accent);border-radius:14px;padding:3px 6px 3px 10px;font-size:12px}
 .chip b{cursor:pointer;font-weight:400;opacity:.7;padding:0 4px}
 .chip b:hover{opacity:1;color:var(--danger)}
+.chip-wrap{position:relative}
+.tag-suggest{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:50;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.35);padding:4px;max-height:200px;overflow-y:auto}
+.tag-sug-item{padding:7px 10px;border-radius:7px;font-size:13px;color:var(--fg2);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tag-sug-item:hover,.tag-sug-item.on{background:var(--accent-bg);color:var(--accent)}
 .checks{display:flex;flex-wrap:wrap;gap:10px}
 .checks .chk{display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--fg)}
 .chk input{width:auto}

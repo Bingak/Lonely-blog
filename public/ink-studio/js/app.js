@@ -170,8 +170,9 @@ function buildMarkdown(d) {
        <label class="chk small"><input type="checkbox" data-timeprec="${key}" ${wt ? "checked" : ""}> 包含时分秒</label>`);
   }
   function chips(key, arr, label) {
-    return fld(label, `<input data-chipin="${key}" list="existing-tags" placeholder="回车添加">
-      <div class="chipbox" data-chips="${key}">${(arr || []).map(t => `<span class="chip">${MD.esc(t)}<b data-chipdel="${MD.esc(t)}">✕</b></span>`).join("")}</div>`);
+    return fld(label, `<div class="chip-wrap"><input data-chipin="${key}" placeholder="回车添加" autocomplete="off">
+      <div class="tag-suggest" hidden></div>
+      <div class="chipbox" data-chips="${key}">${(arr || []).map(t => `<span class="chip">${MD.esc(t)}<b data-chipdel="${MD.esc(t)}">✕</b></span>`).join("")}</div></div>`);
   }
   function segCover(f) {
     const mode = f._coverMode || (f.image ? "custom" : "none");
@@ -349,17 +350,56 @@ function buildMarkdown(d) {
       }
       renderForm(); touch();
     });
-    // chips
+    // chips + 自定义标签下拉
+    const getExistingTags = () => {
+      const dl = $("#existing-tags");
+      return dl ? [...dl.options].map(o => o.value) : [];
+    };
     host.querySelectorAll("[data-chipin]").forEach(inp => {
+      const box = inp.closest(".chip-wrap");
+      const sug = box.querySelector(".tag-suggest");
+      let activeIdx = -1;
+      const showSuggest = () => {
+        const all = getExistingTags();
+        const used = (cur.fm[inp.dataset.chipin] || []).map(s => s.toLowerCase());
+        const q = inp.value.trim().toLowerCase();
+        const items = all.filter(t => !used.includes(t.toLowerCase()) && (!q || t.toLowerCase().includes(q))).slice(0, 8);
+        if (!items.length) { sug.hidden = true; return; }
+        activeIdx = -1;
+        sug.innerHTML = items.map((t, i) => `<div class="tag-sug-item" data-i="${i}" data-v="${MD.esc(t)}">${MD.esc(t)}</div>`).join("");
+        sug.hidden = false;
+        sug.querySelectorAll(".tag-sug-item").forEach(el => {
+          el.onmousedown = e => { e.preventDefault(); pickTag(el.dataset.v); };
+        });
+      };
+      const pickTag = (v) => {
+        const k = inp.dataset.chipin;
+        cur.fm[k] = cur.fm[k] || [];
+        cur.fm[k].push(v);
+        inp.value = "";
+        sug.hidden = true;
+        renderForm(); touch();
+      };
+      inp.oninput = showSuggest;
+      inp.onfocus = showSuggest;
+      inp.onblur = () => { setTimeout(() => { sug.hidden = true; }, 150); };
       inp.onkeydown = ev => {
-        if (ev.key === "Enter" && inp.value.trim()) {
+        const items = sug.querySelectorAll(".tag-sug-item");
+        if (ev.key === "ArrowDown") {
+          if (!sug.hidden && items.length) { ev.preventDefault(); activeIdx = (activeIdx + 1) % items.length; highlight(); }
+        } else if (ev.key === "ArrowUp") {
+          if (!sug.hidden && items.length) { ev.preventDefault(); activeIdx = (activeIdx - 1 + items.length) % items.length; highlight(); }
+        } else if (ev.key === "Enter") {
           ev.preventDefault();
-          const k = inp.dataset.chipin;
-          cur.fm[k] = cur.fm[k] || [];
-          cur.fm[k].push(inp.value.trim());
-          renderForm(); touch();
+          if (activeIdx >= 0 && items[activeIdx]) pickTag(items[activeIdx].dataset.v);
+          else if (inp.value.trim()) { const k = inp.dataset.chipin; cur.fm[k] = cur.fm[k] || []; cur.fm[k].push(inp.value.trim()); renderForm(); touch(); }
+        } else if (ev.key === "Escape") {
+          sug.hidden = true;
         }
       };
+      function highlight() {
+        items.forEach((el, i) => el.classList.toggle("on", i === activeIdx));
+      }
     });
     host.querySelectorAll("[data-chipdel]").forEach(b => b.onclick = () => {
       const box = b.closest("[data-chips]"), k = box.dataset.chips;
