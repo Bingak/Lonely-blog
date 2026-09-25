@@ -159,8 +159,12 @@ function buildMarkdown(d) {
         : '';
     return `<div class="field"><label>${label}${mark}</label>${inner}${hint ? `<div class="hint">${hint}</div>` : ""}</div>`;
   }
-  function txt(key, value, ph, hint, label, req) {
-    return fld(label, `<input data-f="${key}" value="${MD.esc(value || "")}" placeholder="${ph || ""}">`, hint, req);
+  function txt(key, value, ph, hint, label, req, listId) {
+    const input = `<input data-f="${key}" value="${MD.esc(value || "")}" placeholder="${ph || ""}" autocomplete="off">`;
+    const inner = listId
+      ? `<div class="chip-wrap">${input}<div class="tag-suggest" data-list="${listId}" hidden></div></div>`
+      : input;
+    return fld(label, inner, hint, req);
   }
   function dateFld(key, value, label, withTimeKey, req) {
     const wt = withTimeKey ? !!withTimeKey.value : / \d{2}:\d{2}/.test(value || "");
@@ -243,7 +247,7 @@ function buildMarkdown(d) {
       h += txt("slug", f.slug, "my-first-post", "导出文件名优先使用 slug", "自定义 Slug", false);
       h += `</div></div>`;
       h += `<div class="fset" open><summary>封面图片</summary><div class="fbody">${segCover(f)}</div></div>`;
-      h += `<div class="fset" open><summary>标签与分类</summary><div class="fbody">${chips("tags", f.tags, "标签")}${txt("category", f.category, "如：项目分享", "", "分类")}</div></div>`;
+      h += `<div class="fset" open><summary>标签与分类</summary><div class="fbody">${chips("tags", f.tags, "标签")}${txt("category", f.category, "如：项目分享", "", "分类", false, "existing-cats")}</div></div>`;
       h += `<div class="fset"><summary>高级设置</summary><div class="fbody">`;
       h += `<div class="checks">
         <label class="chk"><input type="checkbox" data-fb="draft" ${f.draft ? "checked" : ""}> 草稿</label>
@@ -412,6 +416,36 @@ function buildMarkdown(d) {
       cur.fm._coverMode = b.dataset.v;
       if (b.dataset.v === "none") cur.fm.image = "";
       renderForm(); touch();
+    });
+    // 文本输入框自动补全（如分类）
+    host.querySelectorAll("[data-list]").forEach(sug => {
+      const inp = sug.parentElement.querySelector("input");
+      const listId = sug.dataset.list;
+      const getList = () => { const dl = document.getElementById(listId); return dl ? [...dl.options].map(o => o.value) : []; };
+      let activeIdx = -1;
+      const show = () => {
+        const all = getList();
+        const q = inp.value.trim().toLowerCase();
+        const items = all.filter(t => !q || t.toLowerCase().includes(q)).slice(0, 8);
+        if (!items.length) { sug.hidden = true; return; }
+        activeIdx = -1;
+        sug.innerHTML = items.map((t, i) => `<div class="tag-sug-item" data-i="${i}" data-v="${MD.esc(t)}">${MD.esc(t)}</div>`).join("");
+        sug.hidden = false;
+        sug.querySelectorAll(".tag-sug-item").forEach(el => {
+          el.onmousedown = e => { e.preventDefault(); inp.value = el.dataset.v; inp.dispatchEvent(new Event("input")); sug.hidden = true; };
+        });
+      };
+      inp.oninput = show;
+      inp.onfocus = show;
+      inp.onblur = () => { setTimeout(() => { sug.hidden = true; }, 150); };
+      inp.addEventListener("keydown", ev => {
+        const items = sug.querySelectorAll(".tag-sug-item");
+        if (ev.key === "ArrowDown" && !sug.hidden && items.length) { ev.preventDefault(); activeIdx = (activeIdx + 1) % items.length; hl(); }
+        else if (ev.key === "ArrowUp" && !sug.hidden && items.length) { ev.preventDefault(); activeIdx = (activeIdx - 1 + items.length) % items.length; hl(); }
+        else if (ev.key === "Enter" && activeIdx >= 0 && items[activeIdx]) { ev.preventDefault(); inp.value = items[activeIdx].dataset.v; inp.dispatchEvent(new Event("input")); sug.hidden = true; }
+        else if (ev.key === "Escape") sug.hidden = true;
+      });
+      function hl() { items.forEach((el, i) => el.classList.toggle("on", i === activeIdx)); }
     });
     // 开源协议
     const lic = host.querySelector("[data-lic]");
@@ -764,6 +798,25 @@ function buildMarkdown(d) {
     if (!dl) return;
     const dirs = [`${g.root}/posts`, `${g.root}/projects`, "src/content/gallery"];
     const allTags = new Set();
+    const allCats = new Set();
+    const parseTags = (fmText) => {
+      const tm = fmText.match(/tags\s*:\s*\[([^\]]*)\]/);
+      if (tm) {
+        [...tm[1].matchAll(/["']([^"']*)["']/g)].forEach(x => x[1] && allTags.add(x[1]));
+      } else {
+        const lines = fmText.split(/\r?\n/);
+        let inTags = false;
+        for (const line of lines) {
+          if (/^tags\s*:/.test(line)) { inTags = true; continue; }
+          if (inTags) {
+            const tm2 = line.match(/^\s*-\s+["']?([^"']+)["']?/);
+            if (tm2) allTags.add(tm2[1]);
+            else if (!/^\s/.test(line)) inTags = false;
+          }
+        }
+      }
+    };
+    const pick = (fmText, k) => { const mm = fmText.match(new RegExp(`^${k}\\s*:\\s*"?(.*?)"?\\s*$`, "m")); return mm ? mm[1].replace(/^["']|["']$/g, "") : ""; };
     for (const dir of dirs) {
       try {
         const r = await ghApi(`/contents/${ghPath(dir)}?ref=${encodeURIComponent(g.branch)}`);
@@ -778,26 +831,16 @@ function buildMarkdown(d) {
             const m = content.text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
             if (!m) continue;
             const fmText = m[1];
-            const tm = fmText.match(/tags\s*:\s*\[([^\]]*)\]/);
-            if (tm) {
-              [...tm[1].matchAll(/["']([^"']*)["']/g)].forEach(x => x[1] && allTags.add(x[1]));
-            } else {
-              const lines = fmText.split(/\r?\n/);
-              let inTags = false;
-              for (const line of lines) {
-                if (/^tags\s*:/.test(line)) { inTags = true; continue; }
-                if (inTags) {
-                  const tm2 = line.match(/^\s*-\s+["']?([^"']+)["']?/);
-                  if (tm2) allTags.add(tm2[1]);
-                  else if (!/^\s/.test(line)) inTags = false;
-                }
-              }
-            }
+            parseTags(fmText);
+            const cat = pick(fmText, "category");
+            if (cat) allCats.add(cat);
           } catch (e) {}
         }
       } catch (e) {}
     }
     dl.innerHTML = [...allTags].sort().map(t => `<option value="${MD.esc(t)}">`).join("");
+    const dlc = $("#existing-cats");
+    if (dlc) dlc.innerHTML = [...allCats].sort().map(t => `<option value="${MD.esc(t)}">`).join("");
   }
 
   function ghSettings() {
