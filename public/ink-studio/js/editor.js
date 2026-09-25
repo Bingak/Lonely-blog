@@ -76,8 +76,8 @@ window.InkEditor = (function () {
 
   /* ---------------- 工具栏 ---------------- */
   const TB = [
-    { icon: "↶", title: "撤销 (Ctrl+Z)", run: () => document.execCommand("undo") },
-    { icon: "↷", title: "重做 (Ctrl+Y)", run: () => document.execCommand("redo") },
+    { icon: "↶", title: "撤销 (Ctrl+Z)", run: () => { ta.focus(); document.execCommand("undo"); changed(); } },
+    { icon: "↷", title: "重做 (Ctrl+Y)", run: () => { ta.focus(); document.execCommand("redo"); changed(); } },
     "sep",
     { icon: "H1", title: "一级标题", run: () => prefixLines("# ") },
     { icon: "H2", title: "二级标题", run: () => prefixLines("## ") },

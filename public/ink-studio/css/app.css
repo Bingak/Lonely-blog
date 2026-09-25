@@ -72,8 +72,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 #configPanel{width:290px;min-width:290px;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden}
 .panel-head{display:flex;align-items:center;gap:8px;padding:12px;border-bottom:1px solid var(--line);font-weight:600;font-size:13px}
 .panel-head select{width:auto;flex:1;font-size:12px}
-#formHost{flex:1;overflow-y:auto;padding:12px}
-#editorPane{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--bg)}
+#formHost{flex:1;overflow-y:auto;padding:12px;min-height:0;overscroll-behavior:contain}
+#editorPane{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--bg)}
 #previewPane{width:44%;min-width:380px;background:var(--bg2);border-left:1px solid var(--line);display:flex;flex-direction:column}
 
 /* ============ 表单 ============ */
@@ -82,6 +82,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .fset>summary::after{content:"▾";color:var(--fg3)}
 .fset:not([open])>summary::after{content:"▸"}
 .fset .fbody{padding:10px 12px;display:flex;flex-direction:column;gap:10px}
+.fset:not([open]) .fbody{display:none!important}
 .field label{display:block;font-size:11.5px;color:var(--fg2);margin-bottom:4px}
 .field .hint{font-size:10.5px;color:var(--fg3);margin-top:3px;line-height:1.5}
 .field-row{display:flex;gap:8px}
@@ -121,9 +122,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 #findInput.mark{background:rgba(251,191,36,.25)}
 
 /* ============ 编辑区 ============ */
-#editorWrap{flex:1;display:flex;overflow:hidden;position:relative}
+#editorWrap{flex:1;display:flex;overflow:hidden;position:relative;min-height:0}
 #gutter{width:48px;padding:14px 8px 14px 0;text-align:right;font-family:var(--font-mono);font-size:13px;line-height:1.7;color:var(--fg3);background:var(--bg);border-right:1px solid var(--line);overflow:hidden;user-select:none;flex-shrink:0}
-#editor{flex:1;border:none;border-radius:0;background:var(--bg);resize:none;padding:14px 16px;font-family:var(--font-mono);font-size:13.5px;line-height:1.7;white-space:pre;overflow:auto}
+#editor{flex:1;border:none;border-radius:0;background:var(--bg);resize:none;padding:14px 16px;font-family:var(--font-mono);font-size:13.5px;line-height:1.7;white-space:pre;overflow:auto;min-height:0;overscroll-behavior:contain}
 #editor:focus{border:none}
 #slashMenu{position:absolute;z-index:40;background:var(--panel);border:1px solid var(--line2);border-radius:10px;box-shadow:var(--shadow);max-height:280px;overflow-y:auto;min-width:230px;padding:4px}
 #slashMenu .sm-item{display:flex;gap:10px;align-items:center;padding:7px 10px;border-radius:7px;cursor:pointer;font-size:12.5px}
@@ -138,7 +139,11 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .pv-tabs{display:flex;gap:2px;align-items:center;padding:6px 10px;border-bottom:1px solid var(--line);background:var(--panel)}
 .pv-tab{border:none;background:none;color:var(--fg2);padding:6px 12px;border-radius:8px;font-size:12.5px}
 .pv-tab.active{background:var(--accent-bg);color:var(--accent);font-weight:600}
-.pv-page{flex:1;overflow-y:auto;padding:22px 26px}
+.pv-page{flex:1;overflow:auto;padding:22px 26px;min-height:0;overscroll-behavior:contain}
+#pvPreview table{border-collapse:collapse;margin:12px 0;display:block;overflow-x:auto;max-width:100%}
+#pvPreview table th,#pvPreview table td{border:1px solid var(--line);padding:6px 12px;white-space:nowrap}
+#pvPreview pre{background:var(--code-bg);border:1px solid var(--line);border-radius:10px;margin:12px 0;overflow:hidden}
+#pvPreview pre code{display:block;padding:12px 14px;overflow-x:auto;white-space:pre;font-family:var(--font-mono);font-size:12.5px;line-height:1.6}
 .code-view{font-family:var(--font-mono);font-size:12px;line-height:1.65;white-space:pre-wrap;word-break:break-all;color:var(--fg2)}
 #pvOutline .ol-item{display:block;padding:5px 8px;border-radius:7px;color:var(--fg2);text-decoration:none;font-size:13px;cursor:pointer}
 #pvOutline .ol-item:hover{background:var(--accent-bg);color:var(--accent)}
@@ -243,6 +248,10 @@ body.zen #editorWrap{max-width:860px;margin:0 auto;width:100%}
 @media (max-width:1100px){
   #previewPane{min-width:320px;width:38%}
   #configPanel{width:250px;min-width:250px}
+}
+@media (min-width:861px){
+  body.no-preview #previewPane{display:none!important}
+  body.no-preview #editorPane{flex:1 1 auto}
 }
 @media (max-width:860px){
   #layout{position:relative;height:calc(100% - 52px - 48px)}

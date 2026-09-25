@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { GalleryAlbum } from "@/types/config";
+import type { CollectionEntry } from "astro:content";
 import { url } from "@/utils/url-utils";
 
 function withBase(assetPath: string): string {
@@ -18,10 +18,13 @@ function withBase(assetPath: string): string {
 	return url(normalizedPath);
 }
 
-/**
- * 扫描相册目录中的所有图片文件
- */
+/** 兼容旧调用：仅扫描本地目录图片 */
 export function scanAlbumPhotos(albumId: string): string[] {
+	return scanLocalPhotos(albumId);
+}
+
+/** 扫描本地相册目录中的图片文件（public/gallery/{id}） */
+export function scanLocalPhotos(albumId: string): string[] {
 	const dir = path.join(process.cwd(), "public", "gallery", albumId);
 	if (!fs.existsSync(dir)) return [];
 	const files = fs
@@ -34,19 +37,20 @@ export function scanAlbumPhotos(albumId: string): string[] {
 		const [coverFile] = files.splice(coverIdx, 1);
 		files.unshift(coverFile);
 	}
-	const localPhotos = files.map((f) => withBase(`/gallery/${albumId}/${f}`));
+	return files.map((f) => withBase(`/gallery/${albumId}/${f}`));
+}
 
-	// 读取 urls.txt 中的远程图片 URL
-	const urlsFile = path.join(dir, "urls.txt");
-	let remotePhotos: string[] = [];
-	if (fs.existsSync(urlsFile)) {
-		remotePhotos = fs
-			.readFileSync(urlsFile, "utf-8")
-			.split("\n")
-			.map((line) => line.trim())
-			.filter((line) => line && !line.startsWith("#"));
-	}
+type GalleryEntryLike = {
+	id: string;
+	data: { photos?: string[]; cover?: string };
+};
 
+/**
+ * 获取相册全部图片：本地文件（public/gallery/{id}）+ frontmatter 中 photos 数组
+ */
+export function getAlbumPhotos(entry: GalleryEntryLike): string[] {
+	const localPhotos = scanLocalPhotos(entry.id);
+	const remotePhotos = entry.data.photos || [];
 	return [...localPhotos, ...remotePhotos];
 }
 
@@ -54,8 +58,14 @@ export function scanAlbumPhotos(albumId: string): string[] {
  * 获取相册封面图
  * 优先级：手动指定 > cover.* 文件 > 第一张图片
  */
-export function getAlbumCover(album: GalleryAlbum, photos: string[]): string {
-	if (album.cover) return withBase(album.cover);
+export function getAlbumCover(
+	entry: GalleryEntryLike,
+	photos: string[],
+): string {
+	if (entry.data.cover) return withBase(entry.data.cover);
 	const coverFile = photos.find((p) => /\/cover\./i.test(p));
 	return coverFile || photos[0] || "";
 }
+
+// 保留 CollectionEntry 类型引用避免未使用告警
+export type GalleryEntry = CollectionEntry<"gallery">;

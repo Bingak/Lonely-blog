@@ -1,11 +1,12 @@
 ---
+import { getCollection } from "astro:content";
 import { Icon } from "astro-icon/components";
 import AlbumCard from "@/components/pages/gallery/AlbumCard.astro";
 import { galleryConfig, siteConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
-import { getAlbumCover, scanAlbumPhotos } from "@/utils/gallery-utils";
+import { getAlbumCover, getAlbumPhotos } from "@/utils/gallery-utils";
 
 // 检查页面是否启用
 if (!siteConfig.pages.gallery) {
@@ -15,23 +16,22 @@ if (!siteConfig.pages.gallery) {
 const title = i18n(I18nKey.gallery);
 const description = i18n(I18nKey.galleryDescription);
 
-// 构建相册数据（扫描照片、获取封面）
-const albums = galleryConfig.albums.map((album) => {
-	const photos = scanAlbumPhotos(album.id);
-	const cover = getAlbumCover(album, photos);
-	return { ...album, cover, photoCount: photos.length };
+// 从内容集合读取相册
+const galleryEntries = await getCollection("gallery");
+const albums = galleryEntries.map((entry) => {
+	const photos = getAlbumPhotos(entry);
+	const cover = getAlbumCover(entry, photos);
+	return { ...entry.data, id: entry.data.id, cover, photoCount: photos.length };
 });
 
 // 收集所有标签用于筛选
 const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
 ---
-
 <MainGridLayout title={title} description={description}>
   <div
     class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32"
   >
     <div class="card-base z-10 px-9 py-6 relative w-full">
-      <!-- 页面标题和描述 -->
       <div class="mb-4">
         <div class="flex items-center gap-3 mb-3">
           <div
@@ -50,7 +50,6 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
         )}
       </div>
 
-      <!-- 搜索框 + 标签筛选 -->
       {albums.length > 0 && (
         <gallery-filter class="mb-6">
           <div class="relative mb-3">
@@ -87,7 +86,6 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
         </gallery-filter>
       )}
 
-      <!-- 相册卡片网格 -->
       {albums.length > 0 ? (
         <>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 my-4">
@@ -105,7 +103,6 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
               />
             ))}
           </div>
-          {/* 搜索无结果提示 */}
           <div class="albums-empty hidden flex-col items-center justify-center py-12 text-neutral-400 dark:text-neutral-500">
             <Icon name="material-symbols:search-off-rounded" class="text-4xl mb-3" />
             <div class="text-sm">{i18n(I18nKey.searchNoResults)}</div>
@@ -124,66 +121,37 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
     if (!customElements.get("gallery-filter")) {
       class GalleryFilter extends HTMLElement {
         selectedTag = "all";
-
-        constructor() {
-          super();
-        }
-
+        constructor() { super(); }
         connectedCallback() {
           this.addEventListener("click", this.handleClick);
           const input = this.querySelector("[data-search]");
-          if (input) {
-            input.addEventListener("input", () => this.applyFilters());
-          }
+          if (input) input.addEventListener("input", () => this.applyFilters());
         }
-
-        disconnectedCallback() {
-          this.removeEventListener("click", this.handleClick);
-        }
-
+        disconnectedCallback() { this.removeEventListener("click", this.handleClick); }
         handleClick(e) {
           const target = e.target;
           const button = target.closest("button");
           if (!button) return;
-
           this.selectedTag = button.dataset.tag;
-          const filters = this.querySelectorAll("button");
-
-          filters.forEach((f) => {
-            f.removeAttribute("data-active");
-          });
+          this.querySelectorAll("button").forEach((f) => f.removeAttribute("data-active"));
           button.setAttribute("data-active", "");
-
           this.applyFilters();
         }
-
         applyFilters() {
           const container = this.closest(".card-base");
           if (!container) return;
-
           const input = this.querySelector("[data-search]");
           const query = (input?.value || "").toLowerCase().trim();
           const cards = container.querySelectorAll(".album-card");
-
           let hasVisible = false;
-
           cards.forEach((card) => {
             const cardEl = card;
             const tags = (cardEl.dataset.tags || "").split(",");
             const name = (cardEl.querySelector("h3")?.textContent || "").toLowerCase();
             const desc = (cardEl.querySelector("p")?.textContent || "").toLowerCase();
             const location = (cardEl.querySelector(".inline-flex")?.textContent || "").toLowerCase();
-
-            const tagMatch =
-              this.selectedTag === "all" ||
-              (this.selectedTag && tags.includes(this.selectedTag));
-            const searchMatch =
-              !query ||
-              name.includes(query) ||
-              desc.includes(query) ||
-              location.includes(query) ||
-              tags.some((t) => t.toLowerCase().includes(query));
-
+            const tagMatch = this.selectedTag === "all" || (this.selectedTag && tags.includes(this.selectedTag));
+            const searchMatch = !query || name.includes(query) || desc.includes(query) || location.includes(query) || tags.some((t) => t.toLowerCase().includes(query));
             if (tagMatch && searchMatch) {
               cardEl.style.display = "";
               cardEl.classList.add("animate-fade-in-up");
@@ -193,7 +161,6 @@ const allTags = [...new Set(albums.flatMap((a) => a.tags || []))].sort();
               cardEl.classList.remove("animate-fade-in-up");
             }
           });
-
           const emptyEl = container.querySelector(".albums-empty");
           if (emptyEl) {
             emptyEl.classList.toggle("hidden", hasVisible);

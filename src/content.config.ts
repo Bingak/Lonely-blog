@@ -55,6 +55,19 @@ type ProjectData = {
 	lang: string;
 };
 
+type GalleryData = {
+	id: string;
+	name: string;
+	description: string;
+	date: string;
+	location: string;
+	tags: string[];
+	cover: string;
+	password: string;
+	passwordHint: string;
+	photos: string[];
+};
+
 type ContentCollection<T> = CollectionConfig<
 	ZodType<T>,
 	ReturnType<typeof glob>
@@ -132,14 +145,32 @@ const projectsCollection: ContentCollection<ProjectData> = defineCollection({
 	}),
 });
 
+const galleryCollection: ContentCollection<GalleryData> = defineCollection({
+	loader: glob({ pattern: "**/*.md", base: "./src/content/gallery" }),
+	schema: z.object({
+		id: z.string(),
+		name: z.string(),
+		description: z.string().optional().default(""),
+		date: z.string().optional().default(""),
+		location: z.string().optional().default(""),
+		tags: z.array(z.string()).optional().default([]),
+		cover: z.string().optional().default(""),
+		password: z.string().optional().default(""),
+		passwordHint: z.string().optional().default(""),
+		photos: z.array(z.string()).optional().default([]),
+	}),
+});
+
 export const collections: {
 	dynamic: typeof dynamicCollection;
 	posts: typeof postsCollection;
 	spec: typeof specCollection;
 	projects: typeof projectsCollection;
+	gallery: typeof galleryCollection;
 } = {
 	dynamic: dynamicCollection,
 	posts: postsCollection,
 	spec: specCollection,
 	projects: projectsCollection,
+	gallery: galleryCollection,
 };

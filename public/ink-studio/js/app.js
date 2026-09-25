@@ -135,12 +135,8 @@
     return `[grid]\n${items}\n[/grid]\n\n` + (d.body || "").replace(/^\n+/, "");
   }
 
-  function galleryUrlsTxt(d) {
-    const urls = d.galleryImgs.map(g => (g.src || "").trim()).filter(Boolean);
-    return urls.length ? urls.join("\n") + "\n" : "";
-  }
-  function buildMarkdown(d) {
-    if (d.type === "gallery") return galleryUrlsTxt(d); // 相册走 galleryConfig.ts + urls.txt，不生成 md
+function buildMarkdown(d) {
+    if (d.type === "gallery") return galleryToMd(d);
     return "---\n" + MD.yamlDump(buildFields(d)) + "\n---\n" + galleryBody(d).replace(/^\n/, "\n");
   }
 
@@ -236,7 +232,7 @@
       h += `<div class="field-row">${txt("password", f.password, "", "访问密码（可选）", "访问密码", false)}${txt("passwordHint", f.passwordHint, "", "输错密码时显示", "密码提示", false)}</div>`;
       h += `</div></div>`;
       h += `<div class="fset" open><summary>相册标签</summary><div class="fbody">${chips("tags", f.tags, "回车添加标签")}</div></div>`;
-      h += `<div class="fset" open><summary>图片列表</summary><div class="fbody"><div data-gimgs></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn small add-mini" data-addgimg>＋ 添加图片</button><button class="btn small" data-batchgimg>📋 批量添加</button></div><div class="hint">发布时写入 public/gallery/{ID}/urls.txt，每行一个图片 URL。批量添加每行一张，可用 <code>URL|图注</code> 格式。</div></div></div>`;
+      h += `<div class="fset" open><summary>图片列表</summary><div class="fbody"><div data-gimgs></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn small add-mini" data-addgimg>＋ 添加图片</button><button class="btn small" data-batchgimg>📋 批量添加</button></div><div class="hint">发布时写入 src/content/gallery/{ID}.md，图片列表存于 frontmatter 的 photos 数组。批量添加每行一张，可用 <code>URL|图注</code> 格式。</div></div></div>`;
     } else { // post
       h += `<div class="fset" open><summary>基础信息</summary><div class="fbody">`;
       h += txt("title", f.title, "文章标题", "标题中的冒号、引号会自动转义，无需手写 YAML", "文章标题", true);
@@ -391,6 +387,14 @@
     if (addGimg) addGimg.onclick = () => { cur.galleryImgs.push({ src: "", alt: "" }); renderGimgs(); touch(); };
     const batchGimg = host.querySelector("[data-batchgimg]");
     if (batchGimg) batchGimg.onclick = () => batchAddGimgs();
+    // 折叠分组：点击 summary 切换 open 属性
+    host.querySelectorAll(".fset>summary").forEach(s => {
+      s.onclick = () => {
+        const fset = s.parentElement;
+        if (fset.hasAttribute("open")) fset.removeAttribute("open");
+        else fset.setAttribute("open", "");
+      };
+    });
   }
 
   /* ================= 保存 / 刷新 ================= */
@@ -453,8 +457,10 @@
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:12px">
       ${imgs.map(g => `<img src="${MD.esc(g.src)}" alt="${MD.esc(g.alt || "")}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px" onerror="this.style.opacity=.25">`).join("") || `<p style="color:var(--fg3)">暂无图片，请在左侧「图片列表」添加</p>`}</div>`;
     $("#pvOutline").innerHTML = `<p style="color:var(--fg3)">相册无大纲</p>`;
-    $("#pvYaml").textContent = albumToTs(f);
-    $("#pvSource").textContent = galleryUrlsTxt(cur);
+    const gmd = galleryToMd(cur);
+    const fm = gmd.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] || "";
+    $("#pvYaml").textContent = fm;
+    $("#pvSource").textContent = gmd;
   }
 
   function resolveCover(f) {
@@ -567,10 +573,10 @@
 
   function exportMd() {
     if (cur.type === "gallery") {
-      const blob = new Blob([galleryUrlsTxt(cur)], { type: "text/plain;charset=utf-8" });
+      const blob = new Blob([galleryToMd(cur)], { type: "text/markdown;charset=utf-8" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = (cur.fm.id || "gallery") + "-urls.txt";
+      a.download = (cur.fm.id || "gallery") + ".md";
       a.click(); URL.revokeObjectURL(a.href);
       toast("已导出 " + a.download, "ok");
       return;
@@ -642,6 +648,7 @@
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ session }),
       });
+      if (!r.ok) throw new Error("session endpoint unavailable");
       const j = await r.json().catch(() => ({}));
       return j.ok === true;
     } catch {
@@ -793,110 +800,52 @@
       toast("提交失败：" + e.message, "err");
     }
   }
-  /** 相册发布：合并 src/config/galleryConfig.ts + 写 public/gallery/{id}/urls.txt */
+  /** 相册发布：写入 src/content/gallery/{id}.md（内容集合，photos 数组存于 frontmatter） */
   async function ghPushGallery() {
     const f = cur.fm;
     const id = (f.id || "").trim();
     if (!/^[A-Za-z0-9][A-Za-z0-9_-]*$/.test(id)) { toast("请填写相册 ID（字母 / 数字 / 连字符）", "err"); return; }
     if (!(f.name || "").trim()) { toast("请填写相册名称", "err"); return; }
     const imgs = cur.galleryImgs.map(x => (x.src || "").trim()).filter(Boolean);
-    if (!imgs.length) { toast("请至少添加一张图片", "err"); return; }
+    const md = galleryToMd(cur);
     toast("正在提交相册 " + id + " …");
     try {
-      const CFG = "src/config/galleryConfig.ts";
-      const cfg = await ghGetFile(CFG);
-      if (!cfg) throw new Error("读取 " + CFG + " 失败");
-      const merged = mergeAlbumConfig(cfg.text, id, albumToTs(f));
-      if (merged == null) throw new Error("解析 " + CFG + " 的 albums 数组失败");
-      await ghPutFile(CFG, merged, `feat(gallery): 相册「${f.name}」配置 [via InkPost]`);
-      await ghPutFile(`public/gallery/${id}/urls.txt`, galleryUrlsTxt(cur), `feat(gallery): ${id} 图片列表（${imgs.length} 张）[via InkPost]`);
+      const path = `src/content/gallery/${id}.md`;
+      await ghPutFile(path, md, `feat(gallery): 相册「${f.name}」（${imgs.length} 张）[via InkPost]`);
+      delete cur._ghPath;
       closeModal();
       toast("相册已提交，Cloudflare 将自动构建 ✓", "ok");
     } catch (e) {
       toast("提交失败：" + e.message, "err");
     }
   }
-  /** 扫描 albums 数组区间内的顶层 {...} 对象（识别字符串与注释，不被内部花括号干扰） */
-  function scanTopObjects(inner) {
-    const objs = [];
-    let i = 0, depth = 0, start = -1;
-    const n = inner.length;
-    while (i < n) {
-      const c = inner[i];
-      if (c === '"' || c === "'" || c === "`") {
-        const q = c; i++;
-        while (i < n) {
-          if (inner[i] === "\\") { i += 2; continue; }
-          if (inner[i] === q) { i++; break; }
-          i++;
-        }
-        continue;
-      }
-      if (c === "/" && inner[i + 1] === "/") { while (i < n && inner[i] !== "\n") i++; continue; }
-      if (c === "/" && inner[i + 1] === "*") { i += 2; while (i < n && !(inner[i] === "*" && inner[i + 1] === "/")) i++; i += 2; continue; }
-      if (c === "{") { if (depth === 0) start = i; depth++; }
-      else if (c === "}") {
-        depth--;
-        if (depth === 0 && start >= 0) { objs.push({ s: start, e: i + 1 }); start = -1; }
-      }
-      i++;
-    }
-    return objs;
-  }
-  /** 相册表单值 -> TS 对象字面量（tab 缩进，与 galleryConfig.ts 风格一致） */
-  function albumToTs(f) {
+  /** 相册表单 + 图片 → 内容集合 Markdown（frontmatter 含 photos 数组） */
+  function galleryToMd(d) {
+    const f = d.fm;
     const q = v => JSON.stringify(String(v ?? ""));
-    const lines = [`id: ${q(f.id)},`, `name: ${q(f.name)},`];
-    if (f.description) lines.push(`description: ${q(f.description)},`);
-    if (f.location) lines.push(`location: ${q(f.location)},`);
-    if (f.date) lines.push(`date: ${q(f.date)},`);
-    if ((f.tags || []).length) lines.push(`tags: [${f.tags.map(q).join(", ")}],`);
-    if (f.cover) lines.push(`cover: ${q(f.cover)},`);
-    if (f.password) lines.push(`password: ${q(f.password)},`);
-    if (f.passwordHint) lines.push(`passwordHint: ${q(f.passwordHint)},`);
-    return "{\n" + lines.map(l => "\t\t\t" + l).join("\n") + "\n\t\t}";
+    const arr = v => `[${(v || []).map(x => JSON.stringify(String(x))).join(", ")}]`;
+    const photos = (d.galleryImgs || []).map(g => (g.src || "").trim()).filter(Boolean);
+    const lines = [
+      `id: ${q(f.id)}`,
+      `name: ${q(f.name)}`,
+      `description: ${q(f.description || "")}`,
+      `date: ${q(f.date || "")}`,
+      `location: ${q(f.location || "")}`,
+      `tags: ${arr(f.tags)}`,
+      `cover: ${q(f.cover || "")}`,
+      `password: ${q(f.password || "")}`,
+      `passwordHint: ${q(f.passwordHint || "")}`,
+    ];
+    if (photos.length) {
+      lines.push(`photos:`);
+      photos.forEach(p => lines.push(`  - ${q(p)}`));
+    } else {
+      lines.push(`photos: []`);
+    }
+    const body = (d.body || "").replace(/^\n+/, "");
+    return "---\n" + lines.join("\n") + "\n---\n" + (body ? "\n" + body + "\n" : "");
   }
-  /** 把相册对象合并进 galleryConfig.ts 的 albums：同 id 替换，否则追加；解析失败返回 null */
-  function mergeAlbumConfig(src, id, albumText) {
-    const m = src.match(/albums\s*:\s*\[/);
-    if (!m) return null;
-    const arrStart = m.index + m[0].length - 1; // 指向 [
-    // 与 scanTopObjects 同样感知字符串与注释，避免描述/注释里的 [ ] 干扰定位
-    let depth = 0, arrEnd = -1, i = arrStart;
-    while (i < src.length) {
-      const c = src[i];
-      if (c === '"' || c === "'" || c === "`") {
-        const q = c; i++;
-        while (i < src.length) {
-          if (src[i] === "\\") { i += 2; continue; }
-          if (src[i] === q) { i++; break; }
-          i++;
-        }
-        continue;
-      }
-      if (c === "/" && src[i + 1] === "/") { while (i < src.length && src[i] !== "\n") i++; continue; }
-      if (c === "/" && src[i + 1] === "*") { i += 2; while (i < src.length && !(src[i] === "*" && src[i + 1] === "/")) i++; i += 2; continue; }
-      if (c === "[") depth++;
-      else if (c === "]") { depth--; if (depth === 0) { arrEnd = i; break; } }
-      i++;
-    }
-    if (arrEnd < 0) return null;
-    const inner = src.slice(arrStart + 1, arrEnd);
-    const objs = scanTopObjects(inner);
-    let hit = null;
-    for (const o of objs) {
-      const idm = inner.slice(o.s, o.e).match(/id\s*:\s*["']([^"']+)["']/);
-      if (idm && idm[1] === id) { hit = o; break; }
-    }
-    if (hit) return src.slice(0, arrStart + 1 + hit.s) + albumText + src.slice(arrStart + 1 + hit.e);
-    if (objs.length) {
-      const last = objs[objs.length - 1];
-      const cm = inner.slice(last.e).match(/^\s*,/);
-      const insAbs = arrStart + 1 + last.e + (cm ? cm[0].length : 0);
-      return src.slice(0, insAbs) + "\n\t\t" + albumText + "," + src.slice(insAbs);
-    }
-    return src.slice(0, arrEnd) + "\t\t" + albumText + ",\n\t" + src.slice(arrEnd);
-  }
+
   /** 从仓库同步：列出各集合已有文档，点击即可拉取并在线编辑 */
   function ghSyncAsk() {
     const g = settings.github;
@@ -905,7 +854,7 @@
       post: { label: "📄 文章", dir: `${g.root}/posts`, type: "post" },
       project: { label: "🧩 项目", dir: `${g.root}/projects`, type: "project" },
       dynamic: { label: "💬 动态", dir: `${g.root}/dynamic`, type: "dynamic" },
-      gallery: { label: "🖼 相册", dir: "public/gallery", type: "gallery" },
+      gallery: { label: "🖼 相册", dir: "src/content/gallery", type: "gallery" },
     };
     let active = "post";
     $("#modalTitle").textContent = "仓库同步 · 选择已有内容拉取到本地编辑";
@@ -923,23 +872,14 @@
       const tab = TABS[active], host = $("[data-synclist]");
       host.innerHTML = '<div style="color:var(--fg3);padding:20px;text-align:center">加载中…</div>';
       try {
-        if (active === "gallery") {
-          // 读 galleryConfig.ts 拿相册列表
-          const cfg = await ghGetFile("src/config/galleryConfig.ts");
-          if (!cfg) { host.innerHTML = '<div style="color:var(--danger);padding:20px">读取 galleryConfig.ts 失败</div>'; return; }
-          const ids = [...cfg.text.matchAll(/id\s*:\s*["']([^"']+)["']/g)].map(m => m[1]);
-          if (!ids.length) { host.innerHTML = '<div style="color:var(--fg3);padding:20px">暂无相册</div>'; return; }
-          host.innerHTML = ids.map(id => `<div class="sync-item" data-album="${MD.esc(id)}"><span>🖼 ${MD.esc(id)}</span><span class="sync-act">拉取编辑 →</span></div>`).join("");
-          host.querySelectorAll("[data-album]").forEach(el => el.onclick = () => loadAlbum(el.dataset.album));
-          return;
-        }
+
         const r = await ghApi(`/contents/${ghPath(tab.dir)}?ref=${encodeURIComponent(g.branch)}`);
         if (!r.ok) { host.innerHTML = `<div style="color:var(--danger);padding:20px">读取失败（${r.status}）</div>`; return; }
         const j = await r.json();
         const files = (Array.isArray(j) ? j : []).filter(f => f.type === "file" && /\.md$/i.test(f.name));
         if (!files.length) { host.innerHTML = '<div style="color:var(--fg3);padding:20px">暂无文档</div>'; return; }
         host.innerHTML = files.map(f => `<div class="sync-item" data-path="${MD.esc(f.path)}" data-sha="${MD.esc(f.sha)}"><span>${MD.esc(f.name)}</span><span class="sync-act">拉取编辑 →</span></div>`).join("");
-        host.querySelectorAll("[data-path]").forEach(el => el.onclick = () => loadMd(el.dataset.path));
+        host.querySelectorAll("[data-path]").forEach(el => el.onclick = () => (active === "gallery" ? loadAlbumMd(el.dataset.path) : loadMd(el.dataset.path)));
       } catch (e) { host.innerHTML = `<div style="color:var(--danger);padding:20px">${MD.esc(e.message)}</div>`; }
     };
     const loadMd = async (path) => {
@@ -954,34 +894,52 @@
         toast(`已拉取「${name}」，可编辑后发布`, "ok");
       } catch (e) { toast("拉取失败：" + e.message, "err"); }
     };
-    const loadAlbum = async (id) => {
+    const loadAlbumMd = async (path) => {
       try {
-        const cfg = await ghGetFile("src/config/galleryConfig.ts");
-        if (!cfg) throw new Error("读取 galleryConfig.ts 失败");
-        // 从配置里挖出该相册对象
-        const m = cfg.text.match(new RegExp(`\\{[^}]*id\\s*:\\s*["']${id}["'][\\s\\S]*?\\n\\t\\t\\}`));
-        const objText = m ? m[0] : "";
-        const f = { id, name: id, description: "", location: "", date: "", tags: [], cover: "", password: "", passwordHint: "" };
-        (["name", "description", "location", "date", "cover", "password", "passwordHint"]).forEach(k => {
-          const mm = objText.match(new RegExp(`${k}\\s*:\\s*["']([^"']*)["']`));
-          if (mm) f[k] = mm[1];
-        });
-        const tm = objText.match(/tags\s*:\s*\[([^\]]*)\]/);
-        if (tm) f.tags = [...tm[1].matchAll(/["']([^"']*)["']/g)].map(x => x[1]);
-        const urlsFile = await ghGetFile(`public/gallery/${id}/urls.txt`);
+        const f = await ghGetFile(path);
+        if (!f) throw new Error("读取失败");
+        const name = path.split("/").pop();
+        // 解析 frontmatter
+        const m = f.text.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
+        const fmText = m ? m[1] : "";
+        const body = m ? m[2] : f.text;
+        const pick = (k) => { const mm = fmText.match(new RegExp(`^${k}\\s*:\\s*"?(.*?)"?\\s*$`, "m")); return mm ? mm[1].replace(/^["']|["']$/g, "") : ""; };
+        const fld = {
+          id: pick("id") || name.replace(/\.md$/i, ""),
+          name: pick("name"),
+          description: pick("description"),
+          location: pick("location"),
+          date: pick("date"),
+          cover: pick("cover"),
+          password: pick("password"),
+          passwordHint: pick("passwordHint"),
+          tags: [],
+        };
+        const tm = fmText.match(/tags\s*:\s*\[([^\]]*)\]/);
+        if (tm) fld.tags = [...tm[1].matchAll(/["']([^"']*)["']/g)].map(x => x[1]);
+        // 解析 photos 数组（支持 [a,b] 和多行 - 两种格式）
         const imgs = [];
-        if (urlsFile) {
-          urlsFile.text.split(/\r?\n/).forEach(line => {
-            const s = line.trim(); if (!s || s.startsWith("#")) return;
-            const [src, alt] = s.split("|").map(x => (x || "").trim());
-            if (src) imgs.push({ src, alt: alt || "" });
-          });
+        const pm = fmText.match(/photos\s*:\s*\[([^\]]*)\]/);
+        if (pm) {
+          [...pm[1].matchAll(/["']([^"']+)["']/g)].forEach(x => imgs.push({ src: x[1], alt: "" }));
+        } else {
+          const lines = fmText.split(/\r?\n/);
+          let inPhotos = false;
+          for (const line of lines) {
+            if (/^photos\s*:/.test(line)) { inPhotos = true; continue; }
+            if (inPhotos) {
+              const mm = line.match(/^\s*-\s*["']([^"']+)["']/);
+              if (mm) imgs.push({ src: mm[1], alt: "" });
+              else if (line.trim() && !/^\s*-\s/.test(line)) break;
+            }
+          }
         }
         const d = newDoc("gallery");
-        d.fm = f; d.galleryImgs = imgs;
+        d.fm = fld; d.galleryImgs = imgs; d.body = body.replace(/^\n+/, "").replace(/\n+$/, "");
         docs.push(d); openDoc(d.id);
+        cur._ghPath = path; cur._ghSha = f.sha;
         closeModal();
-        toast(`已拉取相册「${id}」（${imgs.length} 张），可编辑后发布`, "ok");
+        toast(`已拉取相册「${fld.name || fld.id}」（${imgs.length} 张），可编辑后发布`, "ok");
       } catch (e) { toast("拉取失败：" + e.message, "err"); }
     };
     render();
@@ -1040,6 +998,10 @@
     $("#btnLock").onclick = lock;
     $("#btnGithub").onclick = ghSettings;
     $("#btnZen").onclick = () => document.body.classList.toggle("zen");
+    $("#btnPreview").onclick = () => {
+      document.body.classList.toggle("no-preview");
+      $("#btnPreview").textContent = document.body.classList.contains("no-preview") ? "📖 预览" : "📖 预览";
+    };
     $("#btnCopy").onclick = () => { navigator.clipboard.writeText(buildMarkdown(cur)).then(() => toast("全文已复制", "ok")); };
     $("#btnPrint").onclick = () => window.print();
     $("#btnImport").onclick = () => $("#filePicker").click();
