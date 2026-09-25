@@ -1,19 +1,15 @@
 ---
 title: 添加在线文章编写推送功能
-published: 2026-09-25T21:30:00+08:00
-pinned: false
+published: 2026-09-25T01:30:00+08:00
+updated: 2026-09-25 17:56:13
 description: 给博客加了个隐藏后台「墨驿 InkPost」：零依赖离线可用，所有参数表单化配置不用手写 YAML，支持文章/项目/动态/相册四种类型，相册已迁移为内容集合，写完一键推送到 GitHub 仓库自动构建，还能拉取仓库已有内容在线编辑。登录走 Cloudflare Worker 服务端校验 + Turnstile 人机验证，密码不落地前端喵~
 image: "https://img.lonelybing.top/file/post/post.png"
-tags:
-  - 博客
-  - 后台
-  - 工具
-  - 记录
+tags: [博客, 后台, 工具, 记录]
 category: 博客搭建
+pinned: false
 slug: online-editor-push-2026-09-25
-series: "博客"
+series: 博客
 ---
-
 以前写文章要开编辑器、手写 YAML 头部、再手动提交仓库，流程又长又容易写错格式。这次干脆给博客加了个在线后台——**墨驿 InkPost**，打开网页就能写，写完一键推送，Cloudflare 自动构建上线喵~
 
 ![墨驿后台主界面](https://img.lonelybing.top/file/post/post.png)
