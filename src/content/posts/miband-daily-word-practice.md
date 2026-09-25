@@ -1,16 +1,14 @@
 ---
 title: 小米手环 9 Pro 背单词小程序：MiBand-Daily-Word-Practice
 published: 2026-09-12
-pinned: false
 description: 小米手环 9 Pro 上的每日背单词小程序：内置 6200 高中词汇，四档记忆状态与智能抽词重复机制，把闲置的手环变成随身单词本。
-image: ""
 tags: [小米手环, Vela, 快应用, 背单词, 开源项目]
 category: 项目分享
+pinned: false
 slug: miband-daily-word-practice
-series: "小米手环"
+series: 小米手环
 seriesOrder: 1
 ---
-
 ## 项目是啥
 
 MiBand-Daily-Word-Practice 是个跑在小米手环 9 Pro 上的每日背单词小程序. 它把「墨墨背单词」最核心的思路——让记忆越模糊的单词出现得越频繁——搬到了腕上这块小屏幕里，让你没带手机的时候也能刷两下单词喵~
@@ -23,7 +21,7 @@ MiBand-Daily-Word-Practice 是个跑在小米手环 9 Pro 上的每日背单词�
 
 ::github{repo="Bingak/MiBand-Daily-Word-Practice"}
 
-这项目为啥会诞生，理由其实挺朴素的：高中三年，这块 9 Pro 有一年半都在打台球和斗地主，是时候让它干点正事了. 我之前完全没碰过前端，为了把它写出来是现学 HTML / CSS / JS 的；设计灵感就直接来自高中一直在用、却因为不能带手机而在校园里真正用不起来的墨墨背单词.
+这项目为啥会诞生，理由其实挺朴素的：:spoiler[高中三年，这块 9 Pro 有一年半都在打台球和斗地主，是时候让它干点正事了. 我之前完全没碰过前端，为了把它写出来是现学 HTML / CSS / JS 的；设计灵感就直接来自高中一直在用、却因为不能带手机而在校园里真正用不起来的墨墨背单词.]
 
 顺便说一句，内置词表塞了不少单词汉译和短语，词库文件体积差不多 ==6MB== 那么大. 手环存储要是本来就紧巴巴的，建议先清出点空间再装，不然容易翻车喵~
 
