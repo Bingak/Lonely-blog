@@ -284,12 +284,15 @@ window.InkEditor = (function () {
           const willOpen = !g.classList.contains("open");
           g.classList.toggle("open");
           if (willOpen) {
-            // 菜单右溢出编辑区时翻转为右对齐，避免被 overflow:hidden 裁掉
-            m.style.left = ""; m.style.right = "";
-            const r = m.getBoundingClientRect();
-            const pane = m.closest("#editorPane") || document.documentElement;
-            const pr = pane.getBoundingClientRect();
-            if (r.right > pr.right - 4) { m.style.left = "auto"; m.style.right = "0"; }
+            // fixed 定位脱离 #editorPane 的 overflow:hidden 裁剪，按视口定位
+            const br = b.getBoundingClientRect();
+            m.style.position = "fixed";
+            m.style.top = (br.bottom + 4) + "px";
+            m.style.left = br.left + "px";
+            m.style.right = "auto";
+            const mr = m.getBoundingClientRect();
+            const vw = document.documentElement.clientWidth;
+            if (mr.right > vw - 8) { m.style.left = "auto"; m.style.right = Math.max(8, vw - br.right) + "px"; }
           }
         };
         g.appendChild(b); g.appendChild(m); bar.appendChild(g);
@@ -301,6 +304,7 @@ window.InkEditor = (function () {
       }
     });
     document.addEventListener("click", () => document.querySelectorAll(".tb-group.open").forEach(x => x.classList.remove("open")));
+    bar.addEventListener("scroll", () => document.querySelectorAll(".tb-group.open").forEach(x => x.classList.remove("open")), { passive: true });
   }
 
   /* ---------------- 斜杠命令 ---------------- */
