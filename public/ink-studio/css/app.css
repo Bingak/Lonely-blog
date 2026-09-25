@@ -116,7 +116,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 #toolbar .tbtn{padding:5px 8px;font-size:12.5px}
 #toolbar .sep{width:1px;height:18px;background:var(--line);margin:0 5px}
 .tb-group{position:relative;display:inline-flex}
-.tb-menu{position:absolute;top:100%;left:0;z-index:30;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:5px;min-width:150px;display:none}
+.tb-menu{position:absolute;top:100%;left:0;z-index:30;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:5px;min-width:210px;white-space:nowrap;display:none}
 .tb-group.open .tb-menu{display:block}
 .tb-menu button{display:block;width:100%;text-align:left;padding:7px 10px;border:none;background:none;color:var(--fg);border-radius:7px;font-size:12.5px}
 .tb-menu button:hover{background:var(--accent-bg);color:var(--accent)}
