@@ -24,6 +24,7 @@ html[data-theme="light"]{
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
+#app{height:100%;display:flex;flex-direction:column}
 body{font-family:var(--font-ui);background:var(--bg);color:var(--fg);overflow:hidden;font-size:14px}
 button{font-family:inherit;cursor:pointer}
 input,select,textarea{font-family:inherit;font-size:13px;color:var(--fg);background:var(--bg3);border:1px solid var(--line);border-radius:8px;padding:7px 10px;outline:none;width:100%}
@@ -60,7 +61,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .turnstile-box{margin:6px 0 2px;min-height:0;display:flex;justify-content:center}
 
 /* ============ 顶栏 ============ */
-#topbar{height:52px;display:flex;align-items:center;gap:8px;padding:0 12px;background:var(--panel);border-bottom:1px solid var(--line)}
+#topbar{height:52px;flex-shrink:0;display:flex;align-items:center;gap:8px;padding:0 12px;background:var(--panel);border-bottom:1px solid var(--line)}
 .doc-title{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
 #docTitleView{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .save-state{font-size:11px;color:var(--fg3)}
@@ -68,7 +69,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .top-actions{display:flex;gap:4px;align-items:center}
 
 /* ============ 布局 ============ */
-#layout{display:flex;height:calc(100% - 52px);overflow:hidden;min-height:0}
+#layout{flex:1;display:flex;overflow:hidden;min-height:0}
 #configPanel{width:290px;min-width:290px;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden;min-height:0}
 .panel-head{display:flex;align-items:center;gap:8px;padding:12px;border-bottom:1px solid var(--line);font-weight:600;font-size:13px;flex-shrink:0}
 .panel-head select{width:auto;flex:1;font-size:12px}
