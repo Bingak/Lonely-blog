@@ -249,12 +249,48 @@ body.zen #editorWrap{max-width:860px;margin:0 auto;width:100%}
   #configPanel,#editorPane,#previewPane{position:absolute;inset:0;width:100%;min-width:0;display:none;border:none}
   #configPanel.show,#editorPane.show,#previewPane.show{display:flex}
   #mobileTabs{display:flex;height:48px;background:var(--panel);border-top:1px solid var(--line)}
-  #mobileTabs button{flex:1;border:none;background:none;color:var(--fg2);font-size:13px}
+  #mobileTabs button{flex:1;border:none;background:none;color:var(--fg2);font-size:13px;min-height:44px}
   #mobileTabs button.active{color:var(--accent);font-weight:700}
-  .top-actions .tbtn{padding:6px 7px;font-size:12px}
-  #btnZen,#btnGithub{display:none}
+  /* 顶栏在移动端横向滚动，保证 GitHub/导出等按钮可触达 */
+  #topbar{overflow-x:auto;scrollbar-width:none}
+  #topbar::-webkit-scrollbar{display:none}
+  .top-actions{flex-shrink:0}
+  .top-actions .tbtn{padding:6px 7px;font-size:12px;min-height:36px}
+  .top-actions .btn{padding:7px 12px;font-size:12px;min-height:36px}
+  /* 移动端保留 GitHub 发布入口（不再隐藏），专注模式可从顶栏右侧触发 */
+  #btnZen{display:none}
+  #btnGithub{display:inline-flex}
   .pv-page{padding:16px}
+  /* 编辑器触摸优化 */
+  #editor{font-size:15px;line-height:1.75;padding:12px 14px;-webkit-text-size-adjust:100%}
+  #gutter{font-size:12.5px;width:42px}
+  /* 表单行在窄屏堆叠 */
+  .field-row{flex-direction:column}
+  .field-row>.field{width:100%}
+  /* 弹窗适配 */
+  .modal{width:96vw;max-height:92vh}
+  .sync-tabs{overflow-x:auto}
+  .link-item{grid-template-columns:1fr}
 }
+/* 更小屏：工具栏可横向滚动避免折行挤压 */
+@media (max-width:480px){
+  #toolbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  #toolbar::-webkit-scrollbar{display:none}
+  .doc-title{flex:0 0 auto;max-width:40vw}
+}
+
+/* ============ 必填 / 选填标记 ============ */
+.req-mark{color:var(--danger);font-weight:700;margin-left:3px}
+.opt-mark{color:var(--fg3);font-size:10.5px;font-weight:400;margin-left:6px;opacity:.8}
+
+/* ============ 仓库同步弹窗 ============ */
+.sync-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.sync-tab{border:1px solid var(--line);background:var(--bg3);color:var(--fg2);border-radius:8px;padding:7px 14px;font-size:12.5px;transition:.12s}
+.sync-tab.on{background:var(--accent-bg);color:var(--accent);border-color:var(--accent);font-weight:600}
+.sync-list{max-height:52vh;overflow-y:auto;border:1px solid var(--line);border-radius:10px;padding:6px}
+.sync-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;cursor:pointer;font-size:13px;transition:.12s}
+.sync-item:hover{background:var(--accent-bg)}
+.sync-item .sync-act{color:var(--accent);font-size:12px;opacity:.8}
 
 /* ============ 打印 ============ */
 @media print{

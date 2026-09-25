@@ -10,7 +10,7 @@
 
   /* ================= 常量 ================= */
   const LS = { docs: "inkpost.docs.v1", current: "inkpost.current", settings: "inkpost.settings" };
-  const TYPE_NAME = { post: "文章", project: "项目", dynamic: "动态", gallery: "画廊" };
+  const TYPE_NAME = { post: "文章", project: "项目", dynamic: "动态", gallery: "相册" };
   const COLLECTION = { post: "posts", project: "projects", dynamic: "dynamic" }; // gallery 走 ghPushGallery，不经此表
   const LICENSES = [
     ["", "不使用"], ["MIT", "MIT License", "https://opensource.org/licenses/MIT"],
@@ -155,13 +155,18 @@
   }
 
   /* ================= 表单生成 ================= */
-  function fld(label, inner, hint) {
-    return `<div class="field"><label>${label}</label>${inner}${hint ? `<div class="hint">${hint}</div>` : ""}</div>`;
+  function fld(label, inner, hint, req) {
+    const mark = req === true
+      ? '<span class="req-mark" title="必填">*</span>'
+      : req === false
+        ? '<span class="opt-mark">选填</span>'
+        : '';
+    return `<div class="field"><label>${label}${mark}</label>${inner}${hint ? `<div class="hint">${hint}</div>` : ""}</div>`;
   }
-  function txt(key, value, ph, hint, label) {
-    return fld(label, `<input data-f="${key}" value="${MD.esc(value || "")}" placeholder="${ph || ""}">`, hint);
+  function txt(key, value, ph, hint, label, req) {
+    return fld(label, `<input data-f="${key}" value="${MD.esc(value || "")}" placeholder="${ph || ""}">`, hint, req);
   }
-  function dateFld(key, value, label, withTimeKey) {
+  function dateFld(key, value, label, withTimeKey, req) {
     const wt = withTimeKey ? !!withTimeKey.value : / \d{2}:\d{2}/.test(value || "");
     return fld(label,
       `<div class="field-row"><input data-f="${key}" value="${MD.esc(value || "")}" placeholder="${wt ? "2026-08-04 10:30:00" : "2026-08-04"}" style="flex:1">
@@ -197,48 +202,48 @@
     let h = "";
     if (d.type === "dynamic") {
       h += `<div class="fset" open><summary>动态信息</summary><div class="fbody">`;
-      h += dateFld("published", f.published, "发布时间");
+      h += dateFld("published", f.published, "发布时间", null, true);
       h += txt("location", f.location, "如：邯郸", "", "位置");
       h += `<label class="chk"><input type="checkbox" data-fb="pinned" ${f.pinned ? "checked" : ""}> 置顶</label>`;
       h += `</div></div>`;
       h += `<div class="fset"><summary>自定义字段</summary><div class="fbody" data-custom></div></div>`;
     } else if (d.type === "project") {
       h += `<div class="fset" open><summary>基础信息</summary><div class="fbody">`;
-      h += txt("title", f.title, "项目名 · 一句话描述", "标题中的冒号、引号会自动转义", "项目标题 *");
-      h += txt("slug", f.slug, "midrop-win11-menu", "导出文件名优先使用 slug", "Slug");
-      h += dateFld("published", f.published, "发布日期");
+      h += txt("title", f.title, "项目名 · 一句话描述", "标题中的冒号、引号会自动转义", "项目标题", true);
+      h += txt("slug", f.slug, "midrop-win11-menu", "导出文件名优先使用 slug", "Slug", false);
+      h += dateFld("published", f.published, "发布日期", null, false);
       h += `<div class="field-row">` +
         fld("排序 order", `<input data-f="order" type="number" value="${f.order ?? ""}" placeholder="95">`) +
         fld("状态 status", `<select data-f="status">${["", "published", "developing", "archived", "paused"].map(s => `<option ${f.status === s ? "selected" : ""} value="${s}">${s || "（默认）"}</option>`).join("")}</select>`) +
         `</div>`;
       h += `<label class="chk"><input type="checkbox" data-fb="draft" ${f.draft ? "checked" : ""}> 草稿（不对读者可见）</label>`;
-      h += txt("lang", f.lang, "zh_CN", "与站点默认语言不同时填写", "语言");
+      h += txt("lang", f.lang, "zh_CN", "与站点默认语言不同时填写", "语言", false);
       h += `</div></div>`;
       h += `<div class="fset" open><summary>简介与封面</summary><div class="fbody">`;
-      h += fld("项目描述", `<textarea data-f="description" rows="3">${MD.esc(f.description || "")}</textarea>`, "描述中的冒号、引号会自动转义");
-      h += txt("image", f.image, "https://img.lonelybing.top/…", "", "封面图片");
+      h += fld("项目描述", `<textarea data-f="description" rows="3">${MD.esc(f.description || "")}</textarea>`, "描述中的冒号、引号会自动转义", false);
+      h += txt("image", f.image, "https://img.lonelybing.top/…", "", "封面图片", false);
       h += `</div></div>`;
       h += `<div class="fset" open><summary>标签</summary><div class="fbody">${chips("tags", f.tags, "标签")}</div></div>`;
       h += `<div class="fset" open><summary>相关链接</summary><div class="fbody"><div data-links></div><button class="btn small add-mini" data-addlink>＋ 添加链接</button></div></div>`;
       h += `<div class="fset"><summary>自定义字段</summary><div class="fbody" data-custom></div></div>`;
     } else if (d.type === "gallery") {
       h += `<div class="fset" open><summary>相册信息</summary><div class="fbody">`;
-      h += txt("id", f.id, "firefly-2026", "相册唯一标识，用于目录与 URL 路径；修改将视为新相册", "相册 ID *");
-      h += txt("name", f.name, "相册名称", "", "相册名称 *");
-      h += fld("相册描述", `<textarea data-f="description" rows="2">${MD.esc(f.description || "")}</textarea>`);
-      h += `<div class="field-row">${txt("location", f.location, "拍摄地点", "", "地点")}${txt("date", f.date, "2026-09-24", "格式 YYYY-MM-DD", "日期")}</div>`;
-      h += txt("cover", f.cover, "封面图 URL（可选，留空用第一张图）", "", "封面图");
-      h += `<div class="field-row">${txt("password", f.password, "", "访问密码（可选）", "访问密码")}${txt("passwordHint", f.passwordHint, "", "输错密码时显示", "密码提示")}</div>`;
+      h += txt("id", f.id, "firefly-2026", "相册唯一标识，用于目录与 URL 路径；修改将视为新相册", "相册 ID", true);
+      h += txt("name", f.name, "相册名称", "", "相册名称", true);
+      h += fld("相册描述", `<textarea data-f="description" rows="2">${MD.esc(f.description || "")}</textarea>`, "", false);
+      h += `<div class="field-row">${txt("location", f.location, "拍摄地点", "", "地点", false)}${txt("date", f.date, "2026-09-24", "格式 YYYY-MM-DD", "日期", false)}</div>`;
+      h += txt("cover", f.cover, "封面图 URL（可选，留空用第一张图）", "", "封面图", false);
+      h += `<div class="field-row">${txt("password", f.password, "", "访问密码（可选）", "访问密码", false)}${txt("passwordHint", f.passwordHint, "", "输错密码时显示", "密码提示", false)}</div>`;
       h += `</div></div>`;
       h += `<div class="fset" open><summary>相册标签</summary><div class="fbody">${chips("tags", f.tags, "回车添加标签")}</div></div>`;
-      h += `<div class="fset" open><summary>图片列表</summary><div class="fbody"><div data-gimgs></div><button class="btn small add-mini" data-addgimg>＋ 添加图片</button><div class="hint">发布时写入 public/gallery/{ID}/urls.txt，每行一个图片 URL</div></div></div>`;
+      h += `<div class="fset" open><summary>图片列表</summary><div class="fbody"><div data-gimgs></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn small add-mini" data-addgimg>＋ 添加图片</button><button class="btn small" data-batchgimg>📋 批量添加</button></div><div class="hint">发布时写入 public/gallery/{ID}/urls.txt，每行一个图片 URL。批量添加每行一张，可用 <code>URL|图注</code> 格式。</div></div></div>`;
     } else { // post
       h += `<div class="fset" open><summary>基础信息</summary><div class="fbody">`;
-      h += txt("title", f.title, "文章标题", "标题中的冒号、引号会自动转义，无需手写 YAML", "文章标题 *");
-      h += dateFld("published", f.published, "发布时间");
-      h += dateFld("updated", f.updated, "更新时间（留空则不输出）");
-      h += fld("文章描述", `<textarea data-f="description" rows="3">${MD.esc(f.description || "")}</textarea>`, "显示在首页文章卡片上；冒号、引号自动转义");
-      h += txt("slug", f.slug, "my-first-post", "导出文件名优先使用 slug", "自定义 Slug");
+      h += txt("title", f.title, "文章标题", "标题中的冒号、引号会自动转义，无需手写 YAML", "文章标题", true);
+      h += dateFld("published", f.published, "发布时间", null, true);
+      h += dateFld("updated", f.updated, "更新时间（留空则不输出）", null, false);
+      h += fld("文章描述", `<textarea data-f="description" rows="3">${MD.esc(f.description || "")}</textarea>`, "显示在首页文章卡片上；冒号、引号自动转义", false);
+      h += txt("slug", f.slug, "my-first-post", "导出文件名优先使用 slug", "自定义 Slug", false);
       h += `</div></div>`;
       h += `<div class="fset" open><summary>封面图片</summary><div class="fbody">${segCover(f)}</div></div>`;
       h += `<div class="fset" open><summary>标签与分类</summary><div class="fbody">${chips("tags", f.tags, "标签")}${txt("category", f.category, "如：项目分享", "", "分类")}</div></div>`;
@@ -277,7 +282,7 @@
     });
     host.querySelectorAll("[data-dellink]").forEach(b => b.onclick = () => { arr.splice(+b.dataset.dellink, 1); renderLinks(); touch(); });
   }
-  /* ------- 画廊图片 ------- */
+  /* ------- 相册图片 ------- */
   function renderGimgs() {
     const host = $("[data-gimgs]"); if (!host) return;
     const arr = cur.galleryImgs;
@@ -289,6 +294,20 @@
       </div>`).join("");
     host.querySelectorAll("[data-gi]").forEach(inp => inp.oninput = () => { arr[+inp.dataset.gi][inp.dataset.k] = inp.value; touch(); });
     host.querySelectorAll("[data-delgimg]").forEach(b => b.onclick = () => { arr.splice(+b.dataset.delgimg, 1); renderGimgs(); touch(); });
+  }
+  /* ------- 批量添加相册图片 ------- */
+  function batchAddGimgs() {
+    askModal("批量添加图片", [{ k: "text", label: "每行一张图，格式：URL 或 URL|图注", area: true }], v => {
+      if (!v.text) return;
+      const lines = v.text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      let n = 0;
+      lines.forEach(l => {
+        const [src, alt] = l.split("|").map(x => (x || "").trim());
+        if (src) { cur.galleryImgs.push({ src, alt: alt || "" }); n++; }
+      });
+      renderGimgs(); touch();
+      toast(`已添加 ${n} 张图片`, "ok");
+    });
   }
   /* ------- 自定义字段 ------- */
   function renderCustom() {
@@ -370,6 +389,8 @@
     if (addLink) addLink.onclick = () => { (cur.fm.links = cur.fm.links || []).push({ label: "", icon: "", value: "" }); renderLinks(); touch(); };
     const addGimg = host.querySelector("[data-addgimg]");
     if (addGimg) addGimg.onclick = () => { cur.galleryImgs.push({ src: "", alt: "" }); renderGimgs(); touch(); };
+    const batchGimg = host.querySelector("[data-batchgimg]");
+    if (batchGimg) batchGimg.onclick = () => batchAddGimgs();
   }
 
   /* ================= 保存 / 刷新 ================= */
@@ -698,7 +719,8 @@
       <label>Turnstile Site Key（可选，默认用站点公开 Key）<input id="ghTs" value="${MD.esc(settings.turnstileKey)}" placeholder="${TS_SITEKEY_DEFAULT}"></label>
       <p style="font-size:11.5px;color:var(--fg3)">Token 仅保存在本机浏览器 localStorage。提交使用 GitHub Contents API，推送即触发 Cloudflare 构建。登录凭据存于 Worker Secrets，前端不可见。</p>`;
     $("#modalFoot").innerHTML = `
-      <button class="btn" id="ghPull">从仓库拉取文件…</button>
+      <button class="btn" id="ghSync">📥 仓库同步</button>
+      <button class="btn" id="ghPull">拉取文件…</button>
       <span class="spacer"></span>
       <button class="btn" id="ghSaveCfg">保存设置</button>
       <button class="btn primary" id="ghPush">发布当前文档 ⇧</button>`;
@@ -710,6 +732,7 @@
     $("#ghSaveCfg").onclick = () => { collect(); closeModal(); toast("设置已保存", "ok"); };
     $("#ghPush").onclick = async () => { collect(); await ghPush(); };
     $("#ghPull").onclick = async () => { collect(); ghPullAsk(); };
+    $("#ghSync").onclick = async () => { collect(); ghSyncAsk(); };
   }
   /** 逐段编码路径：保留 / 不编码，GitHub Contents API 才能正确解析多级路径 */
   const ghPath = p => p.split("/").map(encodeURIComponent).join("/");
@@ -751,7 +774,7 @@
     const g = settings.github;
     if (!g.token || !g.owner || !g.repo) { toast("请先填写 GitHub 设置", "err"); return; }
     if (cur.type === "gallery") return ghPushGallery();
-    const path = `${g.root}/${COLLECTION[cur.type]}/${fileName(cur)}`;
+    const path = cur._ghPath || `${g.root}/${COLLECTION[cur.type]}/${fileName(cur)}`;
     toast("正在提交到 " + path + " …");
     try {
       const exist = await ghGetFile(path);
@@ -873,6 +896,95 @@
       return src.slice(0, insAbs) + "\n\t\t" + albumText + "," + src.slice(insAbs);
     }
     return src.slice(0, arrEnd) + "\t\t" + albumText + ",\n\t" + src.slice(arrEnd);
+  }
+  /** 从仓库同步：列出各集合已有文档，点击即可拉取并在线编辑 */
+  function ghSyncAsk() {
+    const g = settings.github;
+    if (!g.token || !g.owner || !g.repo) { toast("请先填写 GitHub 设置", "err"); return; }
+    const TABS = {
+      post: { label: "📄 文章", dir: `${g.root}/posts`, type: "post" },
+      project: { label: "🧩 项目", dir: `${g.root}/projects`, type: "project" },
+      dynamic: { label: "💬 动态", dir: `${g.root}/dynamic`, type: "dynamic" },
+      gallery: { label: "🖼 相册", dir: "public/gallery", type: "gallery" },
+    };
+    let active = "post";
+    $("#modalTitle").textContent = "仓库同步 · 选择已有内容拉取到本地编辑";
+    const render = () => {
+      const tab = TABS[active];
+      $("#modalBody").innerHTML = `<div class="sync-tabs">${Object.entries(TABS).map(([k, v]) => `<button class="sync-tab ${k === active ? "on" : ""}" data-st="${k}">${v.label}</button>`).join("")}</div>
+        <div class="sync-list" data-synclist><div style="color:var(--fg3);padding:20px;text-align:center">加载中…</div></div>
+        <p style="font-size:11.5px;color:var(--fg3);margin:0">拉取后会新建本地文档，编辑完成点「发布当前文档」即可更新仓库（自动覆盖原文件）。</p>`;
+      $$(".sync-tab").forEach(b => b.onclick = () => { active = b.dataset.st; render(); loadList(); });
+      $("#modalFoot").innerHTML = `<button class="btn" id="syncClose">关闭</button>`;
+      $("#syncClose").onclick = closeModal;
+      loadList();
+    };
+    const loadList = async () => {
+      const tab = TABS[active], host = $("[data-synclist]");
+      host.innerHTML = '<div style="color:var(--fg3);padding:20px;text-align:center">加载中…</div>';
+      try {
+        if (active === "gallery") {
+          // 读 galleryConfig.ts 拿相册列表
+          const cfg = await ghGetFile("src/config/galleryConfig.ts");
+          if (!cfg) { host.innerHTML = '<div style="color:var(--danger);padding:20px">读取 galleryConfig.ts 失败</div>'; return; }
+          const ids = [...cfg.text.matchAll(/id\s*:\s*["']([^"']+)["']/g)].map(m => m[1]);
+          if (!ids.length) { host.innerHTML = '<div style="color:var(--fg3);padding:20px">暂无相册</div>'; return; }
+          host.innerHTML = ids.map(id => `<div class="sync-item" data-album="${MD.esc(id)}"><span>🖼 ${MD.esc(id)}</span><span class="sync-act">拉取编辑 →</span></div>`).join("");
+          host.querySelectorAll("[data-album]").forEach(el => el.onclick = () => loadAlbum(el.dataset.album));
+          return;
+        }
+        const r = await ghApi(`/contents/${ghPath(tab.dir)}?ref=${encodeURIComponent(g.branch)}`);
+        if (!r.ok) { host.innerHTML = `<div style="color:var(--danger);padding:20px">读取失败（${r.status}）</div>`; return; }
+        const j = await r.json();
+        const files = (Array.isArray(j) ? j : []).filter(f => f.type === "file" && /\.md$/i.test(f.name));
+        if (!files.length) { host.innerHTML = '<div style="color:var(--fg3);padding:20px">暂无文档</div>'; return; }
+        host.innerHTML = files.map(f => `<div class="sync-item" data-path="${MD.esc(f.path)}" data-sha="${MD.esc(f.sha)}"><span>${MD.esc(f.name)}</span><span class="sync-act">拉取编辑 →</span></div>`).join("");
+        host.querySelectorAll("[data-path]").forEach(el => el.onclick = () => loadMd(el.dataset.path));
+      } catch (e) { host.innerHTML = `<div style="color:var(--danger);padding:20px">${MD.esc(e.message)}</div>`; }
+    };
+    const loadMd = async (path) => {
+      try {
+        const f = await ghGetFile(path);
+        if (!f) throw new Error("读取失败");
+        const name = path.split("/").pop();
+        importMarkdown(f.text, name);
+        // 标记来源路径，发布时直接覆盖
+        cur._ghPath = path; cur._ghSha = f.sha;
+        closeModal();
+        toast(`已拉取「${name}」，可编辑后发布`, "ok");
+      } catch (e) { toast("拉取失败：" + e.message, "err"); }
+    };
+    const loadAlbum = async (id) => {
+      try {
+        const cfg = await ghGetFile("src/config/galleryConfig.ts");
+        if (!cfg) throw new Error("读取 galleryConfig.ts 失败");
+        // 从配置里挖出该相册对象
+        const m = cfg.text.match(new RegExp(`\\{[^}]*id\\s*:\\s*["']${id}["'][\\s\\S]*?\\n\\t\\t\\}`));
+        const objText = m ? m[0] : "";
+        const f = { id, name: id, description: "", location: "", date: "", tags: [], cover: "", password: "", passwordHint: "" };
+        (["name", "description", "location", "date", "cover", "password", "passwordHint"]).forEach(k => {
+          const mm = objText.match(new RegExp(`${k}\\s*:\\s*["']([^"']*)["']`));
+          if (mm) f[k] = mm[1];
+        });
+        const tm = objText.match(/tags\s*:\s*\[([^\]]*)\]/);
+        if (tm) f.tags = [...tm[1].matchAll(/["']([^"']*)["']/g)].map(x => x[1]);
+        const urlsFile = await ghGetFile(`public/gallery/${id}/urls.txt`);
+        const imgs = [];
+        if (urlsFile) {
+          urlsFile.text.split(/\r?\n/).forEach(line => {
+            const s = line.trim(); if (!s || s.startsWith("#")) return;
+            const [src, alt] = s.split("|").map(x => (x || "").trim());
+            if (src) imgs.push({ src, alt: alt || "" });
+          });
+        }
+        const d = newDoc("gallery");
+        d.fm = f; d.galleryImgs = imgs;
+        docs.push(d); openDoc(d.id);
+        closeModal();
+        toast(`已拉取相册「${id}」（${imgs.length} 张），可编辑后发布`, "ok");
+      } catch (e) { toast("拉取失败：" + e.message, "err"); }
+    };
+    render();
   }
   function ghPullAsk() {
     const g = settings.github;

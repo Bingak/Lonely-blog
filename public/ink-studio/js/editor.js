@@ -120,7 +120,7 @@ window.InkEditor = (function () {
     {
       icon: "🖼▾", title: "图片 / 媒体", menu: [
         ["🖼 图片", () => imageInsert()],
-        ["🎞 图片画廊 [grid]", () => gridInsert()],
+        ["🎞 图片相册 [grid]", () => gridInsert()],
         ["📺 视频嵌入 (B站/YouTube)", () => videoInsert()],
         ["🪟 自定义 Iframe", () => iframeInsert()],
       ]
@@ -173,7 +173,7 @@ window.InkEditor = (function () {
     ], v => { if (v.src) wrapOrInsert(`![${v.alt || ""}](${v.src})`); });
   }
   function gridInsert() {
-    askModal("图片画廊", [
+    askModal("图片相册", [
       { k: "imgs", label: "图片地址（每行一个，可用 | 分隔图注；列数按图片数自动计算，最多 4 列）", area: true },
     ], v => {
       if (!v.imgs) return;
@@ -183,22 +183,36 @@ window.InkEditor = (function () {
     });
   }
   function videoInsert() {
-    askModal("视频嵌入", [{ k: "url", label: "视频链接（B 站 BV/av、YouTube watch/youtu.be/shorts）", ph: "https://www.bilibili.com/video/BV…" }], v => {
-      const html = videoIframe(v.url || "");
+    askModal("视频嵌入", [
+      { k: "url", label: "视频链接（自动识别 B站 BV/av/分P、YouTube；其他网址也支持）", ph: "https://www.bilibili.com/video/BV…" },
+      { k: "w", label: "宽度（% 或 px，如 100% / 640）", value: "100%" },
+      { k: "h", label: "高度（px，如 468）", value: "468" },
+    ], v => {
+      const html = videoIframe(v.url || "", v.w || "100%", v.h || "468");
       if (html) insertBlock("\n" + html + "\n");
-      else alert("未识别的视频链接");
+      else alert("未识别的视频链接，请填写完整 URL");
     });
   }
-  function videoIframe(url) {
-    let m = url.match(/bilibili\.com\/video\/(BV\w+|av\d+)/i) || url.match(/^(BV\w+|av\d+)$/i);
+  function videoIframe(url, w, h) {
+    const W = (w || "100%").toString(), H = (h || "468").toString();
+    const safeAttr = s => String(s).replace(/"/g, "");
+    // B站：BV号 / av号 / 分P
+    let m = url.match(/bilibili\.com\/video\/(BV[\w]+|av\d+)/i) || url.match(/^(BV[\w]+|av\d+)$/i);
     if (m) {
       const id = m[1];
       const pM = url.match(/[?&]p=(\d+)/);
       const key = /^av/i.test(id) ? `aid=${id.slice(2)}` : `bvid=${id}`;
-      return `<iframe width="100%" height="468"\n  src="//player.bilibili.com/player.html?${key}&p=${pM ? pM[1] : 1}&autoplay=0&high_quality=1&danmaku=0"\n  scrolling="no" border="0" frameborder="no"\n  framespacing="0" allowfullscreen="true">\n</iframe>`;
+      return `<iframe width="${safeAttr(W)}" height="${safeAttr(H)}" src="//player.bilibili.com/player.html?${key}&p=${pM ? pM[1] : 1}&autoplay=0&high_quality=1&danmaku=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>`;
     }
-    m = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([\w-]{6,})/);
-    if (m) return `<iframe width="100%" height="468"\n  src="https://www.youtube.com/embed/${m[1]}"\n  title="YouTube video player"\n  frameborder="0" allowfullscreen>\n</iframe>`;
+    // YouTube：watch / youtu.be / shorts / embed
+    m = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{6,})/);
+    if (m) {
+      return `<iframe width="${safeAttr(W)}" height="${safeAttr(H)}" src="https://www.youtube.com/embed/${m[1]}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+    }
+    // 其他视频网站：通用 iframe 嵌入
+    if (/^https?:\/\//i.test(url)) {
+      return `<iframe width="${safeAttr(W)}" height="${safeAttr(H)}" src="${safeAttr(url)}" frameborder="0" allowfullscreen></iframe>`;
+    }
     return null;
   }
   function iframeInsert() {
@@ -287,7 +301,7 @@ window.InkEditor = (function () {
     ["☑", "任务列表", "- [ ] "], ["—", "分割线", "\n---\n"],
     ["</>", "代码块", () => codeInsert()], ["▦", "表格", () => tableInsert()],
     ["💡", "提示块", () => admon("TIP")], ["🔗", "链接", () => linkInsert()],
-    ["🖼", "图片", () => imageInsert()], ["🎞", "图片画廊", () => gridInsert()],
+    ["🖼", "图片", () => imageInsert()], ["🎞", "图片相册", () => gridInsert()],
     ["📺", "视频嵌入", () => videoInsert()], ["🐙", "GitHub 卡片", () => githubInsert()],
     ["📄", "内部链接", () => wikiInsert()], ["🃏", "文章卡片", () => cardInsert()],
     ["🧜", "Mermaid", () => langCode("mermaid", "graph TD;\n  A --> B;")], ["∑", "块级公式", "\n$$\n\n$$\n"],

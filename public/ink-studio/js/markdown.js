@@ -351,7 +351,7 @@ window.InkMD = (function () {
         html += `<a class="post-card" href="/posts/${encodeURIComponent(slug)}/" target="_blank"><div class="pc-title">📄 ${esc(t)}</div><div class="pc-path">/posts/${esc(slug)}/</div></a>`;
         i++; continue;
       }
-      // 图片画廊 [grid cols=3] ... [/grid]
+      // 图片相册 [grid cols=3] ... [/grid]
       if (/^\[grid(?:\s+cols=(\d))?\]\s*$/i.test(line)) {
         flushPara();
         const cols = Math.min(6, Math.max(1, +(RegExp.$1 || 2)));

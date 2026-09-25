@@ -625,6 +625,14 @@ html {
   --_spoiler-mask: color-mix(in oklch, var(--primary) 55%, white 45%);
 }
 
+/* 高亮效果 ==text== */
+.custom-md mark {
+  @apply px-1 py-0.5 rounded-md font-medium;
+  background: color-mix(in oklch, var(--primary) 25%, transparent);
+  color: inherit;
+  box-decoration-break: clone;
+}
+
 /* 文章列表布局切换样式 */
 .post-list-layout-switch {
   @apply flex items-center gap-2 mb-6 p-3 bg-(--card-bg) rounded-lg border border-(--line-divider);

@@ -14,45 +14,20 @@ import icon from "astro-icon";
 import { pluginLanguageLogo } from "ec-lang-logo"; /* Language Logo */
 import { pluginCollapsible } from "expressive-code-collapsible"; /* Collapsible */
 import { pluginLanguageBadge } from "expressive-code-language-badge"; /* Language Badge */
-import katex from "katex";
-import "katex/dist/contrib/mhchem.mjs"; // 加载 mhchem 扩展
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import rehypeCallouts from "rehype-callouts";
-import rehypeCodeGroup from "rehype-code-group"; /* Tab 代码块 */
-import rehypeComponents from "rehype-components"; /* Render the custom directive content */
-import rehypeKatex from "rehype-katex";
-import rehypeSlug from "rehype-slug";
-import remarkAdmonitionToBlockquoteCallout from "remark-admonition-to-blockquote-callout";
-import remarkDirective from "remark-directive"; /* Handle directives */
-import remarkMath from "remark-math";
-import remarkSectionize from "remark-sectionize";
 import {
 	commentConfig,
 	dynamicConfig,
 	expressiveCodeConfig,
 	fontConfig,
 	fontsList,
-	mermaidConfig,
-	plantumlConfig,
 	siteConfig,
 } from "./src/config";
 import I18nKey from "./src/i18n/i18nKey";
 import { i18n } from "./src/i18n/translation";
-import { GithubCardComponent } from "./src/plugins/rehype-component-github-card.mjs";
-import { rehypeDiagramPanZoom } from "./src/plugins/rehype-diagram-panzoom.mjs";
-import rehypeEmailProtection from "./src/plugins/rehype-email-protection.mjs";
-import rehypeExternalLinks from "./src/plugins/rehype-external-links.mjs";
-import rehypeFigure from "./src/plugins/rehype-figure.mjs";
-import rehypeImageReferrerPolicy from "./src/plugins/rehype-image-referrerpolicy.mjs";
-import { rehypeMermaid } from "./src/plugins/rehype-mermaid.mjs";
-import { rehypePlantuml } from "./src/plugins/rehype-plantuml.mjs";
-import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype.js";
-import { remarkExcerpt } from "./src/plugins/remark-excerpt.js";
-import { remarkImageGrid } from "./src/plugins/remark-image-grid.js";
-import { remarkMermaid } from "./src/plugins/remark-mermaid.js";
-import { remarkPlantuml } from "./src/plugins/remark-plantuml.js";
-import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
-import { remarkWikiLink } from "./src/plugins/remark-wiki-link.js";
+import {
+	markdownRehypePlugins,
+	markdownRemarkPlugins,
+} from "./src/utils/markdown-pipeline.mjs";
 import { collectUsedFontCssVars } from "./src/utils/fontHelper";
 
 if (process.env.NODE_ENV === "development") {
@@ -285,69 +260,8 @@ export default defineConfig({
 	],
 	markdown: {
 		processor: unified({
-			remarkPlugins: [
-				...(siteConfig.post.rehypeCallouts.enablePythonMarkdownAdmonitions !==
-				false
-					? [remarkAdmonitionToBlockquoteCallout]
-					: []),
-				remarkMath,
-				remarkReadingTime,
-				remarkWikiLink,
-				remarkImageGrid,
-				remarkExcerpt,
-				remarkDirective,
-				remarkSectionize,
-				parseDirectiveNode,
-				remarkMermaid,
-				[remarkPlantuml, plantumlConfig],
-			],
-			rehypePlugins: [
-				[rehypeKatex, { katex }],
-				[rehypeCallouts, { theme: siteConfig.post.rehypeCallouts.theme }],
-				rehypeSlug,
-				rehypeCodeGroup,
-				[rehypeMermaid, mermaidConfig],
-				rehypePlantuml,
-				rehypeDiagramPanZoom,
-				rehypeFigure,
-				[
-					rehypeImageReferrerPolicy,
-					{ domains: siteConfig.imageOptimization?.noReferrerDomains || [] },
-				],
-				[rehypeExternalLinks, { siteUrl: siteConfig.site_url }],
-				[rehypeEmailProtection, { method: "base64" }], // 邮箱保护插件，支持 'base64' 或 'rot13'
-				[
-					rehypeComponents,
-					{
-						components: {
-							github: GithubCardComponent,
-						},
-					},
-				],
-				[
-					rehypeAutolinkHeadings,
-					{
-						behavior: "append",
-						properties: {
-							className: ["anchor"],
-						},
-						content: {
-							type: "element",
-							tagName: "span",
-							properties: {
-								className: ["anchor-icon"],
-								"data-pagefind-ignore": true,
-							},
-							children: [
-								{
-									type: "text",
-									value: "#",
-								},
-							],
-						},
-					},
-				],
-			],
+			remarkPlugins: markdownRemarkPlugins,
+			rehypePlugins: markdownRehypePlugins,
 		}),
 	},
 	vite: {

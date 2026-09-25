@@ -5,11 +5,20 @@ import {
 	dynamicSlug,
 	sortDynamics,
 } from "@/utils/dynamic-utils";
+import {
+	markdownRehypePlugins,
+	markdownRemarkPlugins,
+} from "@/utils/markdown-pipeline.mjs";
 
 const markdownImagePattern = /!\[([^\]]*)\]\((\S+?)(?:\s+["']([^"']*)["'])?\)/g;
 
 export async function GET(): Promise<Response> {
-	const processor = await createMarkdownProcessor();
+	// 与文章页共用同一套 Markdown 插件管线，
+	// 保证 :spoiler[] / ==高亮== / 提示块 / 公式 / 图表 / wiki 链接 等扩展语法在动态页同样生效
+	const processor = await createMarkdownProcessor({
+		remarkPlugins: markdownRemarkPlugins,
+		rehypePlugins: markdownRehypePlugins,
+	});
 	const dynamics = sortDynamics(await getCollection("dynamic"));
 	const data = await Promise.all(
 		dynamics.map(async (entry) => {
