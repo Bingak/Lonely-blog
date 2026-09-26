@@ -113,7 +113,7 @@ window.InkEditor = (function () {
       icon: "🔗▾", title: "链接 / 卡片", menu: [
         ["🔗 链接", () => linkInsert()],
         ["📄 内部链接 [[slug]]", () => wikiInsert()],
-        ["🃏 文章卡片 ![[slug]]", () => cardInsert()],
+        ["🃏 文章卡片 [[slug]] 单行", () => cardInsert()],
         ["🐙 GitHub 卡片", () => githubInsert()],
       ]
     },
@@ -158,9 +158,9 @@ window.InkEditor = (function () {
   }
   function cardInsert() {
     askModal("文章卡片", [
-      { k: "slug", label: "文章 slug", ph: "my-first-post" },
+      { k: "slug", label: "文章 slug（单独成行才渲染为卡片）", ph: "my-first-post" },
       { k: "title", label: "卡片标题（可留空）" },
-    ], v => { if (v.slug) insertBlock(`\n![[${v.slug}${v.title ? "|" + v.title : ""}]]\n`); });
+    ], v => { if (v.slug) insertBlock(`\n[[${v.slug}${v.title ? "|" + v.title : ""}]]\n`); });
   }
   function githubInsert() {
     askModal("GitHub 卡片", [{ k: "repo", label: "仓库（owner/repo）", ph: "Bingak/MiDropWin11Menu" }],

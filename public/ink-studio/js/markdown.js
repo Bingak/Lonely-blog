@@ -174,8 +174,8 @@ window.InkMD = (function () {
     s = s.replace(/:spoiler\[([^\]]+)\]/g, '<span class="spoiler" onclick="this.classList.toggle(\'open\')">$1</span>');
     // 行内数学
     s = s.replace(/\$([^$\n]+)\$/g, '<span class="math">$1</span>');
-    // wiki 链接
-    s = s.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, slug, alias) => {
+    // wiki 链接（![[...]] 前台不解析，预览保持原样以免误导）
+    s = s.replace(/(?<!!)\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, slug, alias) => {
       const t = (alias || slug).trim(), tg = slug.trim();
       if (tg.startsWith("#")) return `<a class="wiki-link" href="${esc(tg)}">${esc(t)}</a>`;
       return `<a class="wiki-link" href="/posts/${encodeURIComponent(tg)}/" target="_blank">${esc(t)}</a>`;
@@ -343,8 +343,8 @@ window.InkMD = (function () {
         html += `<div class="gh-card"><div class="gh-ic">🐙</div><div><div class="gh-repo">${esc(gh[1])}</div><div class="gh-sub">GitHub 仓库卡片 · 前台自动拉取数据</div></div></div>`;
         i++; continue;
       }
-      // 文章卡片 ![[slug]]
-      const pc = line.match(/^!\[\[([^\]|]+)(?:\|([^\]]+))?\]\]\s*$/);
+      // 文章卡片：单独成行的 [[slug]]（与前台 remark-wiki-link 一致，![[...]] 前台不支持）
+      const pc = line.match(/^\[\[([^\]|#]+)(?:\|([^\]]+))?\]\]\s*$/);
       if (pc) {
         flushPara();
         const slug = pc[1].trim(), t = (pc[2] || pc[1]).trim();

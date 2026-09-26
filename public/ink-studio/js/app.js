@@ -688,7 +688,7 @@ function buildMarkdown(d) {
       body.querySelectorAll("[data-mf]").forEach(i => v[i.dataset.mf] = i.value);
       cb(v);
     };
-    $("#mOk").onclick = () => { closeModal(); modalCb && modalCb(); window.InkEditor.focus(); };
+    $("#mOk").onclick = () => { const cb = modalCb; closeModal(); cb && cb(); window.InkEditor.focus(); };
     $("#mCancel").onclick = closeModal;
     $("#modalBack").hidden = false;
     const first = body.querySelector("[data-mf]"); if (first) first.focus();
