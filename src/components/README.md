@@ -6,7 +6,6 @@
 - `pages/dynamic/DynamicFeed.svelte`：负责动态 JSON 加载、搜索、年份筛选和分页。
 - `pages/dynamic/DynamicGallery.astro`：动态图片网格、轮播和灯箱。
 - `pages/dynamic/DynamicInlineComments.astro`：单条动态的按需评论区。
-- `pages/dynamic/DynamicItem.astro`：动态条目的服务端渲染组件。
 - `pages/dynamic/DynamicItemTemplate.astro`：动态条目的客户端渲染模板。
 
 Firefly 项目中所有可复用组件的集中管理。组件按照功能和职责进行分类，提供清晰的架构和易于维护的代码组织。
@@ -92,7 +91,6 @@ Firefly 项目中所有可复用组件的集中管理。组件按照功能和职
 - `SidebarTOC.astro` - 侧边栏目录组件
 - `SiteInfo.astro` - 站点信息组件
 - `SiteStats.astro` - 站点统计组件
-- `SpineModel.astro` - Spine 看板娘组件
 - `Tags.astro` - 标签组件
 
 ### ✨ features/ - 全局功能特效组件
