@@ -98,14 +98,11 @@ export const siteConfig: SiteConfig = {
 	// Favicon 配置
 	// 如果启用了OpenGraph图片功能，数组中需要包含png格式的favicon图标
 	favicon: [
-		{
-			// 图标文件路径
-			src: "/favicon/firefly-32.png",
-			// 可选，指定主题 'light' | 'dark'
-			// theme: "light",
-			// 可选，图标大小
-			// sizes: "32x32",
-		},
+		// Layout.astro 拿数组里第一个 png 当 apple-touch-icon，故 180 放最前（它是唯一不透明底的一张）
+		{ src: "/favicon/lonely-180.png", sizes: "180x180" },
+		{ src: "/favicon/lonely-32.png", sizes: "32x32" },
+		{ src: "/favicon/lonely-128.png", sizes: "128x128" },
+		{ src: "/favicon/lonely-192.png", sizes: "192x192" },
 	],
 
 	// 导航栏配置
