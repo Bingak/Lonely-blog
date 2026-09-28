@@ -26,6 +26,14 @@ window.InkEditor = (function () {
     replaceRange(s, e, before + t + (after == null ? before : after));
     setSel(s + before.length, s + before.length + t.length);
   }
+  function colorInsert(color) {
+    const { s, e } = sel();
+    const t = ta.value.slice(s, e) || "彩色文字";
+    const open = "<span style=\"color:" + color + "\">";
+    const close = "</span>";
+    replaceRange(s, e, open + t + close);
+    setSel(s + open.length, s + open.length + t.length);
+  }
 
   function lineStart(pos) { return ta.value.lastIndexOf("\n", pos - 1) + 1; }
   function currentLine() {
