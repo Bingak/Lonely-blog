@@ -87,6 +87,22 @@ window.InkEditor = (function () {
     { icon: "I", title: "斜体 (Ctrl+I)", run: () => wrapSel("*", "*", "斜体") },
     { icon: "S", title: "删除线", run: () => wrapSel("~~", "~~", "删除线") },
     { icon: "H", title: "高亮", run: () => wrapSel("==", "==", "高亮") },
+    {
+      icon: "🎨▾", title: "文字颜色", menu: [
+        ["🔴 红色", () => colorInsert("red")],
+        ["🟠 橙色", () => colorInsert("orange")],
+        ["🟡 黄色", () => colorInsert("yellow")],
+        ["🟢 绿色", () => colorInsert("green")],
+        ["🔵 蓝色", () => colorInsert("blue")],
+        ["🟣 紫色", () => colorInsert("purple")],
+        ["⚪ 白色", () => colorInsert("white")],
+        ["⚫ 黑色", () => colorInsert("black")],
+        ["🩵 天蓝", () => colorInsert("skyblue")],
+        ["🩷 粉色", () => colorInsert("pink")],
+        ["🟤 棕色", () => colorInsert("brown")],
+        ["🩶 灰色", () => colorInsert("gray")],
+      ]
+    },
     { icon: "<>", title: "行内代码", run: () => wrapSel("`", "`", "code") },
     { icon: "S▣", title: "剧透遮罩", run: () => wrapSel(":spoiler[", "]", "隐藏内容") },
     "sep",
