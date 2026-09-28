@@ -31,7 +31,9 @@ window.InkEditor = (function () {
     const t = ta.value.slice(s, e) || "彩色文字";
     const open = "<span style=\"color:" + color + "\">";
     const close = "</span>";
-    replaceRange(s, e, open + t + close);
+    ta.focus();
+    ta.setSelectionRange(s, e);
+    document.execCommand("insertText", false, open + t + close);
     setSel(s + open.length, s + open.length + t.length);
   }
 
