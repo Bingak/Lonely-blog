@@ -4,8 +4,18 @@
 		"imgurl": "https://weavatar.com/avatar/d252655d40d6874417a720bad0a6c5f77f8f6a1fd2f882f8f338402dc37e4190?s=640",
 		"desc": "飞萤之火自无梦的长夜亮起，绽放在终竟的明天。",
 		"siteurl": "https://blog.cuteleaf.cn",
-		"tags": ["Blog"],
+		"tags": [
+			"Blog"
+		],
 		"weight": 10,
+		"enabled": true
+	},
+	{
+		"title": "xiaodaidai的博客",
+		"imgurl": "https://static.xiaodaidai.site/assets/picture/%E5%A4%B4%E5%83%8F%E8%83%8C%E9%9D%A2.jpeg",
+		"desc": "星凝眉上字，潮敛贝中音。",
+		"siteurl": "https://xiaodaidai.site/",
+		"weight": 0,
 		"enabled": true
 	}
 ]
