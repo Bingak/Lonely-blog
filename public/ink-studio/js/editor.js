@@ -213,11 +213,25 @@ window.InkEditor = (function () {
     askModal("GitHub 卡片", [{ k: "repo", label: "仓库（owner/repo）", ph: "Bingak/MiDropWin11Menu" }],
       v => { if (v.repo) insertBlock(`\n::github{repo="${v.repo}"}\n`); });
   }
+  function normalizeImgSize(raw) {
+    let v = (raw || "").trim();
+    if (!v) return "";
+    if (v.startsWith("=")) return v;
+    if (/%$/.test(v)) return "=" + v; // 60% → =60%
+    if (/^\d+(\.\d+)?x\d+(\.\d+)?$/i.test(v)) return "=" + v; // 480x360 → =480x360
+    if (/^\d+(\.\d+)?$/.test(v)) return "=x" + v; // 480 → =x480
+    return "";
+  }
   function imageInsert() {
     askModal("插入图片", [
       { k: "alt", label: "描述（alt）" },
       { k: "src", label: "图片地址", ph: "images/xxx.png 或 https://…" },
-    ], v => { if (v.src) wrapOrInsert(`![${v.alt || ""}](${v.src})`); });
+      { k: "size", label: "显示宽度（留空＝默认缩小；如 45% / 360 / 480x360）", value: "45%", ph: "45%" },
+    ], v => {
+      if (!v.src) return;
+      const size = normalizeImgSize(v.size);
+      wrapOrInsert(`![${v.alt || ""}](${v.src}${size ? ` "${size}"` : ""})`);
+    });
   }
   function gridInsert() {
     askModal("图片相册", [

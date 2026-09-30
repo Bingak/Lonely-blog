@@ -158,9 +158,25 @@ window.InkMD = (function () {
     const codes = [];
     s = s.replace(/`([^`]+)`/g, (_, c) => { codes.push(c); return "\u0001" + (codes.length - 1) + "\u0001"; });
     s = esc(s);
-    // 图片
-    s = s.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g,
-      (_, a, src, t) => `<img src="${esc(src)}" alt="${esc(a)}"${t ? ` title="${esc(t)}"` : ""} loading="lazy">`);
+    // 图片（支持 Typora 风格尺寸标注 ![alt](src =x400 / =60% / =400x300)）
+    s = s.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+([^)]*))?\)/g, (_, a, src, extra) => {
+      extra = (extra || "").trim().replace(/^"(.*)"$/, "$1").replace(/^'(.*)'$/, "$1");
+      let attrs = "";
+      if (extra.startsWith("=")) {
+        const m = /^=(?:x(\d+(?:\.\d+)?)|(\d+(?:\.\d+)?)(?:x(\d+(?:\.\d+)?))?|(\d+(?:\.\d+)?)%)$/.exec(extra);
+        if (m) {
+          const w = m[1] || m[2], h = m[3], pct = m[4];
+          if (pct) attrs += ` style="width:${pct}%;max-width:100%"`;
+          else {
+            if (w) attrs += ` width="${w}"`;
+            if (h) attrs += ` height="${h}"`;
+          }
+        }
+      } else if (extra) {
+        attrs += ` title="${esc(extra.replace(/^"|"$/g, ""))}"`;
+      }
+      return `<img src="${esc(src)}" alt="${esc(a)}"${attrs} loading="lazy">`;
+    });
     // 链接
     s = s.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g,
       (_, a, href, t) => `<a href="${esc(href)}" target="_blank" rel="noopener"${t ? ` title="${esc(t)}"` : ""}>${a}</a>`);

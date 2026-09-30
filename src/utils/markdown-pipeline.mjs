@@ -22,6 +22,7 @@ import { rehypePlantuml } from "../plugins/rehype-plantuml.mjs";
 import { parseDirectiveNode } from "../plugins/remark-directive-rehype.js";
 import { remarkExcerpt } from "../plugins/remark-excerpt.js";
 import { remarkImageGrid } from "../plugins/remark-image-grid.js";
+import { remarkImageSize } from "../plugins/remark-image-size.js";
 import { remarkMark } from "../plugins/remark-mark.js";
 import { remarkMermaid } from "../plugins/remark-mermaid.js";
 import { remarkPlantuml } from "../plugins/remark-plantuml.js";
@@ -41,6 +42,7 @@ export const markdownRemarkPlugins = [
 	remarkReadingTime,
 	remarkWikiLink,
 	remarkImageGrid,
+	remarkImageSize,
 	remarkExcerpt,
 	remarkDirective,
 	remarkSectionize,
