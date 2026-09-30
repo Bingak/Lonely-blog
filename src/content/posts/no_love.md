@@ -1,13 +1,13 @@
 ---
 title: 搞笑
 published: 2026-09-30 11:20:44
+updated: 2026-09-30 14:32:39
 description: 被绿了
 image: "https://img.lonelybing.top/file/post/1790738380951.jpg"
 tags: [Life]
 pinned: false
 slug: no_love
 ---
-
 # 真招笑啊
 
 <span style="color:green">本人原来是被绿了</span>，
