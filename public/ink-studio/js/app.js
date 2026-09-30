@@ -738,6 +738,23 @@ function buildMarkdown(d) {
       return Number.isFinite(exp) && exp > Date.now() ? "offline" : false;
     }
   }
+  /* 登录门随机壁纸：与博客同款随机图 API，逐个预加载，全部失败则保持纯色背景 */
+  const GATE_WALLPAPERS = [
+    "https://t.alcy.cc/pc",
+    "https://www.dmoe.cc/random.php",
+    "https://api.isoyu.com/bing_images.php",
+  ];
+  function loadGateWallpaper(i = 0) {
+    if (i >= GATE_WALLPAPERS.length) return;
+    const src = GATE_WALLPAPERS[i] + (GATE_WALLPAPERS[i].includes("?") ? "&" : "?") + "t=" + Date.now();
+    const img = new Image();
+    img.onload = () => {
+      const el = document.querySelector(".gate-bg");
+      if (el) el.style.backgroundImage = `url("${src}")`;
+    };
+    img.onerror = () => loadGateWallpaper(i + 1);
+    img.src = src;
+  }
   async function initGate() {
     const saved = localStorage.getItem(SESSION_KEY);
     if (saved) {
@@ -746,6 +763,7 @@ function buildMarkdown(d) {
       if (st === "offline") return enterApp(true);
       localStorage.removeItem(SESSION_KEY);
     }
+    loadGateWallpaper();
     $("#gateLogin").hidden = false;
     renderTurnstile();
     $("#btnLogin").onclick = tryLogin;

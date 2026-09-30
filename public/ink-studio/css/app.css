@@ -46,8 +46,20 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 
 /* ============ 登录门 ============ */
 .gate{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(1200px 600px at 20% -10%,var(--accent-bg),transparent),var(--bg)}
-.gate-card{width:min(400px,92vw);background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:34px 30px;box-shadow:var(--shadow)}
+  background:var(--bg);overflow:hidden}
+/* 随机图背景层（app.js 注入 URL），叠一层暗色渐变保证文字可读 */
+.gate-bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;
+  background-repeat:no-repeat;filter:saturate(1.05)}
+.gate-bg::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(160deg,rgba(10,14,26,.55),rgba(10,14,26,.72))}
+html[data-theme="light"] .gate-bg::after{
+  background:linear-gradient(160deg,rgba(20,26,48,.28),rgba(20,26,48,.42))}
+.gate-card{position:relative;z-index:1;width:min(400px,92vw);
+  background:rgba(19,24,41,.55);-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);
+  border:1.5px solid rgba(255,255,255,.14);border-radius:18px;padding:34px 30px;
+  box-shadow:0 12px 40px rgba(0,0,0,.35);color:var(--fg)}
+html[data-theme="light"] .gate-card{
+  background:rgba(255,255,255,.5);border:1.5px solid rgba(255,255,255,.5)}
 .gate-brand{display:flex;gap:14px;align-items:center;margin-bottom:24px}
 .gate-logo{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;
   background:linear-gradient(135deg,var(--accent),var(--accent2))}
@@ -56,6 +68,11 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .gate-tip{color:var(--fg2);font-size:12.5px;line-height:1.7;background:var(--accent-bg);border-radius:8px;padding:10px 12px;margin-bottom:14px}
 .gate-card label{display:block;font-size:12px;color:var(--fg2);margin-bottom:12px}
 .gate-card label input{margin-top:5px;padding:10px 12px}
+/* 磨砂卡片内的输入框也做半透明，避免实心块破坏质感 */
+.gate-card input{background:rgba(10,14,26,.38);border:1.5px solid rgba(255,255,255,.16)}
+.gate-card input:focus{border-color:var(--accent)}
+html[data-theme="light"] .gate-card input{background:rgba(255,255,255,.55);border:1.5px solid rgba(35,41,70,.18)}
+.gate-card .btn.primary{box-shadow:0 4px 16px rgba(0,0,0,.25)}
 .gate-msg{color:var(--danger);font-size:12px;margin-top:10px;min-height:16px;text-align:center}
 .gate-foot{text-align:center;color:var(--fg3);font-size:11px;margin-top:18px}
 .turnstile-box{margin:6px 0 2px;min-height:0;display:flex;justify-content:center}

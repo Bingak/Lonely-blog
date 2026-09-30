@@ -5,12 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <title>墨驿 InkPost · 博客内容工坊</title>
-<link rel="stylesheet" href="css/app.css?v=20260930">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="css/app.css?v=20260930b">
 </head>
 <body>
 
 <!-- ===================== 登录门 ===================== -->
 <div id="loginGate" class="gate">
+  <div class="gate-bg" aria-hidden="true"></div>
   <div class="gate-card">
     <div class="gate-brand">
       <div class="gate-logo">墨</div>
@@ -21,7 +23,7 @@
     </div>
 
     <div id="gateLogin" hidden>
-      <p class="gate-tip">登录凭据存于 Cloudflare Worker Secrets，前端无法读取。</p>
+      <p class="gate-tip">登录凭据存于 Cloudflare Worker Secrets</p>
       <label>用户名<input id="loginUser" type="text" autocomplete="username"></label>
       <label>密码<input id="loginPass" type="password" autocomplete="current-password"></label>
       <div id="turnstileBox" class="turnstile-box"></div>
@@ -161,8 +163,8 @@
 <input id="filePicker" type="file" accept=".md,.markdown,.txt" hidden>
 <div id="toast"></div>
 
-<script src="js/markdown.js?v=20260930"></script>
-<script src="js/editor.js?v=20260930"></script>
-<script src="js/app.js?v=20260930"></script>
+<script src="js/markdown.js?v=20260930b"></script>
+<script src="js/editor.js?v=20260930b"></script>
+<script src="js/app.js?v=20260930b"></script>
 </body>
 </html>
