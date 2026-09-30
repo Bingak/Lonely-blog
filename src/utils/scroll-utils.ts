@@ -13,6 +13,52 @@ const navbar = document.getElementById("navbar-wrapper");
 // 动态导航栏：记录上一次滚动位置，用于判断滚动方向（下滑隐藏 / 上滑显示）
 let lastScrollTop = 0;
 
+/* ============================================
+ * 导航栏形变动画（借鉴 RAGNote）：
+ * 滚过阈值后把全宽胶囊收拢为居中悬浮小胶囊。
+ * fit/max-content 无法直接过渡，所以 JS 先量出内容自然宽，
+ * 再以像素值写回内联 width，交给 navbar.css 的过渡做形变。
+ * ============================================ */
+const NAVBAR_MORPH_THRESHOLD = 80;
+
+function getNavbarBar(): HTMLElement | null {
+	const navbarEl = document.getElementById("navbar");
+	if (!navbarEl) return null;
+	return navbarEl.querySelector<HTMLElement>(":scope > div");
+}
+
+/** 临时禁用过渡量出内容自然宽（同帧内完成，不会闪烁） */
+function measureMorphedWidth(bar: HTMLElement): number {
+	bar.style.setProperty("transition", "none", "important");
+	bar.style.setProperty("width", "max-content", "important");
+	const target = Math.min(bar.offsetWidth, window.innerWidth - 32);
+	bar.style.removeProperty("width");
+	bar.style.removeProperty("transition");
+	void bar.offsetWidth; // 提交还原状态，后续改宽才能走过渡
+	return target;
+}
+
+function updateNavbarMorph(scrollTop: number): void {
+	const navbarEl = document.getElementById("navbar");
+	const bar = getNavbarBar();
+	if (!navbarEl || !bar) return;
+	const isMorphed = navbarEl.classList.contains("navbar-morphed");
+	const shouldMorph = scrollTop > NAVBAR_MORPH_THRESHOLD;
+	if (shouldMorph === isMorphed) return;
+
+	if (shouldMorph) {
+		// 先锁定当前宽度并进入形变态，再量自然宽：
+		// 保证 navbar-morphed 附加的列间距等样式计入目标宽度，不会撑爆小胶囊
+		bar.style.setProperty("width", `${bar.offsetWidth}px`, "important");
+		navbarEl.classList.add("navbar-morphed");
+		const target = measureMorphedWidth(bar);
+		bar.style.setProperty("width", `${target}px`, "important"); // 过渡到小胶囊
+	} else {
+		navbarEl.classList.remove("navbar-morphed");
+		bar.style.removeProperty("width"); // 回到样式表的 100%，px→% 可插值
+	}
+}
+
 /** 优化的滚动处理函数（从 Layout.astro 迁出；visit:end 切页后也会调用） */
 export function scrollFunction(): void {
 	if (document.documentElement.classList.contains("is-page-transitioning")) {
@@ -97,6 +143,9 @@ export function scrollFunction(): void {
 				navbarElement.classList.remove("navbar-sticky-shadow");
 			}
 		});
+		operations.push(() => {
+			updateNavbarMorph(scrollTop);
+		});
 	}
 
 	// 批量执行DOM操作
@@ -127,4 +176,15 @@ export function initScroll(): void {
 
 	// 初始化滚动状态（例如从历史位置恢复时）
 	scrollFunction();
+
+	// 窗口尺寸变化时，若正处于形变态则重新量宽，避免小胶囊过宽或溢出
+	window.addEventListener("resize", () => {
+		const navbarEl = document.getElementById("navbar");
+		const bar = getNavbarBar();
+		if (!navbarEl || !bar || !navbarEl.classList.contains("navbar-morphed")) {
+			return;
+		}
+		const target = measureMorphedWidth(bar);
+		bar.style.setProperty("width", `${target}px`, "important");
+	});
 }

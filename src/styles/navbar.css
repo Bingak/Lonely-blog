@@ -47,7 +47,10 @@
     border-color 0.36s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.36s cubic-bezier(0.22, 1, 0.36, 1),
     --navbar-surface-blur 0.36s cubic-bezier(0.22, 1, 0.36, 1),
-    border-radius 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+    border-radius 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    margin-inline 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ============================================
@@ -92,6 +95,9 @@
     background-color: var(--card-bg);
     border: 1px solid transparent;
     border-radius: 9999px;
+    /* 显式 width 让形变收起/还原时 px↔100% 可插值（auto 无法过渡） */
+    width: 100%;
+    margin-inline: auto;
     --navbar-surface-blur: 0px;
     position: relative;
     @apply navbar-surface-transition;
@@ -381,4 +387,45 @@ html[data-has-wallpaper] #navbar[data-transparent-mode="semi"].navbar-sticky-sha
 }
 :root.dark[data-has-wallpaper] #navbar[data-transparent-mode="semi"].navbar-sticky-shadow>div {
     box-shadow: inset 0 1px 0 var(--navbar-glass-highlight), 0 1px 0 var(--navbar-glass-hairline) !important;
+}
+
+/* ============================================
+ * 形变动画 - 滚动时把全宽胶囊收拢为居中悬浮小胶囊
+ * （借鉴 RAGNote：JS 先按 max-content 量出内容自然宽，
+ *  再写回像素 width，配合上面的 width/height 过渡形成形变）
+ * 用 #navbar-wrapper 前缀提高特异性，压过 main.css 里
+ * wallpaper-transparent / enable-card-border 等 !important 规则
+ * ============================================ */
+#navbar-wrapper #navbar.navbar-morphed>div {
+    height: 60px;
+    margin-inline: auto;
+    --navbar-surface-blur: var(--navbar-glass-blur, 14px) !important;
+    background: color-mix(in oklch, var(--card-bg) 88%, transparent) !important;
+    border: 1px solid color-mix(in oklch, var(--line-divider) 70%, transparent) !important;
+    box-shadow: inset 0 1px 0 var(--navbar-glass-highlight), 0 10px 24px rgba(15, 23, 42, 0.14) !important;
+}
+
+:root.dark #navbar-wrapper #navbar.navbar-morphed>div {
+    box-shadow: inset 0 1px 0 var(--navbar-glass-highlight), 0 10px 24px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* 形变态列间距：搜索框与左侧导航胶囊拉开距离，避免拥挤 */
+#navbar>div>div:first-of-type {
+    transition: column-gap 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#navbar.navbar-morphed>div>div:first-of-type {
+    column-gap: 18px;
+}
+
+/* #navbar 本体的整宽投影与收起的小胶囊错位，形变期间禁用 */
+#navbar.navbar-morphed.navbar-sticky-shadow {
+    box-shadow: none !important;
+}
+
+/* 降低动态偏好：直接切换，不做形变过渡 */
+@media (prefers-reduced-motion: reduce) {
+    #navbar>div {
+        transition: none !important;
+    }
 }

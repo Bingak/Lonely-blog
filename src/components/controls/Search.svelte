@@ -183,7 +183,7 @@ $: if (initialized && (keywordMobile || keywordMobile === "")) {
 </script>
 
 <!-- search bar for desktop view -->
-<div id="search-bar" class="hidden lg:flex transition-all items-center h-11 mr-2 rounded-lg
+<div id="search-bar" class="hidden lg:flex transition-all items-center h-11 mr-2 rounded-full
       bg-black/4 hover:bg-black/6 focus-within:bg-black/6
       dark:bg-white/5 dark:hover:bg-white/10 dark:focus-within:bg-white/10
 ">
