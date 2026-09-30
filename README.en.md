@@ -15,16 +15,26 @@
 
 <table width="100%" align="center">
   <tr>
-    <td align="center"><img src="./docs/images/1.webp"><br>Banner Mode</td>
-    <td align="center"><img src="./docs/images/2.webp"><br>Full-screen Wallpaper Mode (Default)</td>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/关于.png" width="470"><br>About page + Full-screen Wallpaper Mode (default)</td>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/更新界面.png" width="470"><br>Changelog page: auto-classified commits, grouped by month/day</td>
   </tr>
   <tr>
-    <td align="center"><img src="./docs/images/3.webp"><br>Transparent Overlay Mode</td>
-    <td align="center"><img src="./docs/images/4.webp"><br>Solid Color Mode</td>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/小卡片.png" width="470"><br>Hover profile card: posting heatmap + live uptime</td>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/主题配置.png" width="250"><br>Display settings panel: theme hue / M3 palettes / card styles</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/音乐播放栏.png" width="300"><br>Wavy music player progress bar</td>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/页脚.png" width="470"><br>Footer Busuanzi stats + site lifetime counter</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/友链申请.png" width="470"><br>Self-service friend-link form (Cloudflare Turnstile)</td>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/墨驿.png" width="470"><br>InkPost studio: form-based config + live preview</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/墨驿-同步与推送.png" width="470"><br>One-click publish via GitHub Contents API, built by Cloudflare</td>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/墨驿-相册编写.png" width="470"><br>Gallery editing: photos stored in the frontmatter array</td>
   </tr>
 </table>
-
-<img alt="Lighthouse" src="./docs/images/Lighthouse.png" />
 
 > The original theme is [CuteLeaf](https://github.com/CuteLeaf)'s [Firefly](https://github.com/CuteLeaf/Firefly), which itself is based on [saicaca](https://github.com/saicaca)'s [Fuwari](https://github.com/saicaca/fuwari) — they built the engine, I just tuned the handling (lol). Most of the customization process is documented as [blog posts](https://lonelybing.top/), feel free to check them out~
 

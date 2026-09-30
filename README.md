@@ -15,16 +15,26 @@
 
 <table width="100%" align="center">
   <tr>
-    <td align="center"><img src="./docs/images/1.webp"><br>横幅模式</td>
-    <td align="center"><img src="./docs/images/2.webp"><br>全屏壁纸模式（本站默认）</td>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/关于.png" width="470"><br>关于页 + 全屏壁纸模式（本站默认）</td>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/更新界面.png" width="470"><br>更新日志页：commit 自动分类，按月/按天分组</td>
   </tr>
   <tr>
-    <td align="center"><img src="./docs/images/3.webp"><br>透明覆盖模式</td>
-    <td align="center"><img src="./docs/images/4.webp"><br>纯色模式</td>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/小卡片.png" width="470"><br>站名悬停资料卡：发文热力图 + 实时运行时间</td>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/主题配置.png" width="250"><br>显示设置面板：主题色相 / M3 配色 / 卡片样式</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/音乐播放栏.png" width="300"><br>音乐播放器波浪进度条</td>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/页脚.png" width="470"><br>页脚不蒜子统计 + 建站存活计时</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/友链申请.png" width="470"><br>友链自动申请表单（Cloudflare Turnstile 人机验证）</td>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/墨驿.png" width="470"><br>墨驿 InkPost 后台：表单化配置 + 实时预览</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/墨驿-同步与推送.png" width="470"><br>墨驿一键发布：GitHub Contents API 提交，Cloudflare 自动构建</td>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/墨驿-相册编写.png" width="470"><br>墨驿相册编写：图片列表存于 frontmatter 的 photos 数组</td>
   </tr>
 </table>
-
-<img alt="Lighthouse" src="./docs/images/Lighthouse.png" />
 
 > 主题本体是 [CuteLeaf](https://github.com/CuteLeaf) 的 [Firefly](https://github.com/CuteLeaf/Firefly)，往上追溯还有 [saicaca](https://github.com/saicaca) 的 [Fuwari](https://github.com/saicaca/fuwari)——魔改的折腾过程大多写成了[博客文章](https://lonelybing.top/)，欢迎围观喵~
 
