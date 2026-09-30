@@ -15,7 +15,9 @@ window.InkEditor = (function () {
   function getSelText() { const { s, e } = sel(); return ta.value.slice(s, e); }
 
   function replaceRange(s, e, text, cursorOffset) {
-    ta.setRangeText(text, s, e, "end");
+    ta.focus();
+    ta.setSelectionRange(s, e);
+    document.execCommand("insertText", false, text);
     if (cursorOffset != null) setSel(s + cursorOffset);
     changed();
   }
@@ -34,6 +36,14 @@ window.InkEditor = (function () {
     ta.focus();
     ta.setSelectionRange(s, e);
     document.execCommand("insertText", false, open + t + close);
+    setSel(s + open.length, s + open.length + t.length);
+  }
+  function sizeInsert(size) {
+    const { s, e } = sel();
+    const t = ta.value.slice(s, e) || "字号文字";
+    const open = "<span style=\"font-size:" + size + "\">";
+    const close = "</span>";
+    replaceRange(s, e, open + t + close);
     setSel(s + open.length, s + open.length + t.length);
   }
 
@@ -111,6 +121,17 @@ window.InkEditor = (function () {
         ["🩷 粉色", () => colorInsert("pink")],
         ["🟤 棕色", () => colorInsert("brown")],
         ["🩶 灰色", () => colorInsert("gray")],
+      ]
+    },
+    {
+      icon: "A▾", title: "字号", menu: [
+        ["极小 12px", () => sizeInsert("12px")],
+        ["小 14px", () => sizeInsert("14px")],
+        ["正常 16px", () => sizeInsert("16px")],
+        ["中 18px", () => sizeInsert("18px")],
+        ["大 24px", () => sizeInsert("24px")],
+        ["较大 32px", () => sizeInsert("32px")],
+        ["极大 48px", () => sizeInsert("48px")],
       ]
     },
     { icon: "<>", title: "行内代码", run: () => wrapSel("`", "`", "code") },
