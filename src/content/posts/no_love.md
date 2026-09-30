@@ -5,6 +5,7 @@ updated: 2026-09-30 14:32:47
 description: 额额额额额
 image: "https://img.lonelybing.top/file/post/shabi.png"
 tags: [Life]
+category: 生活
 pinned: false
 slug: no_love
 ---
