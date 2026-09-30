@@ -1,13 +1,13 @@
 ---
 id: "encrypted"
-name: "加密的哦~"
-description: "重要的人才能看哦~"
+name: "加密的~"
+description: "起警示作用"
 date: "2026-09-12"
-location: "未知"
+location: "衡水"
 tags: ["Life", "Love"]
-cover: ""
+cover: "https://img.lonelybing.top/file/post/1790738380951.jpg"
 password: "0928"
-passwordHint: "你猜猜"
+passwordHint: "煞笔的生日"
 photos:
   - "https://img.lonelybing.top/file/Love/1789364269099.jpg"
   - "https://img.lonelybing.top/file/Love/1789364271267.jpg"
