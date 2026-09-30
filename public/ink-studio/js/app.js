@@ -435,7 +435,7 @@ function buildMarkdown(d) {
           el.onmousedown = e => { e.preventDefault(); inp.value = el.dataset.v; inp.dispatchEvent(new Event("input")); sug.hidden = true; };
         });
       };
-      inp.oninput = show;
+      inp.addEventListener("input", show);
       inp.onfocus = show;
       inp.onblur = () => { setTimeout(() => { sug.hidden = true; }, 150); };
       inp.addEventListener("keydown", ev => {
