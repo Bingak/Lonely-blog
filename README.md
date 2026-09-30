@@ -44,10 +44,11 @@
 - **不蒜子（Busuanzi）访问统计**：页脚全站 PV / UV，文章页单篇阅读量，以及「本站已存活 X 天 X 时 X 分 X 秒」的实时计时（自 2026.9.12 起算），全部零后端实现.
 - **项目页评论区**：项目展示页接入评论系统，每个项目可在 frontmatter 用 `comment` 字段单独开关.
 - **全屏随机壁纸 + 名言**：全屏壁纸模式接入多个随机图 API，每次刷新换图，底部附带随机中文名言.
+- **图片尺寸语法**：新增 `remark-image-size` 插件，支持 Typora 风格标注 `![alt](url "=x400")` / `"=60%"` / `"=480x360"`（引号不能省，CommonMark 对裸 `=x400` 会整行解析失败）；正文未标注尺寸的图片默认按 `min(55%, 520px)` 缩小显示，移动端保持全宽，`[grid]` 相册内的图片不叠加缩小.
 - **在线写作**：配置 `.pages.yml`（Pages CMS），可在 GitHub 网页端直接写文章、发动态.
 - **更新日志页**：客户端组件请求同源 `/api/commits`，由 `worker/index.js` 在服务端带上 `GITHUB_TOKEN` 回源 GitHub 拉取 commit 记录，按类型（新功能/修复/优化等）宽松分类（支持中英文 commit message 多种前缀）与分页，无需重新构建即可看到最新改动. token 只存在于服务端 Secret，前端产物里不会有凭据.
 - **友链自动申请**：友链页「申请友链」按钮弹出表单（站点名称 / 链接 / 头像 / 描述），通过 Cloudflare Turnstile 人机验证后，`worker/index.js` 的 `POST /api/friend-apply` 会读取 `src/data/friends.json`、做去重与链接合法性校验，再在仓库新建分支并自动开一个 PR，站长点合并即上线，无需手动改代码. 友链数据也因此从 TS 迁移到 JSON，便于服务端读写.
-- **墨驿内容工坊（后台）**：零依赖、离线可用的静态后台（`public/ink-studio/`），表单化 FrontMatter 配置（引号/冒号自动转义、无需手写 YAML）、自动保存刷新不丢、内置多文档库与浅色/深色/跟随系统主题、本地 Markdown 导入、写作快捷键（Ctrl+B 等），写完一键经 GitHub Contents API 提交仓库、Cloudflare 自动构建上线；支持 post / project / dynamic / gallery 四类内容，其中 gallery 已迁移为内容集合 `src/content/gallery/{id}.md`（图片列表存于 frontmatter 的 `photos` 数组）。后台还支持从 GitHub 仓库拉取已有内容在线编辑、相册批量添加图片、视频嵌入自动识别 B 站（BV/av/分P）与 YouTube（watch/youtu.be/shorts）且可设宽高、表单按分类折叠并标注必填/选填、编辑器与预览横向滚动、移动端适配等.
+- **墨驿内容工坊（后台）**：零依赖、离线可用的静态后台（`public/ink-studio/`），表单化 FrontMatter 配置（引号/冒号自动转义、无需手写 YAML）、自动保存刷新不丢、内置多文档库与浅色/深色/跟随系统主题、本地 Markdown 导入、写作快捷键（Ctrl+B 等），写完一键经 GitHub Contents API 提交仓库、Cloudflare 自动构建上线；支持 post / project / dynamic / gallery 四类内容，其中 gallery 已迁移为内容集合 `src/content/gallery/{id}.md`（图片列表存于 frontmatter 的 `photos` 数组）。后台还支持从 GitHub 仓库拉取已有内容在线编辑、插入图片可设显示宽度（默认 45%，自动生成 `"=x400"` / `"=60%"` 尺寸语法且预览所见即所得）、相册批量添加图片、视频嵌入自动识别 B 站（BV/av/分P）与 YouTube（watch/youtu.be/shorts）且可设宽高、表单按分类折叠并标注必填/选填、编辑器与预览横向滚动、移动端适配等.
 - **后台登录安全**：用户名/密码存于 Worker Secrets（`ADMIN_USER` / `ADMIN_PASS`），前端永远拿不到明文；登录走 `POST /api/admin-login`，强制 Cloudflare Turnstile 人机验证、常数时间比较与同 IP 限流，成功后签发 12 小时 TTL 的 HMAC-SHA256 签名会话；入口藏在导航栏「链接」下拉菜单，地址不直观. 登录页本身也做了美化：背景接随机图 API（与全站同源那几个，逐个预加载、全挂就安静回落纯色，悲），登录卡是半透明磨砂玻璃，输入框也做成半透明避免实心块破坏质感.
 - **个性化配置**：相册、打赏页、看板娘、评论区等均替换为自己的内容与账号.
 
