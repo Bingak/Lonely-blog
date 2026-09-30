@@ -1,7 +1,7 @@
 ---
 title: 搞笑
-published: 2026-09-30 11:20:44
-updated: 2026-09-30 14:32:39
+published: 2026-09-30 14:32:59
+updated: 2026-09-30 14:32:47
 description: 被绿了
 image: "https://img.lonelybing.top/file/post/1790738380951.jpg"
 tags: [Life]
