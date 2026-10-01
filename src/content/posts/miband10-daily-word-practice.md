@@ -75,7 +75,7 @@ MiBand10-Daily-Word-Practice 是个跑在小米手环 10 标准版上的每日�
 
 ### 复习与学习统计
 
-除了当天的任务，还提供复习功能，可以回看近 7 日学习统计. *数据不会骗人*——坚持没坚持，一眼就能看出来喵~（悲）.
+除了当天的任务，还提供复习功能，可以回看近 7 日学习统计. *数据不会骗人*——坚持没坚持，一眼就能看出来喵~.
 
 ![数据统计界面](https://img.lonelybing.top/file/post/miband10-daily-word-practice-stats.png)
 
@@ -139,7 +139,7 @@ git clone https://github.com/Bingak/MiBand10-Daily-Word-Practice.git
 ## 说明与反馈
 
 - 本仓库是小米手环 10 标准版适配版；小米手环 9 Pro 版本请见 [MiBand-Daily-Word-Practice](https://github.com/Bingak/MiBand-Daily-Word-Practice)
-- 更新节奏看作者的驾照练习进度（恼），但只要有空就会接着维护
+- 更新节奏看作者的驾照练习进度，但只要有空就会接着维护
 - 作者现在也在用这小程序备考，有问题或建议欢迎来戳：**LonelyBing@outlook.com**
 - 觉得有用的话，可以去 [爱发电](https://ifdian.net/a/LonelyBing) 支持一下
 

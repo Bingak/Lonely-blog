@@ -16,9 +16,9 @@ series: "博客"
 
 ## 起因
 
-以前加友链的流程是这样的：访客在评论区留言 → 本尊手动往 `src/config/friendsConfig.ts` 里粘一段对象 → 提交 → 等构建。四步里三步是本尊干的（恼）
+以前加友链的流程是这样的：访客在评论区留言 → 本尊手动往 `src/config/friendsConfig.ts` 里粘一段对象 → 提交 → 等构建。四步里三步是本尊干的
 
-本尊寻思想自动化，最省事的方案是存数据库或者写文件到 KV——但那样友链数据就脱离仓库了，本尊想要的是**访客提交 → 直接变成一条可审的 PR**，这样我只需要点一下按钮就行了()。
+本尊寻思想自动化，最省事的方案是存数据库或者写文件到 KV——但那样友链数据就脱离仓库了，本尊想要的是**访客提交 → 直接变成一条可审的 PR**，这样我只需要点一下按钮就行了。
 
 于是最终形状定成这样：
 
@@ -72,7 +72,7 @@ export const friendsConfig: FriendLink[] = friendsData;
 
 点击顶部按钮弹一个浮层，包含四个必填项：网站名称 / 网站链接 / 头像链接 / 网站描述。
 
-本来打算写一套遮罩 + Esc 关闭 + 焦点管理的，后来想到 `<dialog>` 原生就有这些行为，`showModal()` 一行搞定，于是全删了（）：
+本来打算写一套遮罩 + Esc 关闭 + 焦点管理的，后来想到 `<dialog>` 原生就有这些行为，`showModal()` 一行搞定，于是全删了：
 
 ```astro
 <dialog id="friend-apply-dialog" data-sitekey={friendApplyConfig.turnstileSiteKey} class="card-base m-auto max-h-[85vh] w-[min(92vw,26rem)] overflow-y-auto rounded-(--radius-large) p-6">
@@ -92,11 +92,11 @@ export const friendsConfig: FriendLink[] = friendsData;
 
 ### 坑 1：弹窗跑到左上角
 
-上线第一版弹窗贴在页面左上角（悲）。原因是 `<dialog>` 默认靠 `margin: auto` 居中，而 Tailwind 的 preflight 把全局 margin 重置成 0，居中机制当场失效。补一个 `m-auto` 就回去了喵~
+上线第一版弹窗贴在页面左上角。原因是 `<dialog>` 默认靠 `margin: auto` 居中，而 Tailwind 的 preflight 把全局 margin 重置成 0，居中机制当场失效。补一个 `m-auto` 就回去了喵~
 
 ### 坑 2：`form.title` 不是输入框
 
-读值时想当然写了 `form.title.value`——`title` 是 `HTMLElement` 上的全局属性，`form.title` 返回的是表单的 title 字符串，不是那个名为 `title` 的输入框（）。改成老老实实按 id 取喵~
+读值时想当然写了 `form.title.value`——`title` 是 `HTMLElement` 上的全局属性，`form.title` 返回的是表单的 title 字符串，不是那个名为 `title` 的输入框。改成老老实实按 id 取喵~
 
 ```js
 const payload = {
@@ -110,7 +110,7 @@ const payload = {
 
 ### 坑 3：swup 会重跑内联脚本
 
-本站开了 swup 页面过渡，切回友链页时 `<script is:inline>` 会被重新执行一遍，事件监听器会越叠越多，点一次提交发三次请求（笑）。用一个 `dataset` 标记挡住二次绑定：
+本站开了 swup 页面过渡，切回友链页时 `<script is:inline>` 会被重新执行一遍，事件监听器会越叠越多，点一次提交发三次请求。用一个 `dataset` 标记挡住二次绑定：
 
 ```js
 const dialog = document.getElementById("friend-apply-dialog");
@@ -213,7 +213,7 @@ await ghJson(token, `/repos/${repo}/contents/${FRIEND_DATA_PATH}`, { method: "PU
 await ghJson(token, `/repos/${repo}/pulls`, { method: "POST", body: ... });
 ```
 
-新条目的权重固定给 `0`，让它排在友链末尾——毕竟还没被本尊看过（乐）。PR 描述里把四个字段和提交时间列出来，扫一眼就能判断要不要合并：
+新条目的权重固定给 `0`，让它排在友链末尾——毕竟还没被本尊看过。PR 描述里把四个字段和提交时间列出来，扫一眼就能判断要不要合并：
 
 ```js
 friends.push({ title, imgurl: imgUrl.href, desc, siteurl: siteUrl.href, weight: 0, enabled: true });
@@ -221,7 +221,7 @@ friends.push({ title, imgurl: imgUrl.href, desc, siteurl: siteUrl.href, weight: 
 
 GitHub 返回的 `html_url` 一路带回前端，成功后直接给访客一个「查看 PR」链接，比干巴巴一句「提交成功」可信多了喵~
 
-任何一步失败都会把上游的 `message` 冒泡出来（502），本尊调试时靠这个才第一次跑通——因为一开始 PAT 只给了 Contents 权限，建 PR 那步一直 403（悲）。
+任何一步失败都会把上游的 `message` 冒泡出来（502），本尊调试时靠这个才第一次跑通——因为一开始 PAT 只给了 Contents 权限，建 PR 那步一直 403。
 
 ---
 
@@ -243,7 +243,7 @@ GitHub 返回的 `html_url` 一路带回前端，成功后直接给访客一个�
 const showApply = friendApplyConfig.enable && !!friendApplyConfig.turnstileSiteKey;
 ```
 
-结果就是**按钮连弹窗一起从页面上消失**，而 MDX 里新写的说明文字照常部署上去了——看着像"上一秒还有下一秒就没了"（恼）
+结果就是**按钮连弹窗一起从页面上消失**，而 MDX 里新写的说明文字照常部署上去了——看着像"上一秒还有下一秒就没了"
 
 最开始的线上那份能显示，是因为那次推的是本地构建的产物。
 
