@@ -14,7 +14,7 @@ export const dynamicConfig: DynamicConfig = {
 	showComment: true,
 
 	// 每页显示的动态数量
-	itemsPerPage: 20,
+	itemsPerPage: 10,
 
 	// 动态数据 json 地址，本地默认 "/api/dynamic.json"
 	// 可改为第三方接口地址，如 "https://firefly.cuteleaf.cn/api/dynamic.json"

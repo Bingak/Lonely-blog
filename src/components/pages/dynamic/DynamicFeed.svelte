@@ -61,7 +61,11 @@ let templateReady = $state(false);
 let list: HTMLElement;
 let template: HTMLTemplateElement | null = null;
 let searchInput: HTMLInputElement | null = null;
-let yearSelect: HTMLSelectElement | null = null;
+let yearWrapper: HTMLElement | null = null;
+let yearTrigger: HTMLButtonElement | null = null;
+let yearMenu: HTMLElement | null = null;
+let yearLabel: HTMLElement | null = null;
+let selectedYear = "all";
 let restoreAnchorAfterRender = false;
 
 const pageEntries = $derived(
@@ -85,7 +89,7 @@ function updateUrl(clearHash = false) {
 
 function applyFilters(resetPage = true) {
 	const query = searchInput?.value.toLocaleLowerCase().trim() || "";
-	const year = yearSelect?.value || "all";
+	const year = selectedYear;
 	filtered = entries.filter(
 		(entry) =>
 			(year === "all" ||
@@ -98,24 +102,84 @@ function applyFilters(resetPage = true) {
 	updateUrl(resetPage);
 }
 
-function populateYears() {
-	if (!yearSelect) return;
-	yearSelect.replaceChildren();
-	const all = document.createElement("option");
-	all.value = "all";
-	all.textContent = allYearsText;
-	yearSelect.append(all);
+function yearValues() {
 	const years = [
 		...new Set(
 			entries.map((entry) => new Date(entry.published).getUTCFullYear()),
 		),
 	];
-	for (const year of years) {
-		const option = document.createElement("option");
-		option.value = String(year);
-		option.textContent = String(year);
-		yearSelect.append(option);
+	return [["all", allYearsText] as const, ...years.map((y) => [String(y), String(y)] as const)];
+}
+
+function populateYears() {
+	if (!yearMenu) return;
+	yearMenu.replaceChildren();
+	for (const [value, label] of yearValues()) {
+		const item = document.createElement("button");
+		item.type = "button";
+		item.className = "dynamic-year-option";
+		item.setAttribute("role", "option");
+		item.dataset.year = value;
+		item.textContent = label;
+		yearMenu.append(item);
 	}
+	syncYearUI();
+}
+
+function syncYearUI() {
+	if (yearLabel) {
+		yearLabel.textContent =
+			selectedYear === "all" ? allYearsText : selectedYear;
+	}
+	yearMenu
+		?.querySelectorAll<HTMLButtonElement>(".dynamic-year-option")
+		.forEach((item) => {
+			const selected = item.dataset.year === selectedYear;
+			item.setAttribute("aria-selected", String(selected));
+			if (selected) item.dataset.active = "true";
+			else delete item.dataset.active;
+		});
+}
+
+function openYearMenu() {
+	if (!yearMenu || !yearTrigger) return;
+	yearMenu.hidden = false;
+	yearTrigger.setAttribute("aria-expanded", "true");
+}
+
+function closeYearMenu() {
+	if (!yearMenu || !yearTrigger) return;
+	yearMenu.hidden = true;
+	yearTrigger.setAttribute("aria-expanded", "false");
+}
+
+function chooseYear(value: string) {
+	selectedYear = value;
+	syncYearUI();
+	closeYearMenu();
+	applyFilters();
+}
+
+function onYearTriggerClick() {
+	if (yearMenu?.hidden) openYearMenu();
+	else closeYearMenu();
+}
+
+function onYearMenuClick(event: MouseEvent) {
+	const item = (event.target as HTMLElement).closest<HTMLButtonElement>(
+		".dynamic-year-option",
+	);
+	if (item?.dataset.year) chooseYear(item.dataset.year);
+}
+
+function onDocumentClick(event: MouseEvent) {
+	if (!yearMenu?.hidden && !yearWrapper?.contains(event.target as Node)) {
+		closeYearMenu();
+	}
+}
+
+function onDocumentKeydown(event: KeyboardEvent) {
+	if (event.key === "Escape") closeYearMenu();
 }
 
 function createItem(entry: DynamicData) {
@@ -277,11 +341,20 @@ onMount(() => {
 	templateReady = template !== null;
 	searchInput =
 		page?.querySelector<HTMLInputElement>("[data-dynamic-search]") ?? null;
-	yearSelect =
-		page?.querySelector<HTMLSelectElement>("[data-year-select]") ?? null;
+	yearWrapper = page?.querySelector<HTMLElement>("[data-year-select]") ?? null;
+	yearTrigger =
+		yearWrapper?.querySelector<HTMLButtonElement>("[data-year-trigger]") ??
+		null;
+	yearMenu =
+		yearWrapper?.querySelector<HTMLElement>("[data-year-menu]") ?? null;
+	yearLabel =
+		yearWrapper?.querySelector<HTMLElement>("[data-year-label]") ?? null;
 	const filter = () => applyFilters();
 	searchInput?.addEventListener("input", filter);
-	yearSelect?.addEventListener("change", filter);
+	yearTrigger?.addEventListener("click", onYearTriggerClick);
+	yearMenu?.addEventListener("click", onYearMenuClick);
+	document.addEventListener("click", onDocumentClick);
+	document.addEventListener("keydown", onDocumentKeydown);
 
 	const load = async () => {
 		try {
@@ -321,7 +394,10 @@ onMount(() => {
 
 	return () => {
 		searchInput?.removeEventListener("input", filter);
-		yearSelect?.removeEventListener("change", filter);
+		yearTrigger?.removeEventListener("click", onYearTriggerClick);
+		yearMenu?.removeEventListener("click", onYearMenuClick);
+		document.removeEventListener("click", onDocumentClick);
+		document.removeEventListener("keydown", onDocumentKeydown);
 	};
 });
 </script>
