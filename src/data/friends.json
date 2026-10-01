@@ -49,5 +49,13 @@
 		"siteurl": "https://www.paeardog.top/",
 		"weight": 0,
 		"enabled": true
+	},
+	{
+		"title": "Eliauk's Blog",
+		"imgurl": "https://img.eliauk312.top/avatar/default-avatar.jpg",
+		"desc": "https://img.eliauk312.top/avatar/default-avatar.jpg",
+		"siteurl": "https://eliauk312.top/",
+		"weight": 0,
+		"enabled": true
 	}
 ]
