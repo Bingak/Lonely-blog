@@ -157,6 +157,11 @@ window.InkMD = (function () {
     // 先保护行内代码
     const codes = [];
     s = s.replace(/`([^`]+)`/g, (_, c) => { codes.push(c); return "\u0001" + (codes.length - 1) + "\u0001"; });
+    // 再保护句中出现的行内 HTML 标签：整行的原始 HTML 由 render() 处理，
+    // 但夹在文字里的 <span style> 等会被 esc() 转义成字面量，与前台渲染不一致
+    const rawTags = [];
+    s = s.replace(/<\/?(?:span|font|sub|sup|kbd|mark|u|s|small|big|ins|del|br|wbr|time|abbr|b|i|em|strong|code|pre)\b[^>]*>/gi,
+      m => { rawTags.push(m); return "\u0002" + (rawTags.length - 1) + "\u0002"; });
     s = esc(s);
     // 图片（支持 Typora 风格尺寸标注 ![alt](src =x400 / =60% / =400x300)）
     s = s.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+([^)]*))?\)/g, (_, a, src, extra) => {
@@ -198,6 +203,8 @@ window.InkMD = (function () {
     });
     // 还原行内代码
     s = s.replace(/\u0001(\d+)\u0001/g, (_, i) => `<code>${esc(codes[+i])}</code>`);
+    // 还原行内 HTML 标签
+    s = s.replace(/\u0002(\d+)\u0002/g, (_, i) => rawTags[+i]);
     return s;
   }
 
