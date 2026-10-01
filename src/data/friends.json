@@ -33,5 +33,13 @@
 		"siteurl": "https://blog.ayeez.cn/",
 		"weight": 0,
 		"enabled": true
+	},
+	{
+		"title": "楠枝小笺",
+		"imgurl": "https://www.nanzhiy.cn/upload/avatar.jpg",
+		"desc": "安安静静地存在，就已经很好啦。",
+		"siteurl": "https://www.nanzhiy.cn/",
+		"weight": 0,
+		"enabled": true
 	}
 ]
