@@ -49,5 +49,13 @@
 		"siteurl": "https://www.paeardog.top/",
 		"weight": 0,
 		"enabled": true
+	},
+	{
+		"title": "花火のPersonal Blog",
+		"imgurl": "https://bu.dusays.com/2026/08/10/6a79d93e98d3d.jpg",
+		"desc": "学无止境",
+		"siteurl": "https://www.hanakosama.top/",
+		"weight": 0,
+		"enabled": true
 	}
 ]
