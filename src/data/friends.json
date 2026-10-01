@@ -41,5 +41,13 @@
 		"siteurl": "https://www.nanzhiy.cn/",
 		"weight": 0,
 		"enabled": true
+	},
+	{
+		"title": "eardogのRef:rain",
+		"imgurl": "https://www.paeardog.top/eardog.png",
+		"desc": "做一个淡淡的人.",
+		"siteurl": "https://www.paeardog.top/",
+		"weight": 0,
+		"enabled": true
 	}
 ]
