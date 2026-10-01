@@ -17,5 +17,13 @@
 		"siteurl": "https://xiaodaidai.site/",
 		"weight": 0,
 		"enabled": true
+	},
+	{
+		"title": "流欺の博客",
+		"imgurl": "https://q2.qlogo.cn/headimg_dl?dst_uin=1458619045&spec=0",
+		"desc": "嗯对就是个博客",
+		"siteurl": "https://blog.lqay.cn/",
+		"weight": 0,
+		"enabled": true
 	}
 ]
