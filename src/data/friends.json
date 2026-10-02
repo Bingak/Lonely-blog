@@ -65,5 +65,13 @@
 		"siteurl": "https://eliauk312.top/",
 		"weight": 0,
 		"enabled": true
+	},
+	{
+		"title": "桃之夭夭",
+		"imgurl": "https://taozhiyy.top/cos/1.png",
+		"desc": "桃之夭夭的小屋",
+		"siteurl": "https://taozhiyy.top/",
+		"weight": 0,
+		"enabled": true
 	}
 ]
