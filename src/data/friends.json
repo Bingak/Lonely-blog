@@ -73,5 +73,13 @@
 		"siteurl": "https://taozhiyy.top/",
 		"weight": 0,
 		"enabled": true
+	},
+	{
+		"title": "Eliauk's Blog",
+		"imgurl": "https://img.eliauk312.top/avatar/default-avatar.jpg",
+		"desc": "一方天地，记录代码、生活和偶尔的奇思妙想。",
+		"siteurl": "https://eliauk312.top/",
+		"weight": 0,
+		"enabled": true
 	}
 ]
