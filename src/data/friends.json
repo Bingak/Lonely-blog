@@ -169,5 +169,13 @@
 		"siteurl": "https://notes.smallbamboo.cn",
 		"weight": 0,
 		"enabled": true
+	},
+	{
+		"title": "小满的墨水瓶",
+		"imgurl": "https://static.yhdzz.cn/imgs/xiaoman1221/512x512.png",
+		"desc": "天上如是，地下亦然",
+		"siteurl": "https://www.yhdzz.cn",
+		"weight": 0,
+		"enabled": true
 	}
 ]
