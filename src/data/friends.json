@@ -57,5 +57,13 @@
 		"siteurl": "https://www.hanakosama.top/",
 		"weight": 0,
 		"enabled": true
+	},
+	{
+		"title": "光昭",
+		"imgurl": "https://s3.pyrzo.com/public/avatar-tuya.webp",
+		"desc": "Where all the miracles begin !",
+		"siteurl": "https://www.pyrzo.com/",
+		"weight": 0,
+		"enabled": true
 	}
 ]
