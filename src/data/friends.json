@@ -81,5 +81,13 @@
 		"siteurl": "https://eliauk312.top/",
 		"weight": 0,
 		"enabled": true
+	},
+	{
+		"title": "Odd.G | 奇怪先生",
+		"imgurl": "https://www.3181314.xyz/icon.jpeg",
+		"desc": "Odd Gentleman的个人博客，记录思考、技术与生活碎片。",
+		"siteurl": "https://www.3181314.xyz/",
+		"weight": 0,
+		"enabled": true
 	}
 ]
