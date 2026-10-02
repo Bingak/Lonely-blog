@@ -129,5 +129,21 @@
 		"siteurl": "https://devcoding.me/",
 		"weight": 0,
 		"enabled": true
+	},
+	{
+		"title": "柒月小站",
+		"imgurl": "https://avatars.githubusercontent.com/u/90437691?v=4",
+		"desc": "海内存知己，天涯若比邻。",
+		"siteurl": "https://blog.qyfy.kdns.fr/",
+		"weight": 0,
+		"enabled": true
+	},
+	{
+		"title": "eryuemu's blog",
+		"imgurl": "https://eryuemu.com/avatar.jpg",
+		"desc": "事在人为，圆融自洽",
+		"siteurl": "https://eryuemu.com/",
+		"weight": 0,
+		"enabled": true
 	}
 ]
