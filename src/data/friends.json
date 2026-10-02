@@ -145,5 +145,13 @@
 		"siteurl": "https://eryuemu.com/",
 		"weight": 0,
 		"enabled": true
+	},
+	{
+		"title": "Muyu の 小窝",
+		"imgurl": "https://i.imgs.ovh/2026/08/16/d9361d6e012c3125dc8bebbd1a913a92.gif",
+		"desc": "永远相信美好的事情即将发生",
+		"siteurl": "https://muyudada.dpdns.org",
+		"weight": 0,
+		"enabled": true
 	}
 ]
