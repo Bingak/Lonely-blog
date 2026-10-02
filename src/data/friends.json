@@ -97,5 +97,13 @@
 		"siteurl": "https://yujingblog.top/",
 		"weight": 0,
 		"enabled": true
+	},
+	{
+		"title": "池泛の小窝",
+		"imgurl": "https://chortle.asia/uploads/image/avater_1786082652615.jpg",
+		"desc": "山水有相逢，来日皆可期",
+		"siteurl": "https://chortle.asia/",
+		"weight": 0,
+		"enabled": true
 	}
 ]
