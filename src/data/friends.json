@@ -89,5 +89,13 @@
 		"siteurl": "https://www.3181314.xyz/",
 		"weight": 0,
 		"enabled": true
+	},
+	{
+		"title": "YuJing的记忆终端",
+		"imgurl": "https://yujingblog.top/assets/home/avatar.webp",
+		"desc": "不怪天气不好，是我心事太多。",
+		"siteurl": "https://yujingblog.top/",
+		"weight": 0,
+		"enabled": true
 	}
 ]
