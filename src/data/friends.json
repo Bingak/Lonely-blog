@@ -105,5 +105,13 @@
 		"siteurl": "https://chortle.asia/",
 		"weight": 0,
 		"enabled": true
+	},
+	{
+		"title": "星空驿站 Starlight Station",
+		"imgurl": "https://baiyangmu.xyz/static/favicon-96x96.png",
+		"desc": "一座漂浮在深空中的小小驿站",
+		"siteurl": "https://baiyangmu.xyz/",
+		"weight": 0,
+		"enabled": true
 	}
 ]
