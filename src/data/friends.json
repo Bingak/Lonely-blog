@@ -153,5 +153,21 @@
 		"siteurl": "https://muyudada.dpdns.org",
 		"weight": 0,
 		"enabled": true
+	},
+	{
+		"title": "楠香自语",
+		"imgurl": "https://blog.onlycc.ltd/upload/onlynn_avatar.png",
+		"desc": "✦在代码与文字间，寻找生活的回响✦",
+		"siteurl": "https://blog.onlycc.ltd",
+		"weight": 0,
+		"enabled": true
+	},
+	{
+		"title": "小竹の笔记本",
+		"imgurl": "https://notes.smallbamboo.cn/wp-content/uploads/2026/06/20260612211938437-favicon_summer.png",
+		"desc": "我没有特别的天赋，我只是热切地充满好奇。",
+		"siteurl": "https://notes.smallbamboo.cn",
+		"weight": 0,
+		"enabled": true
 	}
 ]
