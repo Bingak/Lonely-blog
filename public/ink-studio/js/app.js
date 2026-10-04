@@ -738,22 +738,53 @@ function buildMarkdown(d) {
       return Number.isFinite(exp) && exp > Date.now() ? "offline" : false;
     }
   }
-  /* 登录门随机壁纸：与博客同款随机图 API，逐个预加载，全部失败则保持纯色背景 */
+  /* 登录门随机壁纸：图源与博客主页壁纸一致，每 5 秒随机切换（双层交叉淡入） */
   const GATE_WALLPAPERS = [
-    "https://t.alcy.cc/pc",
+    "https://unsplash.it/1600/900?random",
     "https://www.dmoe.cc/random.php",
     "https://api.isoyu.com/bing_images.php",
+    "https://imgapi.xl0408.top/index.php",
+    "https://tu.ltyuanfang.cn/api/fengjing.php",
+    "https://t.alcy.cc/pc",
   ];
-  function loadGateWallpaper(i = 0) {
-    if (i >= GATE_WALLPAPERS.length) return;
-    const src = GATE_WALLPAPERS[i] + (GATE_WALLPAPERS[i].includes("?") ? "&" : "?") + "t=" + Date.now();
+  const GATE_WALLPAPER_INTERVAL = 5000;
+  let gateWpIdx = Math.floor(Math.random() * GATE_WALLPAPERS.length);
+  let gateWpFront = null;
+  let gateWpTimer = null;
+  const gateWpUrl = (i) => {
+    const n = ((i % GATE_WALLPAPERS.length) + GATE_WALLPAPERS.length) % GATE_WALLPAPERS.length;
+    const base = GATE_WALLPAPERS[n];
+    return base + (base.includes("?") ? "&" : "?") + "t=" + Date.now();
+  };
+  function loadGateWallpaper(i, attempt = 0) {
+    if (attempt >= GATE_WALLPAPERS.length) return; // 全部失败 → 保持纯色背景
+    const src = gateWpUrl(i);
     const img = new Image();
     img.onload = () => {
-      const el = document.querySelector(".gate-bg");
-      if (el) el.style.backgroundImage = `url("${src}")`;
+      const layers = document.querySelectorAll(".gate-bg");
+      if (!layers.length) return;
+      const next = gateWpFront === 0 ? layers[1] || layers[0] : layers[0];
+      const cur = gateWpFront === 0 ? layers[0] : layers[1];
+      next.style.backgroundImage = `url("${src}")`;
+      next.classList.add("on");
+      if (cur && cur !== next) cur.classList.remove("on");
+      gateWpFront = next === layers[0] ? 0 : 1;
     };
-    img.onerror = () => loadGateWallpaper(i + 1);
+    img.onerror = () => loadGateWallpaper(i + 1, attempt + 1);
     img.src = src;
+  }
+  function nextGateWallpaper() {
+    let n = Math.floor(Math.random() * GATE_WALLPAPERS.length);
+    if (n === gateWpIdx && GATE_WALLPAPERS.length > 1) n = (n + 1) % GATE_WALLPAPERS.length;
+    gateWpIdx = n;
+    loadGateWallpaper(n);
+  }
+  function startGateWallpaper() {
+    nextGateWallpaper();
+    if (!gateWpTimer) gateWpTimer = setInterval(nextGateWallpaper, GATE_WALLPAPER_INTERVAL);
+  }
+  function stopGateWallpaper() {
+    if (gateWpTimer) { clearInterval(gateWpTimer); gateWpTimer = null; }
   }
   async function initGate() {
     const saved = localStorage.getItem(SESSION_KEY);
@@ -763,7 +794,7 @@ function buildMarkdown(d) {
       if (st === "offline") return enterApp(true);
       localStorage.removeItem(SESSION_KEY);
     }
-    loadGateWallpaper();
+    startGateWallpaper();
     $("#gateLogin").hidden = false;
     renderTurnstile();
     $("#btnLogin").onclick = tryLogin;
@@ -797,6 +828,7 @@ function buildMarkdown(d) {
     }
   }
   function enterApp(offline) {
+    stopGateWallpaper();   // 进入主界面后停止壁纸轮播，省流量
     $("#loginGate").style.display = "none";
     $("#app").hidden = false;
     boot();
