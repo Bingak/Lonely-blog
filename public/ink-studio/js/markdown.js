@@ -164,8 +164,9 @@ window.InkMD = (function () {
       m => { rawTags.push(m); return "\u0002" + (rawTags.length - 1) + "\u0002"; });
     s = esc(s);
     // 图片（支持 Typora 风格尺寸标注 ![alt](src =x400 / =60% / =400x300)）
+    // 注意：此时全文已被 esc()，引号是 &quot;，需先还原再剥离
     s = s.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+([^)]*))?\)/g, (_, a, src, extra) => {
-      extra = (extra || "").trim().replace(/^"(.*)"$/, "$1").replace(/^'(.*)'$/, "$1");
+      extra = (extra || "").replace(/&quot;/g, '"').trim().replace(/^"(.*)"$/, "$1").replace(/^'(.*)'$/, "$1");
       let attrs = "";
       if (extra.startsWith("=")) {
         const m = /^=(?:x(\d+(?:\.\d+)?)|(\d+(?:\.\d+)?)(?:x(\d+(?:\.\d+)?))?|(\d+(?:\.\d+)?)%)$/.exec(extra);
@@ -182,9 +183,9 @@ window.InkMD = (function () {
       }
       return `<img src="${esc(src)}" alt="${esc(a)}"${attrs} loading="lazy">`;
     });
-    // 链接
-    s = s.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g,
-      (_, a, href, t) => `<a href="${esc(href)}" target="_blank" rel="noopener"${t ? ` title="${esc(t)}"` : ""}>${a}</a>`);
+    // 链接（title 引号同样已被 esc 成 &quot;）
+    s = s.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+&quot;([^)]*)&quot;)?\)/g,
+      (_, a, href, t) => `<a href="${esc(href)}" target="_blank" rel="noopener"${t ? ` title="${t}"` : ""}>${a}</a>`);
     // 粗斜体
     s = s.replace(/\*\*\*([^*]+)\*\*\*/g, "<b><i>$1</i></b>");
     s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
