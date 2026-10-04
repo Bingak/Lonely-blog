@@ -974,3 +974,31 @@ html[data-wallpaper-mode="fullscreen"][data-fullscreen-layout="classic"] #wallpa
     }
 }
 
+/* ============================================
+ * 文章页标题空位：hero / overlay 模式在桌面端文章页顶部让出一块空——
+ * 壁纸保持原有固定全屏 / 覆盖透明形态（全屏依旧全屏），只把内容区整体下推，
+ * 标题+介绍覆盖层定位在这块空位里居中，不再viewport居中压到分类栏和卡片
+ * ============================================ */
+@media (min-width: 1024px) {
+    html[data-wallpaper-mode="fullscreen"][data-fullscreen-layout="hero"] body:not(.is-home).is-post #content-panel,
+    html[data-wallpaper-mode="overlay"] body:not(.is-home).is-post #content-panel {
+        top: calc(5.5rem + 13rem) !important;
+        min-height: calc(100vh - 5.5rem - 13rem) !important;
+    }
+
+    html[data-wallpaper-mode="fullscreen"][data-fullscreen-layout="hero"] body:not(.is-home).is-post #banner-overlay-container .banner-post-meta-overlay,
+    html[data-wallpaper-mode="overlay"] body:not(.is-home).is-post #banner-overlay-container .banner-post-meta-overlay {
+        inset: 0 0 auto 0 !important;
+        height: calc(5.5rem + 13rem) !important;
+        padding-top: 5.5rem !important;
+        align-items: center !important;
+    }
+
+    /* 放开标题+介绍覆盖层（压过 fullscreen / overlay 非首页的隐藏规则；
+       限桌面端——移动端覆盖层本就 hidden，放开会和卡片重叠） */
+    html[data-wallpaper-mode="fullscreen"][data-fullscreen-layout="hero"] body:not(.is-home).is-post #wallpaper-wrapper .banner-post-meta-overlay,
+    html[data-wallpaper-mode="overlay"] body:not(.is-home).is-post #wallpaper-wrapper .banner-post-meta-overlay {
+        display: flex !important;
+    }
+}
+

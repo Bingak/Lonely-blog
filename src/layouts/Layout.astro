@@ -522,6 +522,7 @@ const ogImageAlt = propsOgImageAlt ?? pageTitle;
     class:list={[
       {
         "is-home": isHomePageCheck,
+        "is-post": !!postSlug,
         "sticky-navbar": navbarMode === "fixed",
         "dynamic-navbar": navbarMode === "dynamic",
       },

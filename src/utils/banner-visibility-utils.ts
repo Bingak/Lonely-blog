@@ -134,8 +134,13 @@ export function getBannerVisibilityState(
 	const homeTextLinksEnable =
 		backgroundWallpaper.common?.homeText?.linksEnable !== false;
 
+	// 文章页标题+介绍横幅：banner / fullscreen（含 hero）/ overlay 均渲染，
+	// hero 与 overlay 的几何与显隐由 layout-styles.css 的 body.is-post 规则接管
 	const showBannerPostMeta =
-		(isBannerMode || isWallpaperSwitchable || isClassicFullscreenMode) &&
+		(isBannerMode ||
+			isFullscreenMode ||
+			isOverlayMode ||
+			isWallpaperSwitchable) &&
 		isBackgroundEnabled &&
 		!isHomePageCheck &&
 		isPostPage &&

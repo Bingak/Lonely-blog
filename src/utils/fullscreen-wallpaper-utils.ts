@@ -11,6 +11,8 @@ let lastWrittenBlur = ""; // 上次实际写入的 --fullscreen-blur，值未变
 // 标题视差记忆化：上次写入的 transform/opacity，值未变则跳过，避免滚动已越淡出区/顶部静止时每帧重写合成层属性
 let lastTitleTransform = "";
 let lastTitleOpacity = "";
+let lastPostBandTransform = "";
+let lastPostBandOpacity = "";
 
 /** 仅当 transform/opacity 实际变化时才写入，减少对含标题文字的合成层的无谓逐帧更新 */
 function setTitleParallaxStyle(
@@ -25,6 +27,20 @@ function setTitleParallaxStyle(
 	overlay.style.opacity = opacity;
 }
 
+/** 文章页标题空位的同款记忆化写入（与首页标题各自独立记忆） */
+function setPostBandStyle(
+	band: HTMLElement,
+	transform: string,
+	opacity: string,
+): void {
+	if (transform === lastPostBandTransform && opacity === lastPostBandOpacity)
+		return;
+	lastPostBandTransform = transform;
+	lastPostBandOpacity = opacity;
+	band.style.transform = transform;
+	band.style.opacity = opacity;
+}
+
 function isHeroFullscreenLayout(): boolean {
 	return (
 		document.documentElement.getAttribute("data-fullscreen-layout") === "hero"
@@ -35,18 +51,41 @@ export function updateFullscreenTitleParallax(): void {
 	const html = document.documentElement;
 	const overlay = document.getElementById("banner-overlay-container");
 	if (!overlay) return;
-	// 非全屏或页面过渡中：复位（让 transition-swup-fade 的 CSS 生效）
-	if (
-		html.getAttribute("data-wallpaper-mode") !== "fullscreen" ||
-		!isHeroFullscreenLayout() ||
+	const mode = html.getAttribute("data-wallpaper-mode");
+	const isHome = pathsEqual(window.location.pathname, url("/"));
+	const isPost = document.body.classList.contains("is-post");
+	const isHeroFullscreen = mode === "fullscreen" && isHeroFullscreenLayout();
+	const transitioning =
 		html.classList.contains("is-animating") ||
-		html.classList.contains("is-changing")
-	) {
+		html.classList.contains("is-changing");
+
+	// 文章页顶部标题空位：hero / overlay 的 wrapper 是 fixed，
+	// 用反向平移 + 淡出模拟文档流，让标题随滚动一起离开视口
+	const postBand = overlay.querySelector(
+		".banner-post-meta-overlay",
+	) as HTMLElement | null;
+	if (postBand) {
+		if (!transitioning && !isHome && isPost && (isHeroFullscreen || mode === "overlay")) {
+			const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+			const fadeScroll = window.innerHeight * TITLE_FADE_RATIO;
+			const ratio = Math.min(scrollY / fadeScroll, 1);
+			setPostBandStyle(
+				postBand,
+				`translateY(${-scrollY}px)`,
+				String(1 - ratio),
+			);
+		} else {
+			setPostBandStyle(postBand, "", "");
+		}
+	}
+
+	// 非全屏或页面过渡中：复位（让 transition-swup-fade 的 CSS 生效）
+	if (!isHeroFullscreen || transitioning) {
 		setTitleParallaxStyle(overlay, "", "");
 		return;
 	}
 	// 仅首页使用 hero 标题；非首页与 overlay 一致（无标题覆盖层）
-	if (!pathsEqual(window.location.pathname, url("/"))) {
+	if (!isHome) {
 		setTitleParallaxStyle(overlay, "", "");
 		return;
 	}
@@ -77,12 +116,21 @@ function requestFullscreenTitleParallax(): void {
 export function syncFullscreenOverlays(): void {
 	const mode = document.documentElement.getAttribute("data-wallpaper-mode");
 	const isHome = pathsEqual(window.location.pathname, url("/"));
+	const isPost = document.body.classList.contains("is-post");
 	const overlays = document.querySelectorAll(
 		"#banner-overlay-container .banner-home-text-overlay, #banner-overlay-container .banner-page-title-overlay, #banner-overlay-container .banner-post-meta-overlay",
 	);
 	overlays.forEach((el) => {
 		const element = el as HTMLElement;
-		if (mode === "fullscreen" && isHeroFullscreenLayout() && !isHome) {
+		// hero 文章页保留标题+介绍覆盖层（顶部横幅由 CSS 的 body.is-post 规则撑出）
+		const keepForPost =
+			isPost && el.classList.contains("banner-post-meta-overlay");
+		if (
+			mode === "fullscreen" &&
+			isHeroFullscreenLayout() &&
+			!isHome &&
+			!keepForPost
+		) {
 			element.style.setProperty("display", "none", "important");
 		} else {
 			element.style.removeProperty("display");
