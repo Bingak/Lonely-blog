@@ -118,6 +118,12 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 				external: true,
 				icon: "material-symbols:edit-note",
 			},
+			{
+				name: "后台",
+				url: "https://api.lonelybing.top/",
+				external: true,
+				icon: "material-symbols:admin-panel-settings-rounded",
+			},
 		],
 	});
 
