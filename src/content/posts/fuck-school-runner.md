@@ -4,6 +4,7 @@ published: 2026-10-04 20:44:11
 updated: 2026-10-04
 description: 二呗学校加入了校园跑，每天还有两个随机打卡点，中途还有人脸验证，而且识别度是真的垃圾
 tags: [Android, Life]
+image: "https://img.lonelybing.top/file/post/1791119354909_%E6%88%90%E5%8A%9F%E4%B8%8A%E4%BC%A0.jpg"
 category: 硬件折腾
 pinned: false
 slug: fuck-school-runner
