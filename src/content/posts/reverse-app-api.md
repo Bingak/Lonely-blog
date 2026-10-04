@@ -18,56 +18,31 @@ series: "逆向"
 
 事情是这样的：本尊在用某app的时候，发现它的VIP功能挺有意思，但本尊只想研究一下它的接口设计，顺便看看能不能在本地搭一套后台出来玩——毕竟纯前端没意思，有来有回才叫折腾喵~
 
-某app的包名是 `某包名`，对应的官网是 `某网站`。本尊的目标很明确：
+本尊的目标很明确：
 
-1. 搞清楚它的接口长啥样、怎么签名的
-2. 把核心接口在本地复刻一遍
-3. 让App乖乖走本尊的本地服务器
-4. VIP验证什么的，当然也要自己说了算
+无非就是搞清楚它的接口长啥样、怎么签名的，然后把核心接口在本地复刻一遍，再让App乖乖走本尊的本地服务器，最后VIP验证什么的，当然也要自己说了算(简称白嫖awa)
 
-最终的效果就是手机上点开某app，数据全从本尊电脑上跑，想返回啥返回啥喵~
-
-![手机上跑本地接口的效果](https://img.lonelybing.top/file/post/1791035355836_phone.jpg)
+![效果](https://img.lonelybing.top/file/post/1791035355836_phone.jpg)
 
 ---
 
 ## 一、抓包：先把接口摸清楚
 
-逆向第一步当然是抓包。本尊用的是 **HTTP Toolkit**，比 Charles 界面好看，免费版也够用。
+逆向第一步当然是抓包啦。用的是 **HTTP Toolkit**，
 
 ### 准备工作
 
-手机上装个证书，WiFi 里代理设成本机 IP。然后打开某app，随便点点——
+准备证书，WiFi 里代理设成电脑 IP。然后打开某app，随便点点就行——
 
-嗯？怎么全是 CONNECT 看不到内容？
+斯，怎么全是 CONNECT ？
 
-哦对，现在的App基本都开了 SSL Pinning（证书锁定），光装系统证书没用，App 自己会校验服务器证书是不是它预期的那一个。
+哦对~，查了一下ai：现在的App基本都开了 SSL Pinning（证书锁定），光装系统证书没用，App 自己会校验服务器证书
 
-### 坑 1：Android 7+ 不信任用户证书
-
-本尊的手机是 Android 14，默认不信任用户安装的证书。HTTP Toolkit 装的证书在「用户凭据」里，App 根本不认。
-
-解决办法要么是把证书挪到系统凭据里（需要 root），要么用 Frida hook 掉 SSL Pinning。本尊选了后者——毕竟 root 太麻烦，Frida 一把梭喵~
-
-```bash
-# 手机上启动 frida-server（要和电脑上 frida-tools 版本一致）
-adb shell /data/local/tmp/frida-server -D &
-
-# 电脑上跑 objection 一键绕过 SSL Pinning
-objection -g 某包名 explore
-```
-
-进到 objection 的交互界面后，输入：
-
-```
-android sslpinning disable
-```
-
-搞定！再切回 HTTP Toolkit，请求就全都明明白白地躺在那儿了。
+本尊手机安卓17已root,随便搞awa
 
 ### 接口分析
 
-抓了几分钟，主要接口就这些：
+主要接口就这些：
 
 | 接口 | 作用 |
 | --- | --- |
@@ -86,13 +61,13 @@ X-Sign: a1b2c3d4e5f6...
 X-Device: <设备ID>
 ```
 
-`X-Sign` 一看就是签名，得反编译才能知道怎么算的喵~
+`X-Sign` 就是签名，得反编译才能知道怎么算的喵~
 
 ---
 
 ## 二、反编译：扒签名算法
 
-抓包只能看到请求长啥样，签名怎么生成的还得去代码里找。
+抓包只能看到请求长啥样，签名怎么生成的得去代码里找
 
 ### 工具准备
 
@@ -100,13 +75,12 @@ X-Device: <设备ID>
 - **apktool**：解资源文件、AndroidManifest.xml
 - **Frida**：运行时 hook，验证猜想
 
-先把 APK 拖进 jadx-gui，等它慢慢反编译完。
 
 ### 找签名逻辑
 
-本尊的经验是：直接搜 "sign" 或者 "X-Sign" 关键词，大概率能定位到。
+偷懒:直接搜 "sign" 或者 "X-Sign" 关键词，大概率能定位到吧(应该)
 
-搜了一下 `X-Sign`，在 `某包名.network.SignUtils` 这个类里找到了：
+搜了一下 `X-Sign`，果然在 `xxx.network.SignUtils` 这个类里找到了：
 
 ```java
 public static String getSign(Map<String, String> params, String timestamp) {
@@ -126,9 +100,9 @@ public static String getSign(Map<String, String> params, String timestamp) {
 }
 ```
 
-就这？MD5 加固定密钥？也太朴素了吧喵~
+~~MD5 加固定密钥也太朴素了吧喵~~
 
-不过等等，`SECRET_KEY` 是哪来的？跟过去一看：
+等一下，`SECRET_KEY` 是哪来的？
 
 ```java
 private static final String SECRET_KEY = nativeGetSecretKey();
@@ -140,13 +114,13 @@ static {
 private static native String nativeGetSecretKey();
 ```
 
-哦，藏在 so 库里了。Java 层直接看不到，得动 native 层。
+哦~，藏在so库里了。Java层看不见，得去native层
 
-### 坑 2：so 里的密钥不好直接扒
+### 坑 ：so 里的密钥不好直接扒
 
-`.so` 文件是 native 库，在 `lib/arm64-v8a/libnative-lib.so`。直接用 strings 命令可能能找到，但本尊试过了——密钥不在明文字符串里，应该是运行时拼出来的。
+`.so` 文件是 native 库，在 `lib/arm64-v8a/libnative-lib.so`。直接用 strings 命令可能能找到，但密钥不在明文字符串里，应该是运行时拼出来的
 
-没关系，Frida 直接 hook 这个 native 方法，把返回值打印出来不就行了：
+没关系，Frida 直接 hook 这个 native 方法，把返回值打印出来不就行了嘛
 
 ```javascript
 // hook_native.js
@@ -166,7 +140,7 @@ Java.perform(function() {
 frida -U -f 某包名 -l hook_native.js --no-pause
 ```
 
-几秒钟后控制台就吐出来了：
+没问题,控制台就出来了：
 
 ```
 [+] nativeGetSecretKey 返回值: xxxxxxxx_SuperSecretKey_xxxxxxxx
@@ -176,7 +150,7 @@ frida -U -f 某包名 -l hook_native.js --no-pause
 
 ### 验证一下
 
-本尊用 Node.js 写了个同样的签名函数，跟抓包里的已知签名对了一下：
+用 Node.js 写了个同样的签名函数，跟抓包里的已知签名对了一下：
 
 ```javascript
 import crypto from "node:crypto";
@@ -197,7 +171,7 @@ function getSign(params, timestamp, secretKey) {
 
 ## 三、搭本地后台
 
-接口和签名都搞清楚了，接下来就是自己写一套后台。本尊用的是 **Node.js + Express**，轻量够用。
+接口和签名都搞清楚了，接下来就是写一套后台。用的是 **Node.js + Express**，轻量够用
 
 ### 项目结构
 
@@ -355,7 +329,7 @@ app.listen(PORT, "0.0.0.0", () => {
 });
 ```
 
-启动之后，手机浏览器访问 `http://<电脑IP>:3000/api/v1/user/info` 测一下，能返回数据就说明后台没问题。
+启动之后，手机浏览器访问 `http://<电脑IP>:3000/api/v1/user/info`，能返回数据就说明后台搭建好了
 
 ![本地后台界面](https://img.lonelybing.top/file/post/1791035359580_界面.png)
 
@@ -401,11 +375,11 @@ https.createServer(options, app).listen(443, "0.0.0.0", () => {
 
 手机上把 `某网站` 的 hosts 指到电脑 IP（用 **Hosts Go** 或者 Magisk 模块），打开 App——
 
-完美！请求全部打到本尊的本地服务器上了喵~
+请求都指向本地服务器上喵~
 
-### 坑 3：App 里硬编码了多个域名
+### 坑 ：App 里硬编码了多个域名
 
-本尊最开始只改了主域名，结果发现有些接口还是往官方走。翻了一下反编译的代码，原来 App 里有好几个 baseUrl，分别对应不同业务线。
+本尊最开始只改了主域名，结果发现有些接口还是走的官方。翻了一下反编译的代码，原来 App 里有好几个 baseUrl，分别对应不同业务线。
 
 继续用 Frida hook，把所有 baseUrl 都换掉：
 
@@ -431,23 +405,22 @@ Java.perform(function() {
 
 ## 五、效果验证
 
-全部搞完之后，打开某app：
+全部搞完之后，打开某app：(白嫖成功)
 
-- ✅ 登录成功（随便输啥都能登）
-- ✅ 用户信息显示「至尊终身会员」
-- ✅ 内容列表正常加载（本尊自己写的 mock 数据）
-- ✅ VIP 功能全开，没有任何限制
-- ✅ 抓包一看，所有请求都走的本地 443 端口
+- 登录成功（随便输啥都能登）
+- 用户信息显示「终身会员」
+- VIP 功能全开，没有任何限制
 
-手机上的效果就是这样的：
+效果：
 
-![手机端效果](https://img.lonelybing.top/file/post/1791035355836_phone.jpg)
+![效果](https://img.lonelybing.top/file/post/1791035355836_phone.jpg)
 
-### 坑 4：部分接口本尊还没实现
+### 坑 ：部分接口本尊还没实现
 
-App 启动时会调一堆初始化接口，本尊只实现了核心的那几个，其他的全返回 404 了。结果 App 倒是没崩，只是有些地方显示空数据——容错做得还不错喵~
+App 启动时会调一堆初始化接口，xianzai只实现了核心的那几个，其他的全返回 404 了。
+结果倒是没崩，只是有些地方显示空数据罢了，软件~~容错做得还不错喵~ ~~
 
-补了几个关键的初始化接口（比如 `config/init`、`home/banner`），页面就完整了。剩下的边角接口看心情补，不影响主流程就行。
+补了几个关键的初始化接口（比如 `config/init`、`home/banner`），页面就完整了。剩下的不影响主流程就行l
 
 ---
 
@@ -494,8 +467,6 @@ local-server/
 - 本文仅供学习交流使用，逆向的目的是研究技术，请勿用于非法用途喵~
 - 不同 App 的签名算法和验证逻辑千差万别，本文里的某app算是比较简单的（MD5 + 固定密钥），复杂的可能会用 HMAC、RSA、甚至 native 层全程加密
 - 如果目标 App 用了 HTTP/2 或者 QUIC，HTTP Toolkit 可能抓不全，那就要上 tcpdump + Wireshark 了
-- Frida 的版本一定要和手机上的 frida-server 对应上，不然连不上
-- 想做得更彻底可以改 smali 重打包，把 baseUrl 和签名密钥直接替换掉，这样不用 Frida 也能跑
+- Frida 的版本一定要和手机上的 frida-server 对应上，不然可能连不上
+- 想做得更彻底可以改 smali 重打包，把 baseUrl 和签名密钥直接替换掉
 - 有问题欢迎交流：**support@lonelybing.top**
-
-就这样~ 现在某app彻底变成本尊的本地玩具了，想加啥功能加啥功能，摸鱼的时间又多了喵~
