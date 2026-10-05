@@ -58,13 +58,8 @@ export const siteConfig: SiteConfig = {
 
 	// 站点关键词
 	keywords: [
-		"Firefly",
 		"LonelyBing",
-		"Fuwari",
-		"Astro",
-		"ACGN",
 		"博客",
-		"技术博客",
 		"静态博客",
 	],
 
@@ -129,7 +124,7 @@ export const siteConfig: SiteConfig = {
 		// 导航菜单对齐方式，left：左对齐，center：居中
 		menuAlign: "center",
 		// 导航栏图标和标题是否跟随主题色
-		followTheme: false,
+		followTheme: true,
 		// 导航栏模式navbarMode：
 		// "static"：不固定，随页面滚动消失
 		// "fixed"：固定在顶部常显
@@ -279,10 +274,11 @@ export const siteConfig: SiteConfig = {
 		// static 模式在构建时获取数据并静态渲染，部署后数据不更新
 		// dynamic 模式在浏览器中实时请求 API，始终显示最新数据
 		mode: "dynamic",
-		// Bangumi API 地址
-		apiUrl: "https://api.bangumi.pro",
-		// 详情页地址
-		subjectBaseUrl: "https://api.bangumi.pro/subject/",
+		// Bangumi API 地址（走 Worker 反代 /api/bangumi -> api.bgm.tv，
+		// api.bgm.tv / api.bangumi.pro 在国内被 SNI 阻断，浏览器直连必失败）
+		apiUrl: "/api/bangumi",
+		// 详情页地址（官方站点链接）
+		subjectBaseUrl: "https://bgm.tv/subject/",
 		// 条目类型排序，数组中的类型将按顺序优先展示
 		// 可选值: "anime" | "book" | "music" | "game" | "real" (暂不支持"real"类型)
 		// 未列出的类型将按默认顺序排在后面

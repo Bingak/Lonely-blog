@@ -16,6 +16,14 @@
  *   GET /api/commits/{sha}                   -> 单个 commit 详情（含 stats 增删行数）
  *   GET /api/commits/stats?shas=a,b,c        -> 批量取 stats，形如 { sha: { additions, deletions } }
  *
+ * 另有 Bangumi 反代（前端 src/pages/bangumi.astro 依赖，dynamic 模式浏览器实时拉取）：
+ *   GET /api/bangumi/v0/...    -> https://api.bgm.tv/v0/...（JSON，边缘缓存 10 分钟）
+ *                               响应里的 lain.bgm.tv 图片地址会被改写成 /api/bangumi-pic/...，
+ *                               否则大陆访客因 DNS 污染加载不出封面图
+ *   GET /api/bangumi-pic/...   -> https://lain.bgm.tv/...（封面图，边缘缓存 7 天）
+ *   为什么需要它：api.bgm.tv / api.bangumi.pro / lain.bgm.tv 在国内均被 SNI 阻断或 DNS 污染，
+ *   浏览器直连必挂；博客自身域名可达，由 Worker 在境外回源即可。
+ *
  * 另有友链申请接口（前端 src/pages/friends.astro 的申请表单依赖）：
  *   POST /api/friend-apply  { title, siteurl, imgurl, desc, cf-turnstile-response }
  *   POST /api/admin-login  { user, pass, token } -> { ok, session }  后台登录（凭据存 Worker Secrets）
@@ -506,6 +514,62 @@ async function handleFriendApply(request, env) {
 }
 
 /* ---------------------------------------------------------------------------
+ * Bangumi 反代：GET /api/bangumi/v0/* 与 GET /api/bangumi-pic/*
+ * ------------------------------------------------------------------------- */
+
+const BANGUMI_API = "https://api.bgm.tv";
+const BANGUMI_PIC = "https://lain.bgm.tv";
+/** 收藏列表等 JSON 缓存 10 分钟：改评分后最多 10 分钟可见，同时保护上游限流 */
+const BANGUMI_JSON_TTL = 600;
+/** 封面图按文件名寻址、基本不变，缓存 7 天 */
+const BANGUMI_PIC_TTL = 604800;
+
+/** GET /api/bangumi/v0/... —— 代理 Bangumi 官方 API，并把图片地址改写成本站图片代理 */
+async function handleBangumiApi(request, env, ctx, url) {
+	// 只透传 /v0/ 开头的公开只读接口，避免变成通用代理
+	const rest = url.pathname.slice("/api/bangumi".length);
+	if (!rest.startsWith("/v0/") && rest !== "/v0") {
+		return jsonResponse({ error: "仅支持 /api/bangumi/v0/ 下的接口" }, 404);
+	}
+
+	const upstreamUrl = `${BANGUMI_API}${rest}${url.search}`;
+	return withCache(request, ctx, BANGUMI_JSON_TTL, async () => {
+		const upstream = await fetch(upstreamUrl, {
+			headers: {
+				Accept: "application/json",
+				// Bangumi 要求客户端以可识别 UA 自报家门
+				"User-Agent": "Bingak/Lonely-blog (Cloudflare Worker proxy)",
+			},
+		});
+		if (!upstream.ok) return upstream;
+
+		const text = await upstream.text();
+		// API 返回的封面图是 http(s)://lain.bgm.tv/...，大陆访客解析不到，改写成同源代理地址
+		const rewritten = text
+			.replaceAll("https://lain.bgm.tv", "/api/bangumi-pic")
+			.replaceAll("http://lain.bgm.tv", "/api/bangumi-pic");
+		return new Response(rewritten, {
+			status: upstream.status,
+			headers: { "Content-Type": "application/json; charset=utf-8" },
+		});
+	});
+}
+
+/** GET /api/bangumi-pic/... —— 代理 Bangumi 封面图 CDN */
+function handleBangumiPic(request, env, ctx, url) {
+	const rest = url.pathname.slice("/api/bangumi-pic".length);
+	if (!rest.startsWith("/")) {
+		return jsonResponse({ error: "非法的图片路径" }, 400);
+	}
+	const upstreamUrl = `${BANGUMI_PIC}${rest}${url.search}`;
+	return withCache(request, ctx, BANGUMI_PIC_TTL, () =>
+		fetch(upstreamUrl, {
+			headers: { "User-Agent": "Bingak/Lonely-blog (Cloudflare Worker proxy)" },
+		}),
+	);
+}
+
+/* ---------------------------------------------------------------------------
  * 后台登录：POST /api/admin-login 与 POST /api/admin-session
  *
  * 用户名 / 密码存于 Worker Secrets（wrangler secret put ADMIN_USER / ADMIN_PASS），
@@ -641,6 +705,20 @@ export default {
 				return handleCommit(request, env, ctx, rest);
 			}
 			return handleList(request, env, ctx);
+		}
+
+		if (url.pathname === "/api/bangumi" || url.pathname.startsWith("/api/bangumi/")) {
+			if (request.method !== "GET" && request.method !== "HEAD") {
+				return jsonResponse({ error: "仅支持 GET" }, 405, { Allow: "GET, HEAD" });
+			}
+			return handleBangumiApi(request, env, ctx, url);
+		}
+
+		if (url.pathname === "/api/bangumi-pic" || url.pathname.startsWith("/api/bangumi-pic/")) {
+			if (request.method !== "GET" && request.method !== "HEAD") {
+				return jsonResponse({ error: "仅支持 GET" }, 405, { Allow: "GET, HEAD" });
+			}
+			return handleBangumiPic(request, env, ctx, url);
 		}
 
 		if (url.pathname === "/api/friend-apply") {
