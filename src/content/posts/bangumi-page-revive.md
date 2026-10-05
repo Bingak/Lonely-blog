@@ -2,16 +2,13 @@
 title: 番组页复活小记
 published: 2026-10-05 21:58:40
 updated: 2026-10-05
-description: bangumi一直「数据拉取失败」，发现bangumi被墙了,镜像也被封了，于是乎
-tags:
-  - Cloudflare
-  - 博客
-category: 博客搭建
+description: "bangumi一直「数据拉取失败」，发现bangumi被墙了,镜像也被封了，于是乎"
 image: "https://img.lonelybing.top/file/post/bangumi_fixed.png"
+tags: [Cloudflare, 博客]
+category: 博客搭建
 pinned: false
 slug: bangumi-page-revive
 ---
-
 ## 阵亡
 
 数据源用的是第三方镜像 `api.bangumi.pro`，直连测试失败。换官方 `api.bgm.tv` 更别说了。连封面图床 `lain.bgm.tv` 也一起被f封了
@@ -20,7 +17,7 @@ slug: bangumi-page-revive
 
 ## 挖条隧道
 
-依据Worker 代理 GitHub API的原理，
+~~依旧cloudflare带善人~~ Worker 代理 GitHub API的原理，
 加了两条路由：
 
 - `/api/bangumi/v0/*` 转发官方 API，顺手把 JSON 里的 `lain.bgm.tv` 图片地址改写成站内代理
