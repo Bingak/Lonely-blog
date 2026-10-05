@@ -7,7 +7,7 @@ tags:
   - Cloudflare
   - 博客
 category: 博客搭建
-image: ""
+image: "https://img.lonelybing.top/file/post/bangumi_fixed.png"
 pinned: false
 slug: bangumi-page-revive
 ---
