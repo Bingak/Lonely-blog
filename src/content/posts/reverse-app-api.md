@@ -1,19 +1,14 @@
 ---
-title: 逆向app接口,重新搭建本地后台网站
+title: "逆向app接口,重新搭建本地后台网站"
 published: 2026-10-03T14:00:00+08:00
-pinned: false
 description: 把某app的接口逆向一遍，从抓包分析到反编译找签名，再用 Node.js 搭了个本地后台，把App的请求全拐到自己服务器上，顺便把VIP验证也重写了一遍。附 HTTP Toolkit 抓包 + jadx 反编译 + Frida hook 的完整踩坑记录。
 image: "https://img.lonelybing.top/file/post/1791035359580_界面.png"
-tags:
-  - 逆向
-  - Android
-  - Node.js
-  - 记录
+tags: [逆向, Android, Node.js, 记录]
 category: 折腾笔记
+pinned: false
 slug: reverse-app-api
-series: "逆向"
+series: 逆向
 ---
-
 ## 起因
 
 事情是这样的：本尊在用某app的时候，发现它的VIP功能挺有意思，但本尊只想研究一下它的接口设计，顺便看看能不能在本地搭一套后台出来玩——毕竟纯前端没意思，有来有回才叫折腾喵~
@@ -32,7 +27,7 @@ series: "逆向"
 
 ### 准备工作
 
-准备证书，WiFi 里代理设成电脑 IP。然后打开某app，随便点点就行——
+准备证书，WiFi 里代理设成电脑 IP。然后打开某app，
 
 斯，怎么全是 CONNECT ？
 
@@ -61,7 +56,7 @@ X-Sign: a1b2c3d4e5f6...
 X-Device: <设备ID>
 ```
 
-`X-Sign` 就是签名，得反编译才能知道怎么算的喵~
+`X-Sign` 就是签名，得反编译才能知道怎么算的
 
 ---
 
@@ -100,7 +95,7 @@ public static String getSign(Map<String, String> params, String timestamp) {
 }
 ```
 
-~~MD5 加固定密钥也太朴素了吧喵~~
+~~MD5 加固定密钥也太朴素了吧~~
 
 等一下，`SECRET_KEY` 是哪来的？
 
