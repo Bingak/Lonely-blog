@@ -3,7 +3,7 @@ import { h } from "hastscript";
 import githubCardData from "../constants/github-card-data.json" with {
 	type: "json",
 };
-import { isValidGithubRepository } from "../utils/github-card-utils.ts";
+import { parseGithubRepository } from "../utils/github-card-utils.ts";
 
 /**
  * Creates a GitHub Card component.
@@ -19,14 +19,14 @@ export function GithubCardComponent(properties, children) {
 			'Invalid directive. ("github" directive must be leaf type "::github{repo="owner/repo"}")',
 		]);
 
-	if (!isValidGithubRepository(properties.repo))
+	const repo = parseGithubRepository(properties.repo);
+	if (!repo)
 		return h(
 			"div",
 			{ class: "hidden" },
 			'Invalid repository. ("repo" attributte must be in the format "owner/repo")',
 		);
 
-	const repo = properties.repo;
 	const cardUuid = `GC${Math.random().toString(36).slice(-6)}`; // Collisions are not important
 	const data = githubCardData[repo.toLowerCase()] ?? null;
 	const hasData = data !== null;

@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { glob } from "glob";
-import { isValidGithubRepository } from "../src/utils/github-card-utils";
+import { parseGithubRepository } from "../src/utils/github-card-utils";
 
 const OUTPUT_FILE = "src/constants/github-card-data.json";
 const CONTENT_GLOB = "src/content/**/*.{md,mdx}";
@@ -32,8 +32,8 @@ async function findRepositories(): Promise<Map<string, string>> {
 	for (const file of contentFiles) {
 		const content = await fs.readFile(file, "utf-8");
 		for (const match of content.matchAll(GITHUB_DIRECTIVE_PATTERN)) {
-			const repo = match[1];
-			if (isValidGithubRepository(repo)) {
+			const repo = parseGithubRepository(match[1]);
+			if (repo) {
 				repositories.set(repo.toLowerCase(), repo);
 			}
 		}

@@ -1,4 +1,10 @@
 {
+	"biefan1029/fuck-run-": {
+		"description": "在runhook的基础上适配了闪动校园和闪动校园Pro /Based on RunHook, we have adapted it for Shandong Campus and Shandong Campus Pro.",
+		"language": "Java",
+		"avatarUrl": "https://avatars.githubusercontent.com/u/145867691?v=4",
+		"license": "NOASSERTION"
+	},
 	"bingak/miband-daily-word-practice": {
 		"description": "小米手环9Pro每日背单词小程序",
 		"language": "Python",
@@ -27,6 +33,12 @@
 		"description": "✨A static blog template built with Astro. ",
 		"language": "Astro",
 		"avatarUrl": "https://avatars.githubusercontent.com/u/25200299?v=4",
+		"license": "MIT"
+	},
+	"wchunlin1006/locusmimic": {
+		"description": "LocusMimic·位置模拟 是一款面向已 Root Android 设备的 Xposed/LSPosed 定位模拟模块。它支持地图选点、地点搜索、常用地点收藏、位置参数配置，并可向用户在 LSPosed 中选择的目标应用提供模拟位置。",
+		"language": null,
+		"avatarUrl": "https://avatars.githubusercontent.com/u/210196197?v=4",
 		"license": "MIT"
 	}
 }
