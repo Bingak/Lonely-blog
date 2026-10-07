@@ -24,6 +24,14 @@
  *   为什么需要它：api.bgm.tv / api.bangumi.pro / lain.bgm.tv 在国内均被 SNI 阻断或 DNS 污染，
  *   浏览器直连必挂；博客自身域名可达，由 Worker 在境外回源即可。
  *
+ * 另有 Umami 统计反代（前端 src/config/analyticsConfig.ts 的 umamiAnalytics 依赖）：
+ *   GET  /umami/script.js、GET /umami/recorder.js   -> https://cloud.umami.is/...（边缘缓存 1 小时）
+ *   POST /umami/api/...（实际用到 /umami/api/send）  -> https://cloud.umami.is/api/...（不缓存）
+ *   为什么需要它：cloud.umami.is / gateway.umami.is 在大陆会被 SNI 阻断或 DNS 污染，
+ *   浏览器直连超时 → 脚本加载失败、上报丢失，后台 PV 明显偏低；本站域名可达，由 Worker 在境外回源。
+ *   注意：script.js 里写死了默认上报端点 gateway.umami.is，不会跟随 script 自身地址推导，
+ *   前端必须显式传 data-host-url（即 hostUrl 配置）指向 /umami，否则反代不生效。
+ *
  * 另有友链申请接口（前端 src/pages/friends.astro 的申请表单依赖）：
  *   POST /api/friend-apply  { title, siteurl, imgurl, desc, cf-turnstile-response }
  *   POST /api/admin-login  { user, pass, token } -> { ok, session }  后台登录（凭据存 Worker Secrets）
@@ -36,6 +44,7 @@
  *   GITHUB_REPO    目标仓库，默认 Bingak/Lonely-blog（客户端不允许覆盖，避免变成公开代理）
  *   GITHUB_BRANCH  默认分支，默认 main；客户端可用 ?sha= 指定同一仓库的其它分支/引用
  *   FRIEND_APPLY_GITHUB_TOKEN   友链申请专用 token，需 Contents 读写 + Pull requests 读写；与只读的 GITHUB_TOKEN 分开
+ *   UMAMI_UPSTREAM   Umami 反代的上游，默认 https://cloud.umami.is；换成自建实例时改这里即可，前端不用动
  *   TURNSTILE_SECRET_KEY        Cloudflare Turnstile 的 Secret Key（Site Key 是构建期的 PUBLIC_TURNSTILE_SITE_KEY，见 src/config/friendApplyConfig.ts）
  */
 
@@ -570,6 +579,97 @@ function handleBangumiPic(request, env, ctx, url) {
 }
 
 /* ---------------------------------------------------------------------------
+ * Umami 统计反代：GET /umami/script.js、GET /umami/recorder.js、POST /umami/api/*
+ *
+ * 存在的理由与 Bangumi 反代一致：cloud.umami.is / gateway.umami.is 在大陆会被 SNI 阻断或 DNS 污染，
+ * 访客浏览器直连超时后统计就整块丢了（脚本是 defer 的，页面照常显示，所以故障很隐蔽）。
+ *
+ * 关于访客真实 IP（很容易踩的坑）：
+ *   Umami 取 IP 的头部优先级是（见 umami-software/umami src/lib/ip.ts）：
+ *     x-umami-client-ip（仅 Cloud 模式）> true-client-ip > cf-connecting-ip > ... > x-real-ip > x-forwarded-for
+ *   而 Worker 的 fetch() 子请求是「边缘发出的新请求」，Cloudflare 会往里面塞自己的
+ *   cf-connecting-ip / x-forwarded-for（值是机房出口 IP，见 Cloudflare Load Balancer 文档里
+ *   「Worker 会把 x-forwarded-for 填成 Worker 自己的 IP」的说明）。
+ *   所以只写 x-forwarded-for / x-real-ip 是**不够**的，会被优先级更高的 cf-connecting-ip 盖掉，
+ *   表现为所有访客的地理位置都落在 Cloudflare 机房。这里直接写最高优先级的那几个头兜住。
+ * ------------------------------------------------------------------------- */
+
+const UMAMI_UPSTREAM = "https://cloud.umami.is";
+/** 允许反代的脚本路径白名单；API 侧只放行 /api/ 前缀，其余一律 404，避免变成通用代理 */
+const UMAMI_SCRIPTS = new Set(["/script.js", "/recorder.js"]);
+/** 脚本内容基本不变，边缘缓存 1 小时，省掉每次访问都回境外源 */
+const UMAMI_SCRIPT_TTL = 3600;
+
+/**
+ * 把字符串按 UTF-8 字节塞进「latin1 语义」的字符串里。
+ * HTTP header 只能承载单字节字符，Umami 那边是 Buffer.from(v, 'latin1').toString('utf8') 解回来的，
+ * 两边必须对齐，否则中文/日文城市名会变成乱码。
+ */
+function toLatin1(text) {
+	let out = "";
+	for (const byte of new TextEncoder().encode(text)) out += String.fromCharCode(byte);
+	return out;
+}
+
+async function handleUmami(request, env, ctx, url) {
+	const rest = url.pathname.slice("/umami".length);
+	const isApi = rest.startsWith("/api/");
+
+	if (!isApi && !UMAMI_SCRIPTS.has(rest)) {
+		return jsonResponse({ error: "非法的 Umami 路径" }, 404);
+	}
+	if (isApi && request.method !== "POST") {
+		return jsonResponse({ error: "仅支持 POST" }, 405, { Allow: "POST" });
+	}
+
+	const upstreamUrl = `${env.UMAMI_UPSTREAM || UMAMI_UPSTREAM}${rest}${url.search}`;
+	const visitorIp = request.headers.get("cf-connecting-ip") || "";
+	const cf = request.cf || {};
+
+	const headers = new Headers();
+	for (const key of ["content-type", "user-agent", "accept-language"]) {
+		const value = request.headers.get(key);
+		if (value) headers.set(key, value);
+	}
+	// 按 Umami 的优先级从高到低全写一遍：不管上游最终认哪一个，拿到的都是访客真实 IP。
+	// 只写 x-forwarded-for / x-real-ip 会被 Cloudflare 在子请求里塞的 cf-connecting-ip（机房 IP）盖掉
+	if (visitorIp) {
+		headers.set("x-umami-client-ip", visitorIp);
+		headers.set("true-client-ip", visitorIp);
+		headers.set("x-real-ip", visitorIp);
+		headers.set("x-forwarded-for", visitorIp);
+	}
+	// 地理位置同理：Umami 会优先信 x-umami-client-country/-region/-city（见 src/lib/detect.ts 的
+	// PROVIDER_HEADERS），其次才是 cf-ipcountry —— 后者在子请求里同样是机房的值。
+	// 这里把入口请求上 Cloudflare 已经算好的访客地理位置直接透传过去。
+	const country = cf.country;
+	const region = cf.regionCode || cf.region;
+	const city = cf.city;
+	if (country) {
+		headers.set("x-umami-client-country", country);
+		if (region) headers.set("x-umami-client-region", region);
+		// Umami 读取时是 latin1 -> utf8 解码，非 ASCII 城市名得按字节塞进 header，否则中文城市会变乱码
+		if (city) headers.set("x-umami-client-city", toLatin1(city));
+	}
+
+	const init = { method: request.method, headers };
+	// 用 text() 而非直接转 body：上游要按原始 content-type 解析，且 sendBeacon 会带 text/plain
+	if (request.method === "POST") init.body = await request.text();
+
+	if (!isApi) {
+		// 脚本走边缘缓存；上报请求绝不进缓存，否则重复上报会被吞掉
+		return withCache(request, ctx, UMAMI_SCRIPT_TTL, () => fetch(upstreamUrl, init));
+	}
+
+	const upstream = await fetch(upstreamUrl, init);
+	const body = await upstream.text();
+	return new Response(body, {
+		status: upstream.status,
+		headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
+	});
+}
+
+/* ---------------------------------------------------------------------------
  * 后台登录：POST /api/admin-login 与 POST /api/admin-session
  *
  * 用户名 / 密码存于 Worker Secrets（wrangler secret put ADMIN_USER / ADMIN_PASS），
@@ -719,6 +819,10 @@ export default {
 				return jsonResponse({ error: "仅支持 GET" }, 405, { Allow: "GET, HEAD" });
 			}
 			return handleBangumiPic(request, env, ctx, url);
+		}
+
+		if (url.pathname === "/umami" || url.pathname.startsWith("/umami/")) {
+			return handleUmami(request, env, ctx, url);
 		}
 
 		if (url.pathname === "/api/friend-apply") {

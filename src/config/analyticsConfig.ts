@@ -8,11 +8,16 @@ export const analyticsConfig: AnalyticsConfig = {
 	// Umami 统计配置
 	umamiAnalytics: {
 		// Umami Website ID
-		websiteId: "",
+		websiteId: "a228e7c9-6234-4d07-98a5-8aa8c6c501da",
 		// Umami JS地址，支持使用自建
-		scriptUrl: "https://cloud.umami.is/script.js",
+		// 走本站域名的 Worker 反代（见 worker/index.js 的 /umami 路由），避免大陆访客直连 cloud.umami.is 超时丢数据
+		scriptUrl: "https://lonelybing.top/umami/script.js",
+		// 上报端点前缀：必须指向反代。
+		// Umami Cloud 的 script.js 里写死了默认端点 https://gateway.umami.is，不会跟随 scriptUrl 推导，
+		// 不显式指定的话数据仍然会直连境外域名，反代就白做了
+		hostUrl: "https://lonelybing.top/umami",
 		// Umami 会话回放脚本地址，支持使用自建
-		replaysScriptUrl: "https://cloud.umami.is/recorder.js",
+		replaysScriptUrl: "https://lonelybing.top/umami/recorder.js",
 		// 是否追踪出站链接
 		trackOutboundLinks: true,
 		// 是否收集浏览器性能指标

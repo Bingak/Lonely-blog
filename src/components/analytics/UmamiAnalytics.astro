@@ -2,6 +2,7 @@
 interface Props {
 	websiteId: string;
 	scriptUrl?: string;
+	hostUrl?: string;
 	replaysScriptUrl?: string;
 	trackOutboundLinks?: boolean;
 	collectWebVitals?: boolean;
@@ -17,6 +18,7 @@ interface Props {
 const {
 	websiteId,
 	scriptUrl,
+	hostUrl,
 	replaysScriptUrl,
 	trackOutboundLinks = true,
 	collectWebVitals = false,
@@ -36,6 +38,7 @@ const replaysBlockSelector = replays?.blockSelector?.trim();
 	defer
 	src={scriptUrl}
 	data-website-id={websiteId}
+	data-host-url={hostUrl}
 	data-performance={collectWebVitals ? "true" : undefined}
 ></script>
 
@@ -47,6 +50,7 @@ const replaysBlockSelector = replays?.blockSelector?.trim();
 			defer
 			src={replaysScriptUrl}
 			data-website-id={websiteId}
+			data-host-url={hostUrl}
 			data-sample-rate={String(replaysSampleRate)}
 			data-mask-level={replaysMaskLevel}
 			data-max-duration={String(replaysMaxDuration)}

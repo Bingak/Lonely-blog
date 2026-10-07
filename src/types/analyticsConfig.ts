@@ -4,6 +4,9 @@ export type AnalyticsConfig = {
 	umamiAnalytics?: {
 		websiteId?: string; // Umami Website ID
 		scriptUrl?: string; // Umami JS地址，支持使用自建
+		// 上报端点前缀。Umami Cloud 的 script.js 默认硬编码上报到 https://gateway.umami.is，
+		// 不会跟随 scriptUrl 推导，所以走自建域名反代时必须显式指定，否则数据仍会直连境外域名
+		hostUrl?: string;
 		replaysScriptUrl?: string; // Umami 会话回放脚本地址
 		trackOutboundLinks?: boolean; // 是否追踪出站链接点击事件，默认 true
 		collectWebVitals?: boolean; // 是否自动收集访客浏览器核心网页指标，默认 false
