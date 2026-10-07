@@ -177,5 +177,13 @@
 		"siteurl": "https://www.yhdzz.cn",
 		"weight": 0,
 		"enabled": true
+	},
+	{
+		"title": "笔尖代码",
+		"imgurl": "https://3z.ink/assets/images/logo-v2.png",
+		"desc": "笔尖代码 - 一个汇聚了前端、后端、数据库、运维、系统知识等内容的个人技术文档库",
+		"siteurl": "https://3z.ink/",
+		"weight": 0,
+		"enabled": true
 	}
 ]
