@@ -177,5 +177,21 @@
 		"siteurl": "https://www.yhdzz.cn",
 		"weight": 0,
 		"enabled": true
+	},
+	{
+		"title": "笔尖代码",
+		"imgurl": "https://3z.ink/assets/images/logo-v2.png",
+		"desc": "笔尖代码 - 一个汇聚了前端、后端、数据库、运维、系统知识等内容的个人技术文档库",
+		"siteurl": "https://3z.ink/",
+		"weight": 0,
+		"enabled": true
+	},
+	{
+		"title": "XingHuiSamaの宝藏之地",
+		"imgurl": "https://bu.dusays.com/2026/03/24/69c1e38ac1846.jpg",
+		"desc": "今天我也要学习吗",
+		"siteurl": "https://www.xinghuisama.top/",
+		"weight": 0,
+		"enabled": true
 	}
 ]
