@@ -13,6 +13,7 @@ import remarkSectionize from "remark-sectionize";
 import { mermaidConfig, plantumlConfig, siteConfig } from "../config";
 import { GithubCardComponent } from "../plugins/rehype-component-github-card.mjs";
 import { rehypeGithubCardAuto } from "../plugins/rehype-github-card-auto.mjs";
+import { rehypeSanitizeTree } from "../plugins/rehype-sanitize-tree.mjs";
 import { rehypeDiagramPanZoom } from "../plugins/rehype-diagram-panzoom.mjs";
 import rehypeEmailProtection from "../plugins/rehype-email-protection.mjs";
 import rehypeExternalLinks from "../plugins/rehype-external-links.mjs";
@@ -78,6 +79,10 @@ export const markdownRehypePlugins = [
 			},
 		},
 	],
+	// 末尾兜底：rehypeComponents 渲染 <github> 卡片后，可能在某些环境/并行下产出带
+	// undefined 子节点的树；在 final visitor（rehypeAutolinkHeadings，内部用 unist-util-visit）
+	// 之前再清一次，避免 visit-parents:354 的 `in operator` 崩溃。
+	rehypeSanitizeTree(),
 	[
 		rehypeAutolinkHeadings,
 		{
