@@ -44,7 +44,7 @@ slug: fuck-school-runner
 
 模拟定位我用的==LocusMimic==(<span style="font-size:12px">建议支持作者</span>)
 
-::github{repo="https://github.com/wchunlin1006/LocusMimic"}
+::github{repo="wchunlin1006/LocusMimic"}
 
 LSP记得勾选作用软件:
 
@@ -81,7 +81,7 @@ LSP记得勾选作用软件:
 校园跑后台不只看坐标，步频对不上速度可能会被判异常
 
 **不过当然有解决办法awa喵~（步频模拟模块）**
-::github{repo="https://github.com/BieFan1029/FUCK-RUN-"}
+::github{repo="BieFan1029/FUCK-RUN-"}
 ![好用](https://img.lonelybing.top/file/post/1791120403290_runhook.jpg "=45%")
 **hook系统框架和相关软件即可喵~**
 ![](https://img.lonelybing.top/file/post/1791120404333_步频hook.jpg "=45%")

@@ -12,6 +12,7 @@ import remarkMath from "remark-math";
 import remarkSectionize from "remark-sectionize";
 import { mermaidConfig, plantumlConfig, siteConfig } from "../config";
 import { GithubCardComponent } from "../plugins/rehype-component-github-card.mjs";
+import { rehypeGithubCardAuto } from "../plugins/rehype-github-card-auto.mjs";
 import { rehypeDiagramPanZoom } from "../plugins/rehype-diagram-panzoom.mjs";
 import rehypeEmailProtection from "../plugins/rehype-email-protection.mjs";
 import rehypeExternalLinks from "../plugins/rehype-external-links.mjs";
@@ -67,6 +68,8 @@ export const markdownRehypePlugins = [
 	],
 	[rehypeExternalLinks, { siteUrl: siteConfig.site_url }],
 	[rehypeEmailProtection, { method: "base64" }], // 邮箱保护插件，支持 'base64' 或 'rot13'
+	// 在 rehypeComponents 之前：把独占一行的 GitHub 仓库链接自动改写成 <github> 卡片元素
+	rehypeGithubCardAuto(),
 	[
 		rehypeComponents,
 		{

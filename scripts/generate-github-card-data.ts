@@ -8,6 +8,12 @@ const CONTENT_GLOB = "src/content/**/*.{md,mdx}";
 const GITHUB_DIRECTIVE_PATTERN =
 	/::github\s*\{[^}]*\brepo\s*=\s*["']([^"']+)["'][^}]*\}/g;
 
+// 匹配正文里「裸 GitHub 仓库链接」（仓库根，允许结尾 .git），
+// 用于自动识别插件覆盖到的链接也能在构建期生成静态兜底数据。
+// 不匹配 issue/PR/文件树等更深路径（repo 名后紧跟 / 即不命中）。
+const GITHUB_URL_PATTERN =
+	/https?:\/\/(?:www\.)?github\.com\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+?)(?:\.git)?(?=[\s)'"`]|$)/gi;
+
 interface GithubCardData {
 	description: string | null;
 	language: string | null;
@@ -33,6 +39,13 @@ async function findRepositories(): Promise<Map<string, string>> {
 		const content = await fs.readFile(file, "utf-8");
 		for (const match of content.matchAll(GITHUB_DIRECTIVE_PATTERN)) {
 			const repo = parseGithubRepository(match[1]);
+			if (repo) {
+				repositories.set(repo.toLowerCase(), repo);
+			}
+		}
+		// 同时收集裸 GitHub 仓库链接（自动识别插件的覆盖范围）
+		for (const match of content.matchAll(GITHUB_URL_PATTERN)) {
+			const repo = parseGithubRepository(`${match[1]}/${match[2]}`);
 			if (repo) {
 				repositories.set(repo.toLowerCase(), repo);
 			}
