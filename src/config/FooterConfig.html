@@ -1,26 +1,44 @@
-<script defer src="https://events.vercount.one/js"></script>
+<!-- 不蒜子访问统计 v3.6.9 · 官方文档 https://www.busuanzi.cc/ -->
+<script src="https://cdn.busuanzi.cc/busuanzi/3.6.9/busuanzi.min.js" defer></script>
 
 <div class="lb-footer">
 	<!-- 访问统计 -->
 	<div class="lb-row">
 		<span class="lb-chip">
-			<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-			今日访问量 <b id="vercount_value_page_pv">—</b> 次
+			<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+				aria-hidden="true">
+				<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+				<circle cx="12" cy="12" r="3" />
+			</svg>
+			今日访问量 <b id="busuanzi_today_pv">—</b> 次
 		</span>
 		<span class="lb-chip">
-			<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-			总访问量 <b id="vercount_value_site_pv">—</b> 次
+			<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+				aria-hidden="true">
+				<path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+			</svg>
+			总访问量 <b id="busuanzi_site_pv">—</b> 次
 		</span>
 		<span class="lb-chip">
-			<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-			访客人数 <b id="vercount_value_site_uv">—</b> 人
+			<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+				aria-hidden="true">
+				<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+				<circle cx="9" cy="7" r="4" />
+				<path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+				<path d="M16 3.13a4 4 0 0 1 0 7.75" />
+			</svg>
+			访客人数 <b id="busuanzi_site_uv">—</b> 人
 		</span>
 	</div>
 
 	<!-- 建站时间统计 -->
 	<div class="lb-row">
 		<span class="lb-chip">
-			<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+			<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+				aria-hidden="true">
+				<circle cx="12" cy="12" r="10" />
+				<polyline points="12 6 12 12 16 14" />
+			</svg>
 			<span id="site-runtime">本站已存活 ...</span>
 		</span>
 	</div>
@@ -64,6 +82,7 @@
 		gap: 10px;
 		margin: 14px 0 4px;
 	}
+
 	.lb-row {
 		display: flex;
 		flex-wrap: wrap;
@@ -71,6 +90,7 @@
 		align-items: center;
 		gap: 8px 10px;
 	}
+
 	.lb-chip {
 		display: inline-flex;
 		align-items: center;
@@ -87,13 +107,16 @@
 		-webkit-backdrop-filter: blur(8px);
 		transition: border-color 0.25s, background 0.25s;
 	}
+
 	.lb-chip:hover {
 		border-color: color-mix(in srgb, var(--primary) 55%, transparent);
 	}
+
 	.lb-chip b {
 		font-weight: 600;
 		color: var(--primary);
 	}
+
 	.lb-chip svg {
 		width: 14px;
 		height: 14px;
@@ -101,28 +124,34 @@
 		opacity: 0.8;
 		flex: none;
 	}
+
 	.lb-meta {
 		font-size: 0.78rem;
 		opacity: 0.75;
 	}
+
 	.lb-meta a {
 		color: inherit;
 		text-decoration: none;
 		transition: color 0.25s;
 	}
+
 	.lb-meta a:hover {
 		color: var(--primary);
 	}
+
 	.lb-meta img {
 		border-radius: 6px;
 		opacity: 0.85;
 		vertical-align: middle;
 		transition: opacity 0.25s, transform 0.25s;
 	}
+
 	.lb-meta a:hover img {
 		opacity: 1;
 		transform: translateY(-1px);
 	}
+
 	.lb-dot {
 		width: 3px;
 		height: 3px;
