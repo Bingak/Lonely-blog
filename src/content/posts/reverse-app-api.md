@@ -11,11 +11,9 @@ series: 逆向
 ---
 ## 起因
 
-事情是这样的：本尊在用某app的时候，发现它的VIP功能挺有意思，但本尊只想研究一下它的接口设计，顺便看看能不能在本地搭一套后台出来玩——毕竟纯前端没意思，有来有回才叫折腾喵~
+事情是这样的：本尊在用某app的时候，发现它某些功能设计还挺有意思的，所以尝试一下搭建本地服务研究一下
 
-本尊的目标很明确：
-
-无非就是搞清楚它的接口长啥样、怎么签名的，然后把核心接口在本地复刻一遍，再让App乖乖走本尊的本地服务器，最后VIP验证什么的，当然也要自己说了算(简称白嫖awa)
+其实目标也挺朴素的. 先把接口摸清楚，搞清楚它长啥样和签名怎么算的；再把核心那几个接口在本地复刻一遍，让App改走本地服务器. 至于验证那块，顺手在本地后台做了个授权测试
 
 ![效果](https://img.lonelybing.top/file/post/1791035355836_phone.jpg)
 
@@ -42,10 +40,10 @@ series: 逆向
 | 接口 | 作用 |
 | --- | --- |
 | `POST /api/v1/login` | 登录，拿 token |
-| `GET /api/v1/user/info` | 获取用户信息（含 VIP 状态） |
+| `GET /api/v1/user/info` | 获取用户信息|
 | `GET /api/v1/content/list` | 内容列表 |
 | `GET /api/v1/content/detail` | 内容详情 |
-| `POST /api/v1/vip/verify` | VIP 验证（重点） |
+| `POST /api/v1/vip/verify` | 验证服务（重点） |
 
 每个请求头里都带了这些东西：
 
@@ -135,7 +133,7 @@ Java.perform(function() {
 frida -U -f 某包名 -l hook_native.js --no-pause
 ```
 
-没问题,控制台就出来了：
+没问题,控制台可用：
 
 ```
 [+] nativeGetSecretKey 返回值: xxxxxxxx_SuperSecretKey_xxxxxxxx
@@ -233,9 +231,9 @@ export function verifySign(req, res, next) {
 }
 ```
 
-### VIP 验证接口
+### 验证接口
 
-这是最有意思的部分。本尊把 VIP 状态改成自己说了算，想让谁是 VIP 谁就是 VIP 喵~
+这是最有意思的部分。本地后台对 相关验证接口做了授权测试，按测试逻辑返回结果即可喵~
 
 ```javascript
 // src/routes/vip.js
@@ -245,7 +243,7 @@ import { authMiddleware } from "../middleware/auth.js";
 const router = express.Router();
 
 router.post("/verify", authMiddleware, (req, res) => {
-  // 本尊的本地后台：所有登录用户全是永久VIP！
+  // 本尊的本地后台：为授权测试，所有登录用户均返回VIP状态
   res.json({
     code: 0,
     message: "success",
@@ -324,7 +322,7 @@ app.listen(PORT, "0.0.0.0", () => {
 });
 ```
 
-启动之后，手机浏览器访问 `http://<电脑IP>:3000/api/v1/user/info`，能返回数据就说明后台搭建好了
+启动之后，手机浏览器访问 `http://<电脑局域网IP>:3000/api/v1/user/info`，能返回数据就说明后台搭建好了
 
 ![本地后台界面](https://img.lonelybing.top/file/post/1791035359580_界面.png)
 
@@ -400,11 +398,11 @@ Java.perform(function() {
 
 ## 五、效果验证
 
-全部搞完之后，打开某app：(白嫖成功)
+全部搞完之后，打开某app：(授权测试通过)
 
 - 登录成功（随便输啥都能登）
 - 用户信息显示「终身会员」
-- VIP 功能全开，没有任何限制
+- 本地授予已生效（仅本地测试环境）
 
 效果：
 
@@ -413,7 +411,7 @@ Java.perform(function() {
 ### 坑 ：部分接口本尊还没实现
 
 App 启动时会调一堆初始化接口，xianzai只实现了核心的那几个，其他的全返回 404 了。
-结果倒是没崩，只是有些地方显示空数据罢了，软件~~容错做得还不错喵~ ~~
+结果倒是没崩，只是有些地方显示空数据罢了，软件~~容错做得还不错喵~~
 
 补了几个关键的初始化接口（比如 `config/init`、`home/banner`），页面就完整了。剩下的不影响主流程就行l
 

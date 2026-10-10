@@ -16,7 +16,7 @@ slug: fuck-school-runner
 
 说白了就是本尊被校园跑逼出来的研究
 
-<span style="font-size:24px">继上篇文章搓了个软件后台后，本尊也是可以白嫖某软件vip了</span>
+<span style="font-size:24px">继上篇文章搓了个软件后台后，实现本地授权</span>
 
 [[reverse-app-api|逆向app接口,重新搭建本地后台网站]]
 
@@ -84,7 +84,7 @@ LSP记得勾选作用软件:
 ::github{repo="BieFan1029/FUCK-RUN-"}
 ![好用](https://img.lonelybing.top/file/post/1791120403290_runhook.jpg "=45%")
 **hook系统框架和相关软件即可喵~**
-![](https://img.lonelybing.top/file/post/1791120404333_步频hook.jpg "=45%")
+![](https://img.lonelybing.top/file/post/1791611158387.jpg "=45%")
 
 ## <span style="color:red">提醒!!</span>
 
