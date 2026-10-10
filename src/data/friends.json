@@ -193,5 +193,13 @@
 		"siteurl": "https://www.xinghuisama.top/",
 		"weight": 0,
 		"enabled": true
+	},
+	{
+		"title": "qwwp",
+		"imgurl": "https://qwwp.top/images/avatar.jpg",
+		"desc": "你要吃一口C4吗？",
+		"siteurl": "https://qwwp.top/",
+		"weight": 0,
+		"enabled": true
 	}
 ]
