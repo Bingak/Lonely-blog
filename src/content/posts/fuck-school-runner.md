@@ -76,7 +76,7 @@ LSP记得勾选作用软件:
 
 ## 缺点是该软件好像没有步数传感器hook的功能
 ### 所以，如果只用这个软件，会导致步频为零
-![](https://img.lonelybing.top/file/post/1791119361060_无效.jpg "=45%")
+![如图仅有175(自己手摇)](https://img.lonelybing.top/file/post/1791119361060_无效.jpg "=45%")
 
 校园跑后台不只看坐标，步频对不上速度可能会被判异常
 
@@ -84,7 +84,7 @@ LSP记得勾选作用软件:
 ::github{repo="BieFan1029/FUCK-RUN-"}
 ![好用](https://img.lonelybing.top/file/post/1791120403290_runhook.jpg "=45%")
 **hook系统框架和相关软件即可喵~**
-![](https://img.lonelybing.top/file/post/1791611158387.jpg "=45%")
+![111](https://img.lonelybing.top/file/post/1791611158387.jpg "=45%")
 
 ## <span style="color:red">提醒!!</span>
 
