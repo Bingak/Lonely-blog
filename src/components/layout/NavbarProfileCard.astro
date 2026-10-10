@@ -2,7 +2,7 @@
 /**
  * 导航栏左侧站名悬停资料卡（参考 my-blog 的 NavbarProfileCard 实现思路，自包含简化版）：
  * - 桌面端 hover/focus 站名展开浮层小卡片，移出延迟收起，过渡动画平滑；
- * - 左栏：身份（头像/昵称/签名）+ 社交入口 + 贡献热力图（12 月 × 5 周方块，
+ * - 左栏：身份（头像/昵称/签名）+ 社交入口 + 贡献热力图（12 月 × 4 周方块，与侧边栏日历热力图口径一致；
  *   构建期由文章发布日期静态统计色阶，悬浮显示「N月第M周 · X篇」提示）；
  * - 右栏：建站倒计时模块，以 SITE_FOUNDING_DATE 为基准实时计算已运行时间
  *   （年/月/日/时/分/秒，每秒刷新），附带月/年进度条（每次展开从 0 重放加载动画）。
@@ -52,14 +52,14 @@ const posts = await getCollection("posts", ({ data }) => {
 for (const post of posts) {
 	const published = post.data.published;
 	if (!published || published.getFullYear() !== currentYear) continue;
-	const key = `${published.getMonth()}-${Math.min(4, Math.floor((published.getDate() - 1) / 7))}`;
+	const key = `${published.getMonth()}-${Math.min(3, Math.floor((published.getDate() - 1) / 7))}`;
 	weekCounts.set(key, (weekCounts.get(key) ?? 0) + 1);
 }
-const currentWeekKey = `${now.getMonth()}-${Math.min(4, Math.floor((now.getDate() - 1) / 7))}`;
+const currentWeekKey = `${now.getMonth()}-${Math.min(3, Math.floor((now.getDate() - 1) / 7))}`;
 
 const heatColumns = Array.from({ length: 12 }, (_, month) => ({
 	month,
-	cells: Array.from({ length: 5 }, (_, week) => {
+	cells: Array.from({ length: 4 }, (_, week) => {
 		const key = `${month}-${week}`;
 		const count = weekCounts.get(key) ?? 0;
 		const label =
@@ -235,7 +235,8 @@ const socialLinks = profileConfig.links.map((link) => ({
 		box-shadow: -1px -1px 2px rgba(0, 0, 0, 0.04);
 	}
 	:global(body.wallpaper-transparent) .npp-arrow {
-		background: var(--card-bg-transparent);
+		/* 与卡片磨砂底色一致，避免箭头比卡体更透 */
+		background: color-mix(in srgb, var(--card-bg) 78%, transparent);
 	}
 
 	.npp-card {
@@ -248,6 +249,18 @@ const socialLinks = profileConfig.links.map((link) => ({
 		box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 		/* 覆盖 card-base 的 overflow-hidden，避免悬浮提示贴边时被裁剪 */
 		overflow: visible;
+	}
+
+	/* 柔光玻璃材质：壁纸透明模式下 card-base 会被 --card-bg-transparent（60% 纯透明）
+	   !important 覆盖，导致背后文字直接透出。这里用更高不透明度的主题色 + 背景模糊
+	   重构成磨砂玻璃，并用 .card-base 复合选择器压过全局 !important。 */
+	:global(body.wallpaper-transparent) .npp-card.card-base {
+		background-color: color-mix(in srgb, var(--card-bg) 78%, transparent) !important;
+		backdrop-filter: blur(24px) saturate(1.5);
+		-webkit-backdrop-filter: blur(24px) saturate(1.5);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.1),
+			0 8px 30px rgba(0, 0, 0, 0.18);
 	}
 
 	/* ── 左栏 ── */
@@ -343,7 +356,7 @@ const socialLinks = profileConfig.links.map((link) => ({
 		transform: translateY(-2px);
 	}
 
-	/* ── 贡献热力图：12 月 × 5 周 ── */
+	/* ── 贡献热力图：12 月 × 4 周 ── */
 	.npp-heatmap {
 		display: flex;
 		gap: 3px;
