@@ -29,6 +29,12 @@
 		"avatarUrl": "https://avatars.githubusercontent.com/u/43440669?v=4",
 		"license": "MIT"
 	},
+	"lyravoid/shirone": {
+		"description": "An expressive, anime-inspired blog theme built on Material 3 Expressive, Astro 7, and Svelte 5",
+		"language": "TypeScript",
+		"avatarUrl": "https://avatars.githubusercontent.com/u/272864777?v=4",
+		"license": "MIT"
+	},
 	"saicaca/fuwari": {
 		"description": "✨A static blog template built with Astro. ",
 		"language": "Astro",
