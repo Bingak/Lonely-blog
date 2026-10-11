@@ -201,5 +201,13 @@
 		"siteurl": "https://qwwp.top/",
 		"weight": 0,
 		"enabled": true
+	},
+	{
+		"title": "x1shang-山与回响",
+		"imgurl": "https://x1shang.top/apple-touch-icon.png",
+		"desc": "山有轮廓，思绪没有",
+		"siteurl": "https://x1shang.top/",
+		"weight": 0,
+		"enabled": true
 	}
 ]
