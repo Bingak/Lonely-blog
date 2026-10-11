@@ -255,7 +255,7 @@ function buildMarkdown(d) {
         <label class="chk"><input type="checkbox" data-fb="commentOff" ${f.comment === false ? "checked" : ""}> 关闭评论</label>
       </div>`;
       h += `<div class="field-row">${txt("author", f.author, "留空用站点默认", "", "作者")}${txt("lang", f.lang, "zh-CN", "", "语言")}</div>`;
-      h += `<div class="field-row">${txt("series", f.series, "系列名", "", "系列")}${fld("系列序号", `<input data-f="seriesOrder" type="number" value="${f.seriesOrder ?? ""}">`)}</div>`;
+      h += `<div class="field-row">${txt("series", f.series, "系列名", "下拉可选已有系列，输入新名即新建", "系列", false, "existing-series")}${fld("系列序号", `<input data-f="seriesOrder" type="number" value="${f.seriesOrder ?? ""}">`)}</div>`;
       h += txt("sourceLink", f.sourceLink, "https://…", "", "来源链接");
       h += licenseFld(f);
       h += `<div class="field-row">${txt("password", f.password, "", "", "访问密码")}${txt("passwordHint", f.passwordHint, "", "", "密码提示")}</div>`;
@@ -367,7 +367,7 @@ function buildMarkdown(d) {
         const all = getExistingTags();
         const used = (cur.fm[inp.dataset.chipin] || []).map(s => s.toLowerCase());
         const q = inp.value.trim().toLowerCase();
-        const items = all.filter(t => !used.includes(t.toLowerCase()) && (!q || t.toLowerCase().includes(q))).slice(0, 8);
+        const items = all.filter(t => !used.includes(t.toLowerCase()) && (!q || t.toLowerCase().includes(q))).slice(0, 40);
         if (!items.length) { sug.hidden = true; return; }
         activeIdx = -1;
         sug.innerHTML = items.map((t, i) => `<div class="tag-sug-item" data-i="${i}" data-v="${MD.esc(t)}">${MD.esc(t)}</div>`).join("");
@@ -426,7 +426,7 @@ function buildMarkdown(d) {
       const show = () => {
         const all = getList();
         const q = inp.value.trim().toLowerCase();
-        const items = all.filter(t => !q || t.toLowerCase().includes(q)).slice(0, 8);
+        const items = all.filter(t => !q || t.toLowerCase().includes(q)).slice(0, 40);
         if (!items.length) { sug.hidden = true; return; }
         activeIdx = -1;
         sug.innerHTML = items.map((t, i) => `<div class="tag-sug-item" data-i="${i}" data-v="${MD.esc(t)}">${MD.esc(t)}</div>`).join("");
@@ -840,15 +840,22 @@ function buildMarkdown(d) {
   }
 
   /* ================= GitHub ================= */
-  /** 从仓库已有 posts/projects/gallery 中提取 tags，填充 #existing-tags datalist */
-  async function fetchExistingTags() {
+  /** 从仓库已有 posts/projects/gallery 中提取 tags / category / series，填充三个 datalist */
+  let tagsFetching = null;
+  function fetchExistingTags() {
+    if (tagsFetching) return tagsFetching;
     const g = settings.github;
-    if (!g || !g.token || !g.owner || !g.repo) return;
+    if (!g || !g.token || !g.owner || !g.repo) return Promise.resolve();
+    tagsFetching = doFetchTaxonomy(g).finally(() => { tagsFetching = null; });
+    return tagsFetching;
+  }
+  async function doFetchTaxonomy(g) {
     const dl = $("#existing-tags");
     if (!dl) return;
     const dirs = [`${g.root}/posts`, `${g.root}/projects`, "src/content/gallery"];
     const allTags = new Set();
     const allCats = new Set();
+    const allSeries = new Set();
     const parseTags = (fmText) => {
       const tm = fmText.match(/tags\s*:\s*\[([^\]]*)\]/);
       if (tm) {
@@ -874,23 +881,27 @@ function buildMarkdown(d) {
         const files = await r.json();
         if (!Array.isArray(files)) continue;
         const mds = files.filter(f => f.type === "file" && /\.md$/i.test(f.name));
-        for (const f of mds) {
+        await Promise.all(mds.map(async f => {
           try {
             const content = await ghGetFile(f.path);
-            if (!content) continue;
+            if (!content) return;
             const m = content.text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-            if (!m) continue;
+            if (!m) return;
             const fmText = m[1];
             parseTags(fmText);
             const cat = pick(fmText, "category");
             if (cat) allCats.add(cat);
+            const ser = pick(fmText, "series");
+            if (ser) allSeries.add(ser);
           } catch (e) {}
-        }
+        }));
       } catch (e) {}
     }
-    dl.innerHTML = [...allTags].sort().map(t => `<option value="${MD.esc(t)}">`).join("");
-    const dlc = $("#existing-cats");
-    if (dlc) dlc.innerHTML = [...allCats].sort().map(t => `<option value="${MD.esc(t)}">`).join("");
+    const sortZh = (s) => [...s].sort((a, b) => a.localeCompare(b, "zh-Hans-CN", { numeric: true }));
+    const fill = (el, set) => { if (el) el.innerHTML = sortZh(set).map(t => `<option value="${MD.esc(t)}">`).join(""); };
+    fill(dl, allTags);
+    fill($("#existing-cats"), allCats);
+    fill($("#existing-series"), allSeries);
   }
 
   function ghSettings() {
@@ -981,6 +992,7 @@ function buildMarkdown(d) {
       if (!r.ok) throw new Error((await r.json()).message || r.status);
       closeModal();
       toast("已提交仓库，Cloudflare 将自动构建 ✓", "ok");
+      fetchExistingTags();
     } catch (e) {
       toast("提交失败：" + e.message, "err");
     }
@@ -1000,6 +1012,7 @@ function buildMarkdown(d) {
       delete cur._ghPath;
       closeModal();
       toast("相册已提交，Cloudflare 将自动构建 ✓", "ok");
+      fetchExistingTags();
     } catch (e) {
       toast("提交失败：" + e.message, "err");
     }
