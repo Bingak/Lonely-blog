@@ -624,6 +624,34 @@ function buildMarkdown(d) {
     });
   }
 
+  const NEW_TYPES = [
+    { k: "post", icon: "📄", label: "文章", sub: "content/posts" },
+    { k: "project", icon: "🧩", label: "项目", sub: "content/projects" },
+    { k: "dynamic", icon: "💬", label: "动态", sub: "content/dynamic" },
+    { k: "gallery", icon: "🖼", label: "相册", sub: "content/gallery" },
+  ];
+  /** 新建文档：点卡片直接创建，不再手打类型名 */
+  function newDocModal() {
+    const def = cur ? cur.type : "post";
+    $("#modalTitle").textContent = "新建文档";
+    $("#modalBody").innerHTML = `<div class="new-grid">${NEW_TYPES.map(t => `
+      <button class="new-card ${t.k === def ? "on" : ""}" data-nt="${t.k}">
+        <span class="nc-icon">${t.icon}</span><span class="nc-label">${t.label}</span><span class="nc-sub">${t.sub}</span>
+      </button>`).join("")}</div>
+      <p style="font-size:11.5px;color:var(--fg3)">点卡片直接创建；默认高亮当前文档类型，直接回车即可。</p>`;
+    $("#modalFoot").innerHTML = `<button class="btn" id="newCancel">取消</button>`;
+    $("#newCancel").onclick = closeModal;
+    $("#modalBody").querySelectorAll("[data-nt]").forEach(b => b.onclick = () => {
+      closeModal();
+      $("#libraryBack").hidden = true;
+      const d = newDoc(b.dataset.nt); docs.push(d); openDoc(d.id); renderLibrary();
+      window.InkEditor.focus();
+    });
+    $("#modalBack").hidden = false;
+    const on = $("#modalBody").querySelector(".new-card.on");
+    if (on) on.focus();
+  }
+
   /* ================= 导入 / 导出 ================= */
   function importMarkdown(text, name) {
     const { fm, body } = MD.splitFrontMatter(text);
@@ -1219,12 +1247,7 @@ function buildMarkdown(d) {
     $("#btnLibrary").onclick = () => { renderLibrary(); $("#libraryBack").hidden = false; };
     $("#btnCloseLibrary").onclick = () => $("#libraryBack").hidden = true;
     $("#libraryBack").onclick = e => { if (e.target.id === "libraryBack") e.target.hidden = true; };
-    $("#btnNewDoc").onclick = () => {
-      askModal("新建文档", [{ k: "type", label: "类型（post / project / dynamic / gallery）", value: "post" }], v => {
-        const t = ["post", "project", "dynamic", "gallery"].includes(v.type) ? v.type : "post";
-        const d = newDoc(t); docs.push(d); openDoc(d.id); renderLibrary();
-      });
-    };
+    $("#btnNewDoc").onclick = newDocModal;
     $("#btnResetDoc").onclick = () => {
       if (!confirm("重置当前文档？内容与配置将清空。")) return;
       const t = cur.type;
