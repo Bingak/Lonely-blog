@@ -4,7 +4,7 @@ name: "校园"
 description: "校园趣事和风景"
 date: "2026-10-13"
 location: "邯郸"
-tags: []
+tags: ["记录", "Life"]
 cover: ""
 password: ""
 passwordHint: ""
