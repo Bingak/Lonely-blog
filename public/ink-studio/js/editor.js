@@ -245,34 +245,47 @@ window.InkEditor = (function () {
   }
   function videoInsert() {
     askModal("视频嵌入", [
-      { k: "url", label: "视频链接（自动识别 B站 BV/av/分P、YouTube；其他网址也支持）", ph: "https://www.bilibili.com/video/BV…" },
+      { k: "url", label: "视频文件或平台链接（MP4/WebM 使用原生播放器；支持 B站、YouTube、Vimeo）", ph: "https://…/video.mp4 或 https://www.bilibili.com/video/BV…" },
       { k: "w", label: "宽度（% 或 px，如 100% / 640）", value: "100%" },
       { k: "h", label: "高度（px，如 468）", value: "468" },
     ], v => {
-      const html = videoIframe(v.url || "", v.w || "100%", v.h || "468");
+      const html = videoEmbed(v.url || "", v.w || "100%", v.h || "468");
       if (html) insertBlock("\n" + html + "\n");
-      else alert("未识别的视频链接，请填写完整 URL");
+      else alert("请填写 MP4/WebM/MOV 视频文件直链，或 B站、YouTube、Vimeo 视频链接。其他平台可使用“自定义 Iframe”。");
     });
   }
-  function videoIframe(url, w, h) {
-    const W = (w || "100%").toString(), H = (h || "468").toString();
-    const safeAttr = s => String(s).replace(/"/g, "");
+  function videoEmbed(url, w, h) {
+    const safeAttr = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+    const size = s => /^\d+(?:px)?$/.test(String(s).trim()) ? String(s).replace(/px$/, "") : /^\d+(?:\.\d+)?%$/.test(String(s).trim()) ? String(s).trim() : "100%";
+    const W = size(w || "100%"), H = /^\d+(?:px)?$/.test(String(h).trim()) ? String(h).replace(/px$/, "") : "468";
+    const input = String(url).trim();
+    let parsed;
+    try { parsed = new URL(/^(BV[\w]+|av\d+)$/i.test(input) ? `https://www.bilibili.com/video/${input}` : input); } catch { return null; }
+    if (!["http:", "https:"].includes(parsed.protocol)) return null;
+    // Direct media files must use HTML5 video. An iframe pointing at a file URL
+    // can trigger browser download handling instead of presenting a player.
+    if (/\.(mp4|webm|mov|ogv|m4v)$/i.test(parsed.pathname)) {
+      const videoWidth = /^\d+$/.test(W) ? `${W}px` : W;
+      return `<video src="${safeAttr(parsed.href)}" controls preload="metadata" playsinline style="display:block;width:${videoWidth};max-width:100%;height:auto"></video>`;
+    }
     // B站：BV号 / av号 / 分P
-    let m = url.match(/bilibili\.com\/video\/(BV[\w]+|av\d+)/i) || url.match(/^(BV[\w]+|av\d+)$/i);
+    let m = parsed.href.match(/bilibili\.com\/video\/(BV[\w]+|av\d+)/i) || url.match(/^(BV[\w]+|av\d+)$/i);
     if (m) {
       const id = m[1];
-      const pM = url.match(/[?&]p=(\d+)/);
+      const pParam = parsed.searchParams.get("p") || "";
+      const pM = /^\d+$/.test(pParam) ? pParam : "1";
       const key = /^av/i.test(id) ? `aid=${id.slice(2)}` : `bvid=${id}`;
-      return `<iframe width="${safeAttr(W)}" height="${safeAttr(H)}" src="//player.bilibili.com/player.html?${key}&p=${pM ? pM[1] : 1}&autoplay=0&high_quality=1&danmaku=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>`;
+      return `<iframe width="${safeAttr(W)}" height="${H}" src="https://player.bilibili.com/player.html?${key}&p=${pM}&autoplay=0&high_quality=1&danmaku=0" scrolling="no" frameborder="0" allowfullscreen></iframe>`;
     }
     // YouTube：watch / youtu.be / shorts / embed
-    m = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{6,})/);
+    m = parsed.href.match(/(?:youtube\.com\/(?:watch\?(?:[^#]*&)?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{6,})/);
     if (m) {
-      return `<iframe width="${safeAttr(W)}" height="${safeAttr(H)}" src="https://www.youtube.com/embed/${m[1]}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+      return `<iframe width="${safeAttr(W)}" height="${H}" src="https://www.youtube.com/embed/${safeAttr(m[1])}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
     }
-    // 其他视频网站：通用 iframe 嵌入
-    if (/^https?:\/\//i.test(url)) {
-      return `<iframe width="${safeAttr(W)}" height="${safeAttr(H)}" src="${safeAttr(url)}" frameborder="0" allowfullscreen></iframe>`;
+    // Vimeo uses an embed URL rather than loading the page URL in an iframe.
+    m = parsed.href.match(/vimeo\.com\/(?:video\/)?(\d+)/i);
+    if (m) {
+      return `<iframe width="${safeAttr(W)}" height="${H}" src="https://player.vimeo.com/video/${m[1]}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
     }
     return null;
   }

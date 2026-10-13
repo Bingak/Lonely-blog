@@ -18,18 +18,32 @@ function withBase(assetPath: string): string {
 	return url(normalizedPath);
 }
 
-/** 兼容旧调用：仅扫描本地目录图片 */
+const IMAGE_RE = /\.(jpe?g|png|webp|avif|gif)$/i;
+// Formats supported by the browser's native HTML5 video player.
+const VIDEO_RE = /\.(mp4|webm|mov|ogv|m4v)$/i;
+
+export function isVideo(src: string): boolean {
+	if (!src) return false;
+	try {
+		const url = new URL(src, "https://x.local");
+		return VIDEO_RE.test(url.pathname);
+	} catch {
+		return VIDEO_RE.test(src);
+	}
+}
+
+/** 兼容旧调用：扫描本地目录中的图片和视频 */
 export function scanAlbumPhotos(albumId: string): string[] {
 	return scanLocalPhotos(albumId);
 }
 
-/** 扫描本地相册目录中的图片文件（public/gallery/{id}） */
+/** 扫描本地相册目录中的图片/视频文件（public/gallery/{id}） */
 export function scanLocalPhotos(albumId: string): string[] {
 	const dir = path.join(process.cwd(), "public", "gallery", albumId);
 	if (!fs.existsSync(dir)) return [];
 	const files = fs
 		.readdirSync(dir)
-		.filter((f) => /\.(jpe?g|png|webp|avif|gif)$/i.test(f))
+		.filter((f) => IMAGE_RE.test(f) || VIDEO_RE.test(f))
 		.sort();
 	// 将 cover.* 排到第一位
 	const coverIdx = files.findIndex((f) => /^cover\./i.test(f));
@@ -46,7 +60,7 @@ type GalleryEntryLike = {
 };
 
 /**
- * 获取相册全部图片：本地文件（public/gallery/{id}）+ frontmatter 中 photos 数组
+ * 获取相册全部媒体：本地文件（public/gallery/{id}）+ frontmatter 中 photos 数组
  */
 export function getAlbumPhotos(entry: GalleryEntryLike): string[] {
 	const localPhotos = scanLocalPhotos(entry.id);
@@ -55,16 +69,20 @@ export function getAlbumPhotos(entry: GalleryEntryLike): string[] {
 }
 
 /**
- * 获取相册封面图
+ * 获取相册封面图（跳过视频，封面必须是图片）
  * 优先级：手动指定 > cover.* 文件 > 第一张图片
  */
 export function getAlbumCover(
 	entry: GalleryEntryLike,
 	photos: string[],
 ): string {
-	if (entry.data.cover) return withBase(entry.data.cover);
+	if (entry.data.cover && !isVideo(entry.data.cover)) {
+		return withBase(entry.data.cover);
+	}
 	const coverFile = photos.find((p) => /\/cover\./i.test(p));
-	return coverFile || photos[0] || "";
+	if (coverFile && !isVideo(coverFile)) return coverFile;
+	const firstImage = photos.find((p) => !isVideo(p));
+	return firstImage || "";
 }
 
 // 保留 CollectionEntry 类型引用避免未使用告警

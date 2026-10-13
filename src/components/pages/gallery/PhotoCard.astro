@@ -1,5 +1,6 @@
 ---
 import { getLqipProps } from "@/utils/lqip-utils";
+import { isVideo } from "@/utils/gallery-utils";
 
 interface Props {
 	src: string;
@@ -9,24 +10,45 @@ interface Props {
 
 const { src, albumId, alt = "" } = Astro.props;
 
-// LQIP 渐变占位
-const lqipProps = getLqipProps(src, undefined, true);
+const video = isVideo(src);
+const lqipProps = video ? { style: "" } : getLqipProps(src, undefined, true);
 ---
 
 <div class="gallery-photo-card break-inside-avoid mb-3">
   <div
     data-fancybox={`gallery-${albumId}`}
     data-src={src}
-    data-type="image"
+    data-type={video ? "html5video" : "image"}
     class="block rounded-xl overflow-hidden relative group cursor-pointer"
   >
-    <div class="lqip-placeholder absolute inset-0 pointer-events-none" style={lqipProps.style} aria-hidden="true"></div>
-    <img
-      src={src}
-      alt={alt}
-      loading="lazy"
-      decoding="async"
-      class="w-full h-auto object-cover opacity-0 transition-all duration-500 ease-out group-hover:scale-105"
-    />
+    {video ? (
+      <>
+        <video
+          src={src}
+          preload="metadata"
+          muted
+          playsinline
+          class="w-full h-auto object-cover"
+        />
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div class="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center group-hover:bg-black/60 transition-colors">
+            <svg class="w-5 h-5 text-white ml-0.5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+        </div>
+      </>
+    ) : (
+      <>
+        <div class="lqip-placeholder absolute inset-0 pointer-events-none" style={lqipProps.style} aria-hidden="true"></div>
+        <img
+          src={src}
+          alt={alt}
+          loading="lazy"
+          decoding="async"
+          class="w-full h-auto object-cover opacity-0 transition-all duration-500 ease-out group-hover:scale-105"
+        />
+      </>
+    )}
   </div>
 </div>

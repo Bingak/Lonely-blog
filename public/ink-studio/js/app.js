@@ -237,7 +237,7 @@ function buildMarkdown(d) {
       h += `<div class="field-row">${txt("password", f.password, "", "访问密码（可选）", "访问密码", false)}${txt("passwordHint", f.passwordHint, "", "输错密码时显示", "密码提示", false)}</div>`;
       h += `</div></div>`;
       h += `<div class="fset" open><summary>相册标签</summary><div class="fbody">${chips("tags", f.tags, "回车添加标签")}</div></div>`;
-      h += `<div class="fset" open><summary>图片列表</summary><div class="fbody"><div data-gimgs></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn small add-mini" data-addgimg>＋ 添加图片</button><button class="btn small" data-batchgimg>📋 批量添加</button></div><div class="hint">发布时写入 src/content/gallery/{ID}.md，图片列表存于 frontmatter 的 photos 数组。批量添加每行一张，可用 <code>URL|图注</code> 格式。</div></div></div>`;
+      h += `<div class="fset" open><summary>图片与视频</summary><div class="fbody"><div data-gimgs></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn small add-mini" data-addgimg>＋ 添加图片</button><button class="btn small add-mini" data-addgvideo>＋ 添加视频</button><button class="btn small" data-batchgimg>📋 批量添加媒体</button></div><div class="hint">发布时写入 src/content/gallery/{ID}.md 的 photos 数组。支持图片地址或 MP4/WebM/MOV 视频直链；批量添加每行一条，可用 <code>URL|图注</code> 格式。</div></div></div>`;
     } else { // post
       h += `<div class="fset" open><summary>基础信息</summary><div class="fbody">`;
       h += txt("title", f.title, "文章标题", "标题中的冒号、引号会自动转义，无需手写 YAML", "文章标题", true);
@@ -290,15 +290,15 @@ function buildMarkdown(d) {
     host.innerHTML = arr.map((g, i) => `
       <div class="kv-item">
         <button class="mini-del" data-delgimg="${i}">✕</button>
-        <input data-gi="${i}" data-k="src" value="${MD.esc(g.src || "")}" placeholder="图片地址">
+        <input data-gi="${i}" data-k="src" value="${MD.esc(g.src || "")}" placeholder="图片或视频地址（MP4/WebM/MOV）">
         <input data-gi="${i}" data-k="alt" value="${MD.esc(g.alt || "")}" placeholder="图注（可留空）">
       </div>`).join("");
     host.querySelectorAll("[data-gi]").forEach(inp => inp.oninput = () => { arr[+inp.dataset.gi][inp.dataset.k] = inp.value; touch(); });
     host.querySelectorAll("[data-delgimg]").forEach(b => b.onclick = () => { arr.splice(+b.dataset.delgimg, 1); renderGimgs(); touch(); });
   }
-  /* ------- 批量添加相册图片 ------- */
+  /* ------- 批量添加相册媒体 ------- */
   function batchAddGimgs() {
-    askModal("批量添加图片", [{ k: "text", label: "每行一张图，格式：URL 或 URL|图注", area: true }], v => {
+    askModal("批量添加媒体", [{ k: "text", label: "每行一张图片或一个视频，格式：URL 或 URL|图注", area: true }], v => {
       if (!v.text) return;
       const lines = v.text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
       let n = 0;
@@ -307,7 +307,7 @@ function buildMarkdown(d) {
         if (src) { cur.galleryImgs.push({ src, alt: alt || "" }); n++; }
       });
       renderGimgs(); touch();
-      toast(`已添加 ${n} 张图片`, "ok");
+      toast(`已添加 ${n} 条媒体`, "ok");
     });
   }
   /* ------- 自定义字段 ------- */
@@ -459,6 +459,13 @@ function buildMarkdown(d) {
     if (addLink) addLink.onclick = () => { (cur.fm.links = cur.fm.links || []).push({ label: "", icon: "", value: "" }); renderLinks(); touch(); };
     const addGimg = host.querySelector("[data-addgimg]");
     if (addGimg) addGimg.onclick = () => { cur.galleryImgs.push({ src: "", alt: "" }); renderGimgs(); touch(); };
+    const addGvideo = host.querySelector("[data-addgvideo]");
+    if (addGvideo) addGvideo.onclick = () => {
+      askModal("添加相册视频", [{ k: "src", label: "视频文件直链（MP4/WebM/MOV）", ph: "https://…/video.mp4" }], v => {
+        if (!v.src) return;
+        cur.galleryImgs.push({ src: v.src.trim(), alt: "" }); renderGimgs(); touch();
+      });
+    };
     const batchGimg = host.querySelector("[data-batchgimg]");
     if (batchGimg) batchGimg.onclick = () => batchAddGimgs();
     // 折叠分组：点击 summary 切换 open 属性
@@ -529,7 +536,9 @@ function buildMarkdown(d) {
       ${f.description ? `<div class="ph-desc">${MD.esc(f.description)}</div>` : ""}
       <div class="ph-meta"><span>📅 ${MD.esc(f.date || "")}</span>${f.location ? `<span>📍 ${MD.esc(f.location)}</span>` : ""}${(f.tags || []).map(t => `<span class="ph-tag">${MD.esc(t)}</span>`).join("")}</div></div></div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:12px">
-      ${imgs.map(g => `<img src="${MD.esc(g.src)}" alt="${MD.esc(g.alt || "")}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px" onerror="this.style.opacity=.25">`).join("") || `<p style="color:var(--fg3)">暂无图片，请在左侧「图片列表」添加</p>`}</div>`;
+      ${imgs.map(g => isGalleryVideo(g.src)
+        ? `<div style="position:relative;aspect-ratio:1;background:#111;border-radius:8px;overflow:hidden"><video src="${MD.esc(g.src)}" preload="metadata" muted playsinline style="width:100%;height:100%;object-fit:cover" onerror="this.style.opacity=.25"></video><span style="position:absolute;inset:0;display:grid;place-items:center;color:white;font-size:24px;pointer-events:none">▶</span></div>`
+        : `<img src="${MD.esc(g.src)}" alt="${MD.esc(g.alt || "")}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px" onerror="this.style.opacity=.25">`).join("") || `<p style="color:var(--fg3)">暂无媒体，请在左侧添加图片或视频</p>`}</div>`;
     $("#pvOutline").innerHTML = `<p style="color:var(--fg3)">相册无大纲</p>`;
     const gmd = galleryToMd(cur);
     const fm = gmd.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] || "";
@@ -545,6 +554,11 @@ function buildMarkdown(d) {
       return "api";
     }
     return f.image || "";
+  }
+
+  function isGalleryVideo(src) {
+    try { return /\.(mp4|webm|mov|ogv|m4v)$/i.test(new URL(src, location.href).pathname); }
+    catch { return /\.(mp4|webm|mov|ogv|m4v)(?:[?#]|$)/i.test(src || ""); }
   }
 
   /* 编辑器内容 → 状态 */
