@@ -68,7 +68,8 @@ const initialPost = posts[0];
 		)}
 
 		<div class="spotlight-showcase">
-			<img class="spotlight-showcase-wallpaper" data-showcase-wallpaper alt="" aria-hidden="true" loading="lazy" />
+			<img class="spotlight-showcase-wallpaper" data-showcase-wallpaper alt="" aria-hidden="true" />
+			<img class="spotlight-showcase-wallpaper" data-showcase-wallpaper alt="" aria-hidden="true" />
 			<span class="spotlight-showcase-shade" aria-hidden="true"></span>
 			<div class="spotlight-showcase-heading">
 				<span class="spotlight-showcase-mark" aria-hidden="true"><span></span><span></span><span></span></span>
@@ -170,20 +171,30 @@ const initialPost = posts[0];
 			}
 		};
 
-		const wallpaperImage = root.querySelector<HTMLImageElement>("[data-showcase-wallpaper]");
-		if (wallpaperImage && wallpapers.length) {
+		const wallpaperImages = Array.from(root.querySelectorAll<HTMLImageElement>("[data-showcase-wallpaper]"));
+		if (wallpaperImages.length && wallpapers.length) {
 			let lastWallpaper = -1;
 			const showWallpaper = () => {
-				lastWallpaper = pick(wallpapers, lastWallpaper);
+				const activeImage = wallpaperImages.findIndex((image) => image.classList.contains("is-active"));
+				const nextImage = wallpaperImages[activeImage === 0 ? 1 : 0];
+				const selectedWallpaper = pick(wallpapers, lastWallpaper);
 				let failedAttempts = 0;
-				const loadNextApi = () => {
-					failedAttempts += 1;
-					if (failedAttempts < wallpapers.length) {
-						wallpaperImage.src = wallpapers[(lastWallpaper + failedAttempts) % wallpapers.length];
-					}
+				const loadWallpaper = (index: number) => {
+					nextImage.onload = () => {
+						lastWallpaper = index;
+						nextImage.classList.add("is-active");
+						if (activeImage >= 0) wallpaperImages[activeImage].classList.remove("is-active");
+						nextImage.onload = null;
+						nextImage.onerror = null;
+					};
+					nextImage.onerror = () => {
+						failedAttempts += 1;
+						if (failedAttempts >= wallpapers.length) return;
+						loadWallpaper((selectedWallpaper + failedAttempts) % wallpapers.length);
+					};
+					nextImage.src = wallpapers[index];
 				};
-				wallpaperImage.onerror = loadNextApi;
-				wallpaperImage.src = wallpapers[lastWallpaper];
+				loadWallpaper(selectedWallpaper);
 			};
 			showWallpaper();
 			if (wallpapers.length > 1) wallpaperTimer = window.setInterval(showWallpaper, 5000);
@@ -358,11 +369,14 @@ const initialPost = posts[0];
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		opacity: 0.92;
+		opacity: 0;
 		filter: saturate(1.14) brightness(1.12) blur(1px);
 		transform: scale(1.035);
+		transition: opacity 1.1s ease-in-out;
 		pointer-events: none;
 	}
+
+	.spotlight-showcase-wallpaper.is-active { opacity: 0.92; }
 
 	.spotlight-showcase-shade {
 		position: absolute;
@@ -613,6 +627,6 @@ const initialPost = posts[0];
 
 	@media (prefers-reduced-motion: reduce) {
 		.spotlight-pulse { animation: none; }
-		.spotlight-feature, .spotlight-feature-link, .spotlight-dynamic, .spotlight-image, .spotlight-dynamic-text { transition: none; }
+		.spotlight-feature, .spotlight-feature-link, .spotlight-dynamic, .spotlight-image, .spotlight-dynamic-text, .spotlight-showcase-wallpaper { transition: none; }
 	}
 </style>
