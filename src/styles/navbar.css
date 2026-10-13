@@ -62,7 +62,12 @@
     left: 0;
     transform: translateY(-50%);
     height: calc(100% - 8px);
-    background-color: rgba(0, 0, 0, 0.08);
+    background: linear-gradient(
+        135deg,
+        color-mix(in oklch, var(--primary) 17%, rgba(255, 255, 255, 0.4)),
+        color-mix(in oklch, var(--primary) 10%, rgba(255, 255, 255, 0.18))
+    );
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 2px 12px -8px var(--primary);
     border-radius: 9999px;
     opacity: 0;
     transition:
@@ -74,7 +79,12 @@
 }
 
 :root.dark .nav-sliding-indicator {
-    background-color: rgba(255, 255, 255, 0.10);
+    background: linear-gradient(
+        135deg,
+        color-mix(in oklch, var(--primary) 30%, rgba(255, 255, 255, 0.12)),
+        color-mix(in oklch, var(--primary) 18%, rgba(255, 255, 255, 0.06))
+    );
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.13), 0 2px 16px -8px var(--primary);
 }
 
 .nav-sliding-indicator.visible {
@@ -85,6 +95,23 @@
 .nav-link-btn {
     position: relative;
     z-index: 1;
+    transition:
+        color 180ms ease,
+        text-shadow 180ms ease,
+        transform 180ms ease;
+}
+
+.nav-link-btn:hover,
+.nav-link-btn:focus-visible {
+    color: var(--primary) !important;
+    text-shadow: 0 0 18px color-mix(in oklch, var(--primary) 32%, transparent);
+}
+
+/* 避免 btn-plain 在悬停/展开时额外铺固定深色块；高亮统一交给跟随鼠标的指示器 */
+.navbar-pill .nav-link-btn:hover,
+.navbar-pill .nav-link-btn:focus-visible,
+.navbar-pill .nav-link-btn[aria-expanded="true"] {
+    background-color: transparent !important;
 }
 
 /* ============================================
@@ -93,14 +120,48 @@
  * ============================================ */
 #navbar>div {
     background-color: var(--card-bg);
-    border: 1px solid transparent;
+    border: 1px solid color-mix(in oklch, var(--primary) 22%, transparent);
     border-radius: 9999px;
     /* 显式 width 让形变收起/还原时 px↔100% 可插值（auto 无法过渡） */
     width: 100%;
     margin-inline: auto;
     --navbar-surface-blur: 0px;
     position: relative;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.34),
+        0 10px 30px -20px color-mix(in oklch, var(--primary) 48%, transparent);
     @apply navbar-surface-transition;
+}
+
+:root.dark #navbar>div {
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 12px 34px -20px color-mix(in oklch, var(--primary) 58%, transparent);
+}
+
+/* 菜单胶囊：与外层区分的轻量中性色面 */
+.navbar-pill {
+    border: 1px solid color-mix(in oklch, var(--primary) 18%, transparent);
+    background: linear-gradient(
+        135deg,
+        color-mix(in oklch, var(--primary) 9%, transparent),
+        rgba(255, 255, 255, 0.08) 48%,
+        color-mix(in oklch, var(--primary) 6%, transparent)
+    ) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.16),
+        0 5px 18px -14px color-mix(in oklch, var(--primary) 80%, transparent);
+}
+
+:root.dark .navbar-pill {
+    border-color: color-mix(in oklch, var(--primary) 24%, rgba(255, 255, 255, 0.12));
+    background: linear-gradient(
+        135deg,
+        color-mix(in oklch, var(--primary) 14%, transparent),
+        rgba(255, 255, 255, 0.055) 48%,
+        color-mix(in oklch, var(--primary) 8%, transparent)
+    ) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 6px 22px -16px var(--primary);
 }
 
 /* 聚光灯层 - 用 clip-path 裁剪为胶囊形状，不影响下拉菜单 */
