@@ -1,7 +1,6 @@
 ---
 import ImageWrapper from "@/components/common/ImageWrapper.astro";
 import ScrollDownIndicator from "@/components/controls/ScrollDownIndicator.astro";
-import BackgroundPlayer from "@/components/features/BackgroundPlayer.astro";
 import BannerHomeTextOverlay from "@/components/layout/BannerHomeTextOverlay.astro";
 import BannerPostMetaOverlay from "@/components/layout/BannerPostMetaOverlay.astro";
 import { backgroundWallpaper } from "@/config";
@@ -529,10 +528,6 @@ const wallpaperPosition = state.isFullscreenMode
     </script>
     )}
     
-    {backgroundWallpaper.playerEnable && typeof backgroundWallpaper.src === "object" && !Array.isArray(backgroundWallpaper.src) && backgroundWallpaper.src.playerUrl && (
-        <BackgroundPlayer playerUrl={backgroundWallpaper.src.playerUrl} playerMode={backgroundWallpaper.common?.playerMode ?? "order"} />
-    )}
-
     <div id="banner-dim-container" class="absolute inset-0 z-10 pointer-events-none">
         {state.showBannerDim && <div class="banner-dim-overlay absolute inset-0" style={`background: rgba(0, 0, 0, ${state.dimOpacity})`}></div>}
     </div>

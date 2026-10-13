@@ -4,6 +4,7 @@ import Live2DWidget from "@components/features/Live2DWidget.astro";
 import SpineModel from "@components/features/SpineModel.astro";
 import Footer from "@components/layout/Footer.astro";
 import HeaderTopRow from "@components/layout/HeaderTopRow.astro";
+import HomeSpotlight from "@components/layout/HomeSpotlight.astro";
 import NavMenuPanel from "@components/layout/NavMenuPanel.astro";
 import SideBar from "@components/layout/SideBar.astro";
 import type { MarkdownHeading } from "astro";
@@ -126,6 +127,9 @@ const {
                     
             {/* 主内容区包装器 - 包含静态栏位和swup容器，作为单个grid item */}
             <div id="content-column" class={staticBarClass}>
+                <div id="home-spotlight-wrapper">
+                    {isHomePageCheck && <HomeSpotlight />}
+                </div>
                 {/* 分类导航栏 - 全站渲染并显示 */}
                 {shouldRenderCategoryBar && <div id="category-bar-wrapper"><CategoryBar currentPostCategory={postCategory} /></div>}
                 {/* 主内容区 - 始终渲染，确保 Swup 容器存在 */}

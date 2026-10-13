@@ -16,10 +16,11 @@ import { musicPlayerConfig } from "@/config/musicConfig";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import type { NavBarLink } from "@/types/config";
+import { getSortedPosts } from "@/utils/content-utils";
 import { getFallbackFormat, getImageFormats } from "@/utils/image-utils";
 import { isHomePage } from "@/utils/layout-utils";
 import { resolveNavMenuLinks } from "@/utils/nav-menu-utils";
-import { url } from "@/utils/url-utils";
+import { getPostUrlBySlug, url } from "@/utils/url-utils";
 import DropdownMenu from "./DropdownMenu.astro";
 import NavbarProfileCard from "./NavbarProfileCard.astro";
 
@@ -68,6 +69,9 @@ const hasDisplaySettings =
 
 // 解析导航栏链接（按 siteConfig.pages 过滤 + i18n 名称），桌面下拉与移动抽屉共用
 const links: NavBarLink[] = resolveNavMenuLinks();
+const randomPostUrls = (await getSortedPosts())
+	.filter((post) => !post.data.password)
+	.map((post) => getPostUrlBySlug(post.id));
 
 // 处理导航栏 Logo 图片，image / url 类型支持亮暗色分别设置
 const logoConfig = siteConfig.navbar.logo;
@@ -217,18 +221,26 @@ const logoVariants = await Promise.all(
                         <Icon name="material-symbols:music-note-rounded" class="text-[1.25rem]"></Icon>
                     </button>
                 )}
-                {backgroundWallpaper.playerEnable && backgroundWallpaper.mode !== "none" && (
-                    <button
-                        aria-label={i18n(I18nKey.videoPlay)}
-						class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90 hidden md:flex"
-                        id="bg-player-toggle"
-                        data-i18n-play={i18n(I18nKey.videoPlay)}
-                        data-i18n-pause={i18n(I18nKey.videoPause)}
-                    >
-                        <span class="bg-player-icon-play"><Icon name="material-symbols:play-arrow-rounded" class="text-[1.5rem]" /></span>
-                        <span class="bg-player-icon-pause hidden"><Icon name="material-symbols:pause-rounded" class="text-[1.5rem]" /></span>
-                    </button>
-                )}
+                <button
+                    aria-label="随机前往一篇文章"
+                    title="随机前往一篇文章"
+					class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90 hidden md:flex items-center justify-center"
+                    id="random-post-button"
+                    data-random-posts={JSON.stringify(randomPostUrls)}
+                >
+                    <svg class="dice-stack" viewBox="0 0 24 24" aria-hidden="true" fill="none">
+                        <g transform="translate(5 1) rotate(12 8 8)">
+                            <rect x="1.5" y="1.5" width="14" height="14" rx="3" />
+                            <circle cx="5" cy="5" r="0.8" /><circle cx="12" cy="12" r="0.8" />
+                            <circle cx="8.5" cy="8.5" r="0.8" />
+                        </g>
+                        <g transform="translate(0 7) rotate(-12 8 8)">
+                            <rect x="1.5" y="1.5" width="14" height="14" rx="3" />
+                            <circle cx="5" cy="5" r="0.8" /><circle cx="12" cy="12" r="0.8" />
+                            <circle cx="12" cy="5" r="0.8" />
+                        </g>
+                    </svg>
+                </button>
                 {hasDisplaySettings && (
                         <button aria-label="Display Settings" aria-controls="display-setting" aria-expanded="false" class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90" id="display-settings-switch">
                             <Icon name="material-symbols:palette-outline" class="text-[1.25rem]"></Icon>
@@ -282,48 +294,22 @@ function loadButtonScript() {
         };
     }
 
-    // 背景视频播放器控制按钮
-    let bgPlayerBtn = document.getElementById("bg-player-toggle");
-    if (bgPlayerBtn) {
-        bgPlayerBtn.onclick = function () {
-            window.dispatchEvent(new CustomEvent("bg-player-toggle"));
-        };
-        function toggleBgPlayerIcon(playing: boolean) {
-            var playIcon = bgPlayerBtn!.querySelector(".bg-player-icon-play");
-            var pauseIcon = bgPlayerBtn!.querySelector(".bg-player-icon-pause");
-            if (playIcon && pauseIcon) {
-                playIcon.classList.toggle("hidden", playing);
-                pauseIcon.classList.toggle("hidden", !playing);
+    const randomPostButton = document.getElementById("random-post-button") as HTMLButtonElement | null;
+    if (randomPostButton) {
+        randomPostButton.onclick = function () {
+            let posts: string[] = [];
+            try {
+                posts = JSON.parse(randomPostButton.dataset.randomPosts || "[]");
+            } catch {
+                posts = [];
             }
-            var i18nPlay = bgPlayerBtn!.getAttribute("data-i18n-play") ?? "";
-            var i18nPause = bgPlayerBtn!.getAttribute("data-i18n-pause") ?? "";
-            var label = playing ? i18nPause : i18nPlay;
-            bgPlayerBtn!.setAttribute("title", label);
-            bgPlayerBtn!.setAttribute("aria-label", label);
-        }
-        window.addEventListener("bg-player-state-change", function (e) {
-            var ce = e as CustomEvent;
-            var playing = ce.detail && ce.detail.playing;
-            toggleBgPlayerIcon(playing);
-        });
-        // 切换壁纸模式时隐藏/显示播放按钮
-        window.addEventListener("wallpaperModeChange", function (e) {
-            var ce = e as CustomEvent;
-            var mode = ce.detail && ce.detail.mode;
-            bgPlayerBtn!.style.display = mode === "none" ? "none" : "";
-        });
-        // Swup 导航时同步播放按钮状态（BackgroundPlayer 可能被重建，也可能持久存在）
-        function syncBgPlayerBtn() {
-            var playing = document.documentElement.hasAttribute("data-bg-video-playing");
-            toggleBgPlayerIcon(playing);
-        }
-        if (window.swup && window.swup.hooks) {
-            window.swup.hooks.on("content:replace", syncBgPlayerBtn);
-        } else {
-            document.addEventListener("swup:enable", function () {
-                window.swup.hooks.on("content:replace", syncBgPlayerBtn);
-            });
-        }
+            if (!posts.length) return;
+            const previous = Number(randomPostButton.dataset.lastIndex ?? -1);
+            let index = Math.floor(Math.random() * posts.length);
+            if (posts.length > 1 && index === previous) index = (index + 1) % posts.length;
+            randomPostButton.dataset.lastIndex = String(index);
+            window.location.assign(posts[index]);
+        };
     }
 
     let themeSwitchBtn = document.getElementById("scheme-switch");
@@ -531,6 +517,22 @@ if (document.readyState === 'loading') {
     });
 })();
 </script>
+
+<style>
+	.dice-stack {
+		width: 1.35rem;
+		height: 1.35rem;
+		overflow: visible;
+		stroke: currentColor;
+		stroke-width: 1.65;
+		stroke-linecap: round;
+	}
+
+	.dice-stack circle {
+		fill: currentColor;
+		stroke: none;
+	}
+</style>
 
 {
     import.meta.env.PROD && (

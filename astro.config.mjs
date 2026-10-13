@@ -100,6 +100,7 @@ export default defineConfig({
 			containers: [
 				"#banner-overlay-container",
 				"#banner-dim-container",
+				"#home-spotlight-wrapper",
 				"#swup-container",
 				"#left-sidebar-dynamic",
 				"#right-sidebar-dynamic",

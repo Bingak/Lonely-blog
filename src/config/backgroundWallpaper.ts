@@ -3,8 +3,6 @@ import type { BackgroundWallpaperConfig } from "@/types/backgroundWallpaper";
 export const backgroundWallpaper: BackgroundWallpaperConfig = {
 	// 壁纸模式："banner" 横幅壁纸，"fullscreen" 全屏壁纸，"overlay" 覆盖透明，"none" 纯色背景无壁纸
 	mode: "fullscreen",
-	// 是否启用背景视频播放，配置后将在导航栏显示视频播放按钮
-	playerEnable: true,
 	/**
 	 * 背景图片配置
 	 * 图片路径支持三种格式：
@@ -56,18 +54,11 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 			"https://api.isoyu.com/bing_images.php",
 		 "https://api.mmeiblog.cn/phone",
 		],
-		// 背景视频播放地址
-		// 支持单个视频路径（字符串）或多个视频循环（数组，参考上面壁纸配置）
-		// 支持远程视频URL，本地视频请放在 public/assets/videos/ 目录下
-		// playerUrl: "/assets/videos/firefly.mp4",
-		playerUrl: "https://bed.twoleaf.cn/file/1785658612716_firefly.mp4",
 	},
 	// 横幅壁纸和全屏壁纸共享配置
 	common: {
 		// 壁纸遮罩暗度，让横幅文字显示更清晰，0-1之间，值越大越暗
 		dimOpacity: 0.2,
-		// 多视频播放模式："order" 顺序循环，"random" 随机切换（仅当 playerUrl 为数组时生效）
-		playerMode: "random",
 		// 主页横幅文字
 		homeText: {
 			// 是否启用主页横幅文字
