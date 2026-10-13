@@ -63,10 +63,24 @@ const description =
             {title}
           </div>
           {
+            items.length > 0 && (
+              <button
+                id="friend-random-visit"
+                class="ml-auto flex items-center gap-1.5 px-4 py-2 rounded-full border border-(--line-divider) bg-white/35 dark:bg-black/20 text-neutral-700 dark:text-neutral-200 text-sm font-medium hover:border-(--primary) hover:bg-(--primary)/10 transition-colors cursor-pointer"
+                data-friends={JSON.stringify(items.map((item) => item.siteurl))}
+                aria-label="随机访问一个友链"
+                title="随机访问一个友链"
+              >
+                <Icon name="material-symbols:casino-rounded" class="text-lg text-(--primary)" />
+                随机访问
+              </button>
+            )
+          }
+          {
             showApply && (
               <button
                 id="friend-apply-open"
-                class="ml-auto flex items-center gap-1.5 px-4 py-2 rounded-full bg-(--primary) text-white dark:text-black/70 text-sm font-medium hover:opacity-85 transition-opacity cursor-pointer"
+                class="flex items-center gap-1.5 px-4 py-2 rounded-full bg-(--primary) text-white dark:text-black/70 text-sm font-medium hover:opacity-85 transition-opacity cursor-pointer"
               >
                 <Icon name="material-symbols:add-link" class="text-lg" />
                 申请友链
@@ -381,6 +395,23 @@ const description =
 
   <script is:inline>
     (function () {
+      const randomVisitButton = document.getElementById("friend-random-visit");
+      if (randomVisitButton && !randomVisitButton.dataset.bound) {
+        randomVisitButton.dataset.bound = "1";
+        randomVisitButton.addEventListener("click", () => {
+          let friends = [];
+          try {
+            friends = JSON.parse(randomVisitButton.dataset.friends || "[]");
+          } catch {
+            friends = [];
+          }
+          if (friends.length) {
+            const index = Math.floor(Math.random() * friends.length);
+            window.open(friends[index], "_blank", "noopener,noreferrer");
+          }
+        });
+      }
+
       const dialog = document.getElementById("friend-apply-dialog");
       if (!dialog || dialog.dataset.bound) return;
       dialog.dataset.bound = "1";
