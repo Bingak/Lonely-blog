@@ -4,8 +4,12 @@ published: 2026-10-14
 pinned: false
 description: 从 printf 打印变量开始，写到条件判断、键盘输入和循环。中间也有一些很诚实的错误。
 image: "https://img.lonelybing.top/file/post/ScreenShot_2026-10-14_170924_500.png"
-tags: [C语言, 编程, 学习记录]
-category: 学习记录
+tags:
+  - C
+  - 学习记录
+  - 零基础
+  - 编程入门
+category: 编程学习
 slug: c-language-learning-progress
 ---
 
