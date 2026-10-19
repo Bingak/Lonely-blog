@@ -5,6 +5,7 @@ import MicrosoftClarity from "@components/analytics/MicrosoftClarity.astro";
 import UmamiAnalytics from "@components/analytics/UmamiAnalytics.astro";
 import CodeGroupManager from "@components/features/CodeGroupManager.astro";
 import FancyboxManager from "@components/features/FancyboxManager.astro";
+import MotionPhoto from "@components/features/MotionPhoto.astro";
 import FontSetup from "@components/features/FontSetup.astro";
 import GithubCardManager from "@components/features/GithubCardManager.astro";
 import MusicManager from "@components/features/MusicManager.astro";
@@ -587,6 +588,9 @@ const ogImageAlt = propsOgImageAlt ?? pageTitle;
 
     <!-- Fancybox Manager -->
     <FancyboxManager />
+
+    <!-- 动态照片播放器 -->
+    <MotionPhoto />
 
     <!-- Tab 代码块交互 -->
     <CodeGroupManager />

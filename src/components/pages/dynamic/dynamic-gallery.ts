@@ -19,7 +19,9 @@ export function registerDynamicGallery(): void {
 				? document.getElementById(this.dataset.sourceId)
 				: null;
 			if (!source) return;
-			const elements = [...source.querySelectorAll<HTMLImageElement>("img")];
+			const elements = [
+				...source.querySelectorAll<HTMLImageElement>("img"),
+			].filter((element) => !element.closest("motion-photo"));
 			if (elements.length === 0) return;
 			this.images = elements.map((element) => ({
 				alt: element.alt,

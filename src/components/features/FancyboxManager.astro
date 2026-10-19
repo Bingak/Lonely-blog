@@ -4,7 +4,7 @@
 
 <script>
   let Fancybox: any;
-  const IMG_SELECTOR = ".custom-md img:not(.card-wiki-link img), #post-cover img, .moment-images img";
+  const IMG_SELECTOR = ".custom-md img:not(.card-wiki-link img):not(motion-photo img), #post-cover img, .moment-images img";
   const LINK_SELECTOR = ".moment-images a[data-fancybox], [data-fancybox]:not(.moment-images a)";
   const svgBlobUrlCache = new Map<string, string>();
 

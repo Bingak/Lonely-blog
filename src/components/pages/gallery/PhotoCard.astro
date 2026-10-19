@@ -1,21 +1,24 @@
 ---
 import { getLqipProps } from "@/utils/lqip-utils";
 import { isVideo } from "@/utils/gallery-utils";
+import MotionPhoto from "@/components/features/MotionPhoto.astro";
 
 interface Props {
-	src: string;
+	photo: { src: string; motion?: string; alt?: string };
 	albumId: string;
-	alt?: string;
 }
 
-const { src, albumId, alt = "" } = Astro.props;
+const { photo, albumId } = Astro.props;
+const { src, motion = "", alt = "" } = photo;
 
 const video = isVideo(src);
 const lqipProps = video ? { style: "" } : getLqipProps(src, undefined, true);
 ---
 
 <div class="gallery-photo-card break-inside-avoid mb-3">
-  <div
+  {motion ? (
+    <MotionPhoto src={src} video={motion} alt={alt} />
+  ) : <div
     data-fancybox={`gallery-${albumId}`}
     data-src={src}
     data-type={video ? "html5video" : "image"}
@@ -50,5 +53,5 @@ const lqipProps = video ? { style: "" } : getLqipProps(src, undefined, true);
         />
       </>
     )}
-  </div>
+  </div>}
 </div>
