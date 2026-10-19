@@ -37,9 +37,7 @@
     theme: "system",
     turnstileKey: "",
     github: { token: "", owner: "Bingak", repo: "Lonely-blog", branch: "main", root: "src/content" },
-    imgbed: { url: "", token: "", uploadChannel: "" },
   });
-  settings.imgbed = { url: "", token: "", uploadChannel: "", ...(settings.imgbed || {}) };
   let docs = load(LS.docs, []);
   let cur = null;          // 当前文档
   let saveTimer = null;
@@ -239,7 +237,7 @@ function buildMarkdown(d) {
       h += `<div class="field-row">${txt("password", f.password, "", "访问密码（可选）", "访问密码", false)}${txt("passwordHint", f.passwordHint, "", "输错密码时显示", "密码提示", false)}</div>`;
       h += `</div></div>`;
       h += `<div class="fset" open><summary>相册标签</summary><div class="fbody">${chips("tags", f.tags, "回车添加标签")}</div></div>`;
-      h += `<div class="fset" open><summary>图片与视频</summary><div class="fbody"><div data-gimgs></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn small add-mini" data-addgimg>＋ 添加图片</button><button class="btn small add-mini" data-addgvideo>＋ 添加视频</button><button class="btn small" data-batchgimg>📋 批量添加媒体</button></div><div class="hint">顶部「动态照片」按钮可将静态照片链接和视频片段链接配成一项，在相册、动态或博文中以动态照片模式播放。建议使用 JPG/PNG/WebP + MP4/WebM。</div></div></div>`;
+      h += `<div class="fset" open><summary>图片与视频</summary><div class="fbody"><div data-gimgs></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn small add-mini" data-addgimg>＋ 添加图片</button><button class="btn small add-mini" data-addgvideo>＋ 添加视频</button><button class="btn small" data-batchgimg>📋 批量添加媒体</button></div><div class="hint">发布时写入 src/content/gallery/{ID}.md 的 photos 数组。支持图片地址或 MP4/WebM/MOV 视频直链；批量添加每行一条，可用 <code>URL|图注</code> 格式。</div></div></div>`;
     } else { // post
       h += `<div class="fset" open><summary>基础信息</summary><div class="fbody">`;
       h += txt("title", f.title, "文章标题", "标题中的冒号、引号会自动转义，无需手写 YAML", "文章标题", true);
@@ -292,18 +290,10 @@ function buildMarkdown(d) {
     host.innerHTML = arr.map((g, i) => `
       <div class="kv-item">
         <button class="mini-del" data-delgimg="${i}">✕</button>
-        <input data-gi="${i}" data-k="src" value="${MD.esc(g.src || "")}" placeholder="图片或视频地址（MP4/WebM）">
-        ${g.motion ? `<input data-gi="${i}" data-k="motion" value="${MD.esc(g.motion)}" placeholder="动态片段视频地址">` : `<button class="btn small" data-linkmotion="${i}">＋ 动态片段</button>`}
+        <input data-gi="${i}" data-k="src" value="${MD.esc(g.src || "")}" placeholder="图片或视频地址（MP4/WebM/MOV）">
         <input data-gi="${i}" data-k="alt" value="${MD.esc(g.alt || "")}" placeholder="图注（可留空）">
       </div>`).join("");
     host.querySelectorAll("[data-gi]").forEach(inp => inp.oninput = () => { arr[+inp.dataset.gi][inp.dataset.k] = inp.value; touch(); });
-    host.querySelectorAll("[data-linkmotion]").forEach(b => b.onclick = () => {
-      const i = +b.dataset.linkmotion;
-      askModal("添加动态片段", [{ k: "src", label: "视频地址（MP4/WebM）", ph: "https://…/clip.mp4" }], v => {
-        if (!v.src) return;
-        arr[i].motion = v.src.trim(); renderGimgs(); touch();
-      });
-    });
     host.querySelectorAll("[data-delgimg]").forEach(b => b.onclick = () => { arr.splice(+b.dataset.delgimg, 1); renderGimgs(); touch(); });
   }
   /* ------- 批量添加相册媒体 ------- */
@@ -546,9 +536,7 @@ function buildMarkdown(d) {
       ${f.description ? `<div class="ph-desc">${MD.esc(f.description)}</div>` : ""}
       <div class="ph-meta"><span>📅 ${MD.esc(f.date || "")}</span>${f.location ? `<span>📍 ${MD.esc(f.location)}</span>` : ""}${(f.tags || []).map(t => `<span class="ph-tag">${MD.esc(t)}</span>`).join("")}</div></div></div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:12px">
-      ${imgs.map(g => g.motion
-        ? `<div style="position:relative;aspect-ratio:1;background:#111;border-radius:8px;overflow:hidden"><img src="${MD.esc(g.src)}" alt="${MD.esc(g.alt || "")}" style="width:100%;height:100%;object-fit:cover"><span style="position:absolute;inset:0;display:grid;place-items:center;color:white;font-size:24px;pointer-events:none">▶</span></div>`
-        : isGalleryVideo(g.src)
+      ${imgs.map(g => isGalleryVideo(g.src)
         ? `<div style="position:relative;aspect-ratio:1;background:#111;border-radius:8px;overflow:hidden"><video src="${MD.esc(g.src)}" preload="metadata" muted playsinline style="width:100%;height:100%;object-fit:cover" onerror="this.style.opacity=.25"></video><span style="position:absolute;inset:0;display:grid;place-items:center;color:white;font-size:24px;pointer-events:none">▶</span></div>`
         : `<img src="${MD.esc(g.src)}" alt="${MD.esc(g.alt || "")}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px" onerror="this.style.opacity=.25">`).join("") || `<p style="color:var(--fg3)">暂无媒体，请在左侧添加图片或视频</p>`}</div>`;
     $("#pvOutline").innerHTML = `<p style="color:var(--fg3)">相册无大纲</p>`;
@@ -974,12 +962,7 @@ function buildMarkdown(d) {
         <label style="flex:1">内容根目录<input id="ghRoot" value="${MD.esc(g.root)}" placeholder="src/content"></label>
       </div>
       <label>Turnstile Site Key（可选，默认用站点公开 Key）<input id="ghTs" value="${MD.esc(settings.turnstileKey)}" placeholder="${TS_SITEKEY_DEFAULT}"></label>
-      <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
-      <strong>CloudFlare-ImgBed 动态照片上传</strong>
-      <label>图床地址<input id="imgbedUrl" value="${MD.esc(settings.imgbed.url)}" placeholder="https://img.example.com"></label>
-      <label>ImgBed API Token（需有 upload 权限）<input id="imgbedToken" type="password" value="${MD.esc(settings.imgbed.token)}" placeholder="Bearer Token"></label>
-      <label>上传渠道（可选）<select id="imgbedChannel"><option value="">使用图床默认渠道</option><option value="telegram">Telegram</option><option value="cfr2">Cloudflare R2</option><option value="s3">S3</option><option value="discord">Discord</option><option value="huggingface">Hugging Face</option><option value="webdav">WebDAV</option><option value="external">External</option></select></label>
-      <p style="font-size:11.5px;color:var(--fg3)">Token 仅保存在本机浏览器 localStorage。发布使用 GitHub Contents API；动态照片会先上传到 ImgBed，再把专用 &lt;motion-photo&gt; 代码插入当前文档。</p>`;
+      <p style="font-size:11.5px;color:var(--fg3)">Token 仅保存在本机浏览器 localStorage。提交使用 GitHub Contents API，推送即触发 Cloudflare 构建。登录凭据存于 Worker Secrets，前端不可见。</p>`;
     $("#modalFoot").innerHTML = `
       <button class="btn" id="ghSync">📥 仓库同步</button>
       <button class="btn" id="ghPull">拉取文件…</button>
@@ -988,11 +971,9 @@ function buildMarkdown(d) {
       <button class="btn primary" id="ghPush">发布当前文档 ⇧</button>`;
     const collect = () => {
       settings.github = { token: $("#ghToken").value.trim(), owner: $("#ghOwner").value.trim(), repo: $("#ghRepo").value.trim(), branch: $("#ghBranch").value.trim() || "main", root: $("#ghRoot").value.trim() || "src/content" };
-      settings.imgbed = { url: $("#imgbedUrl").value.trim().replace(/\/+$/, ""), token: $("#imgbedToken").value.trim(), uploadChannel: $("#imgbedChannel").value };
       settings.turnstileKey = $("#ghTs").value.trim();
       persist();
     };
-    $("#imgbedChannel").value = settings.imgbed.uploadChannel;
     $("#ghSaveCfg").onclick = () => { collect(); closeModal(); toast("设置已保存", "ok"); fetchExistingTags(); };
     $("#ghPush").onclick = async () => { collect(); await ghPush(); };
     $("#ghPull").onclick = async () => { collect(); ghPullAsk(); };
@@ -1083,7 +1064,7 @@ function buildMarkdown(d) {
     const f = d.fm;
     const q = v => JSON.stringify(String(v ?? ""));
     const arr = v => `[${(v || []).map(x => JSON.stringify(String(x))).join(", ")}]`;
-    const photos = (d.galleryImgs || []).map(g => ({ ...g, src: (g.src || "").trim() })).filter(g => g.src);
+    const photos = (d.galleryImgs || []).map(g => (g.src || "").trim()).filter(Boolean);
     const lines = [
       `id: ${q(f.id)}`,
       `name: ${q(f.name)}`,
@@ -1097,10 +1078,7 @@ function buildMarkdown(d) {
     ];
     if (photos.length) {
       lines.push(`photos:`);
-      photos.forEach(p => {
-        if (p.motion) lines.push(`  - src: ${q(p.src)}`, `    motion: ${q(p.motion)}`, `    alt: ${q(p.alt || "")}`);
-        else lines.push(`  - ${q(p.src)}`);
-      });
+      photos.forEach(p => lines.push(`  - ${q(p)}`));
     } else {
       lines.push(`photos: []`);
     }
@@ -1179,7 +1157,7 @@ function buildMarkdown(d) {
         };
         const tm = fmText.match(/tags\s*:\s*\[([^\]]*)\]/);
         if (tm) fld.tags = [...tm[1].matchAll(/["']([^"']*)["']/g)].map(x => x[1]);
-        // 解析 photos 数组（旧字符串和动态照片对象）
+        // 解析 photos 数组（支持 [a,b] 和多行 - 两种格式）
         const imgs = [];
         const pm = fmText.match(/photos\s*:\s*\[([^\]]*)\]/);
         if (pm) {
@@ -1190,16 +1168,8 @@ function buildMarkdown(d) {
           for (const line of lines) {
             if (/^photos\s*:/.test(line)) { inPhotos = true; continue; }
             if (inPhotos) {
-              const objectItem = line.match(/^\s*-\s*src:\s*["']([^"']+)["']/);
-              const stringItem = line.match(/^\s*-\s*["']([^"']+)["']/);
-              if (objectItem) {
-                const item = { src: objectItem[1], alt: "", motion: "" };
-                imgs.push(item);
-                continue;
-              }
-              const prop = line.match(/^\s+(motion|alt):\s*["'](.*?)["']\s*$/);
-              if (prop && imgs.length) imgs[imgs.length - 1][prop[1]] = prop[2];
-              else if (stringItem) imgs.push({ src: stringItem[1], alt: "" });
+              const mm = line.match(/^\s*-\s*["']([^"']+)["']/);
+              if (mm) imgs.push({ src: mm[1], alt: "" });
               else if (line.trim() && !/^\s*-\s/.test(line)) break;
             }
           }
@@ -1265,77 +1235,6 @@ function buildMarkdown(d) {
       persist(); applyTheme();
     };
     $("#btnExport").onclick = exportMd;
-    $("#btnMotionUpload").onclick = () => {
-      const cfg = settings.imgbed;
-      if (!cfg?.url || !cfg?.token) {
-        toast("请先在「GitHub 设置」中配置 ImgBed 地址和上传 Token", "err");
-        ghSettings();
-        return;
-      }
-      const picker = document.createElement("input");
-      picker.type = "file";
-      picker.multiple = true;
-      picker.accept = "image/*,video/*,.jpg,.jpeg,.heic,.heif,.mp4,.mov,.m4v,.webm";
-      picker.onchange = async () => {
-        const selected = [...(picker.files || [])];
-        if (!selected.length) return;
-        const photo = selected.find(file => file.type.startsWith("image/") || /\.(jpe?g|heic|heif|png|webp)$/i.test(file.name));
-        const video = selected.find(file => file !== photo && (file.type.startsWith("video/") || /\.(mp4|mov|m4v|webm)$/i.test(file.name)));
-        if (!photo || (selected.length > 1 && (!video || selected.length !== 2))) {
-          toast("请选择一张内嵌视频的动态照片，或一张照片加一个视频片段", "err");
-          picker.value = "";
-          return;
-        }
-        const targetId = cur.id;
-        const alt = prompt("照片说明（可留空）", photo.name.replace(/\.[^.]+$/, ""));
-        if (alt === null) return;
-        let endpoint;
-        try { endpoint = new URL(cfg.url.replace(/\/+$/, "") + "/upload"); }
-        catch { toast("ImgBed 地址格式无效，请填写完整的 https:// 域名", "err"); return; }
-        endpoint.searchParams.set("motionPhoto", "true");
-        endpoint.searchParams.set("returnFormat", "full");
-        if (cfg.uploadChannel) endpoint.searchParams.set("uploadChannel", cfg.uploadChannel);
-        const form = new FormData();
-        form.append("file", photo, photo.name);
-        if (video) form.append("motion", video, video.name);
-        form.append("alt", alt);
-        toast("正在上传动态照片…");
-        try {
-          const response = await fetch(endpoint, {
-            method: "POST",
-            headers: { Authorization: `Bearer ${cfg.token}` },
-            body: form,
-          });
-          const responseText = await response.text();
-          let payload;
-          try { payload = JSON.parse(responseText); } catch { payload = { error: responseText }; }
-          if (!response.ok) throw new Error(payload.error || payload.message || `ImgBed 上传失败（HTTP ${response.status}）`);
-          if (payload.type !== "motion-photo" || !payload.image || !payload.video) throw new Error("ImgBed 未返回动态照片和视频链接，请确认图床已更新到支持动态照片的版本");
-          const target = docs.find(doc => doc.id === targetId);
-          if (!target) throw new Error("当前文档已不存在，上传完成但未能插入链接");
-          if (target.type === "gallery") {
-            target.galleryImgs.push({ src: payload.image, motion: payload.video, alt });
-            if (cur.id === targetId) renderGimgs();
-          } else {
-            const safe = value => String(value).replace(/[&<>\"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" }[char]));
-            const tag = `<motion-photo src="${safe(payload.image)}" video="${safe(payload.video)}" alt="${safe(alt)}"></motion-photo>`;
-            target.body = `${target.body || ""}${target.body ? "\n\n" : ""}${tag}\n\n`;
-            if (cur.id === targetId) {
-              const editor = $("#editor"), start = editor.selectionStart;
-              editor.setRangeText(`${start ? "\n\n" : ""}${tag}\n\n`, start, editor.selectionEnd, "end");
-              editor.dispatchEvent(new Event("input", { bubbles: true }));
-            }
-          }
-          if (cur.id === targetId) touch(); else persist();
-          toast("动态照片已上传并插入", "ok");
-        } catch (error) {
-          toast(error.message || "动态照片上传失败", "err");
-        } finally {
-          picker.value = "";
-        }
-      };
-      picker.click();
-    };
     $("#btnLock").onclick = lock;
     $("#btnGithub").onclick = ghSettings;
     $("#btnZen").onclick = () => document.body.classList.toggle("zen");

@@ -56,23 +56,16 @@ export function scanLocalPhotos(albumId: string): string[] {
 
 type GalleryEntryLike = {
 	id: string;
-	data: {
-		photos?: (string | { src: string; motion?: string; alt?: string })[];
-		cover?: string;
-	};
+	data: { photos?: string[]; cover?: string };
 };
-
-export type GalleryPhoto = { src: string; motion?: string; alt?: string };
 
 /**
  * 获取相册全部媒体：本地文件（public/gallery/{id}）+ frontmatter 中 photos 数组
  */
-export function getAlbumPhotos(entry: GalleryEntryLike): GalleryPhoto[] {
+export function getAlbumPhotos(entry: GalleryEntryLike): string[] {
 	const localPhotos = scanLocalPhotos(entry.id);
-	const remotePhotos = (entry.data.photos || []).map((photo) =>
-		typeof photo === "string" ? { src: photo } : photo,
-	);
-	return [...localPhotos.map((src) => ({ src })), ...remotePhotos];
+	const remotePhotos = entry.data.photos || [];
+	return [...localPhotos, ...remotePhotos];
 }
 
 /**
@@ -81,15 +74,15 @@ export function getAlbumPhotos(entry: GalleryEntryLike): GalleryPhoto[] {
  */
 export function getAlbumCover(
 	entry: GalleryEntryLike,
-	photos: GalleryPhoto[],
+	photos: string[],
 ): string {
 	if (entry.data.cover && !isVideo(entry.data.cover)) {
 		return withBase(entry.data.cover);
 	}
-	const coverFile = photos.find((p) => /\/cover\./i.test(p.src));
-	if (coverFile && !isVideo(coverFile.src)) return coverFile.src;
-	const firstImage = photos.find((p) => !isVideo(p.src));
-	return firstImage?.src || "";
+	const coverFile = photos.find((p) => /\/cover\./i.test(p));
+	if (coverFile && !isVideo(coverFile)) return coverFile;
+	const firstImage = photos.find((p) => !isVideo(p));
+	return firstImage || "";
 }
 
 // 保留 CollectionEntry 类型引用避免未使用告警

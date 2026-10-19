@@ -65,7 +65,7 @@ type GalleryData = {
 	cover: string;
 	password: string;
 	passwordHint: string;
-	photos: (string | { src: string; motion?: string; alt?: string })[];
+	photos: string[];
 };
 
 type ContentCollection<T> = CollectionConfig<
@@ -157,19 +157,7 @@ const galleryCollection: ContentCollection<GalleryData> = defineCollection({
 		cover: z.string().optional().default(""),
 		password: z.string().optional().default(""),
 		passwordHint: z.string().optional().default(""),
-		photos: z
-			.array(
-				z.union([
-					z.string(),
-					z.object({
-						src: z.string(),
-						motion: z.string().optional().default(""),
-						alt: z.string().optional().default(""),
-					}),
-				]),
-			)
-			.optional()
-			.default([]),
+		photos: z.array(z.string()).optional().default([]),
 	}),
 });
 
