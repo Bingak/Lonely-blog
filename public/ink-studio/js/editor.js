@@ -4,7 +4,7 @@
  * ============================================================ */
 "use strict";
 window.InkEditor = (function () {
-  let ta, gutter, onChange, askModal;
+  let ta, gutter, onChange, askModal, onMotionPhotoInsert;
   let slash = { open: false, items: [], sel: 0, start: 0 };
 
   const $ = s => document.querySelector(s);
@@ -163,6 +163,9 @@ window.InkEditor = (function () {
         ["🃏 文章卡片 [[slug]] 单行", () => cardInsert()],
         ["🐙 GitHub 卡片", () => githubInsert()],
       ]
+    },
+    {
+      icon: "🎞", title: "插入动态照片", run: () => { if (onMotionPhotoInsert) onMotionPhotoInsert(sel()); }
     },
     {
       icon: "🖼▾", title: "图片 / 媒体", menu: [
@@ -630,6 +633,7 @@ window.InkEditor = (function () {
   function init(opts) {
     ta = opts.textarea; gutter = opts.gutter;
     onChange = opts.onChange; askModal = opts.askModal;
+    onMotionPhotoInsert = opts.onMotionPhotoInsert;
     buildToolbar();
     ta.addEventListener("input", () => { changed(); slashRefresh(); });
     ta.addEventListener("keydown", onKeydown);
