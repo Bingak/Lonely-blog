@@ -43,6 +43,7 @@
   let docs = load(LS.docs, []);
   let cur = null;          // 当前文档
   let saveTimer = null;
+  let onMotionPhotoUpload = null;
 
   function load(k, dft) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : dft; } catch { return dft; } }
   function persist() {
@@ -239,7 +240,7 @@ function buildMarkdown(d) {
       h += `<div class="field-row">${txt("password", f.password, "", "访问密码（可选）", "访问密码", false)}${txt("passwordHint", f.passwordHint, "", "输错密码时显示", "密码提示", false)}</div>`;
       h += `</div></div>`;
       h += `<div class="fset" open><summary>相册标签</summary><div class="fbody">${chips("tags", f.tags, "回车添加标签")}</div></div>`;
-      h += `<div class="fset" open><summary>图片与视频</summary><div class="fbody"><div data-gimgs></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn small add-mini" data-addgimg>＋ 添加图片</button><button class="btn small add-mini" data-addgvideo>＋ 添加视频</button><button class="btn small" data-batchgimg>📋 批量添加媒体</button></div><div class="hint">顶部「动态照片」按钮可将静态照片链接和视频片段链接配成一项，在相册、动态或博文中以动态照片模式播放。建议使用 JPG/PNG/WebP + MP4/WebM。</div></div></div>`;
+      h += `<div class="fset" open><summary>图片与视频</summary><div class="fbody"><div data-gimgs></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn small add-mini" data-addgimg>＋ 添加图片链接</button><button class="btn small add-mini" data-addgvideo>＋ 添加视频链接</button><button class="btn small" data-addgmotion>🎞 上传动态照片</button><button class="btn small" data-batchgimg>📋 批量添加链接</button></div><div class="hint">“添加链接”只填写已有 URL；“上传动态照片”会上传原始照片（不压缩）并自动加入相册。可选择带内嵌视频的手机动态照片，或同时选择照片和视频。</div></div></div>`;
     } else { // post
       h += `<div class="fset" open><summary>基础信息</summary><div class="fbody">`;
       h += txt("title", f.title, "文章标题", "标题中的冒号、引号会自动转义，无需手写 YAML", "文章标题", true);
@@ -476,6 +477,8 @@ function buildMarkdown(d) {
         cur.galleryImgs.push({ src: v.src.trim(), alt: "" }); renderGimgs(); touch();
       });
     };
+    const addGMotion = host.querySelector("[data-addgmotion]");
+    if (addGMotion) addGMotion.onclick = () => onMotionPhotoUpload?.(null);
     const batchGimg = host.querySelector("[data-batchgimg]");
     if (batchGimg) batchGimg.onclick = () => batchAddGimgs();
     // 折叠分组：点击 summary 切换 open 属性
@@ -1245,6 +1248,7 @@ function buildMarkdown(d) {
   function boot() {
     if (booted) return; booted = true;
     applyTheme();
+    onMotionPhotoUpload = insertMotionPhoto;
     window.InkEditor.init({
       textarea: $("#editor"), gutter: $("#gutter"),
       onChange: onEditorInput, askModal,
@@ -1332,7 +1336,7 @@ function buildMarkdown(d) {
             } else target.body = `${target.body || ""}${target.body ? "\n\n" : ""}${tag}\n\n`;
           }
           if (cur.id === targetId) touch(); else persist();
-          toast("动态照片已上传并插入", "ok");
+          toast(target.type === "gallery" ? "动态照片已上传并加入相册" : "动态照片已上传并插入正文", "ok");
         } catch (error) {
           toast(error.message || "动态照片上传失败", "err");
         } finally {
