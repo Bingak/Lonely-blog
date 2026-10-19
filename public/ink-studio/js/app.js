@@ -1248,7 +1248,6 @@ function buildMarkdown(d) {
     window.InkEditor.init({
       textarea: $("#editor"), gutter: $("#gutter"),
       onChange: onEditorInput, askModal,
-      onMotionPhotoInsert: insertMotionPhoto,
       onScroll: () => {
         if (!$("#scrollSync").checked) return;
         const ta = $("#editor"), pv = $("#pvPreview");
@@ -1266,7 +1265,7 @@ function buildMarkdown(d) {
       persist(); applyTheme();
     };
     $("#btnExport").onclick = exportMd;
-    function insertMotionPhoto(selection) {
+    $("#btnMotionUpload").onclick = () => {
       const cfg = settings.imgbed;
       if (!cfg?.url || !cfg?.token) {
         toast("请先在「GitHub 设置」中配置 ImgBed 地址和上传 Token", "err");
@@ -1320,16 +1319,12 @@ function buildMarkdown(d) {
           } else {
             const safe = value => String(value).replace(/[&<>\"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" }[char]));
             const tag = `<motion-photo src="${safe(payload.image)}" video="${safe(payload.video)}" alt="${safe(alt)}"></motion-photo>`;
+            target.body = `${target.body || ""}${target.body ? "\n\n" : ""}${tag}\n\n`;
             if (cur.id === targetId) {
-              const editor = $("#editor");
-              const start = Math.min(selection?.s ?? editor.selectionStart, editor.value.length);
-              const end = Math.min(selection?.e ?? editor.selectionEnd, editor.value.length);
-              const before = editor.value.slice(0, start);
-              const after = editor.value.slice(end);
-              const inserted = `${before && !before.endsWith("\n\n") ? "\n\n" : ""}${tag}${after && !after.startsWith("\n\n") ? "\n\n" : ""}`;
-              editor.setRangeText(inserted, start, end, "end");
+              const editor = $("#editor"), start = editor.selectionStart;
+              editor.setRangeText(`${start ? "\n\n" : ""}${tag}\n\n`, start, editor.selectionEnd, "end");
               editor.dispatchEvent(new Event("input", { bubbles: true }));
-            } else target.body = `${target.body || ""}${target.body ? "\n\n" : ""}${tag}\n\n`;
+            }
           }
           if (cur.id === targetId) touch(); else persist();
           toast("动态照片已上传并插入", "ok");
@@ -1340,7 +1335,7 @@ function buildMarkdown(d) {
         }
       };
       picker.click();
-    }
+    };
     $("#btnLock").onclick = lock;
     $("#btnGithub").onclick = ghSettings;
     $("#btnZen").onclick = () => document.body.classList.toggle("zen");
