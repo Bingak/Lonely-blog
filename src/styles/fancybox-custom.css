@@ -55,8 +55,8 @@
   justify-content: center;
   width: auto;
   height: auto;
-  max-width: min(82vw, 1200px);
-  max-height: min(76vh, 820px);
+  max-width: min(60vw, 900px);
+  max-height: min(62vh, 650px);
   padding: 10px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -70,14 +70,14 @@
   display: inline-grid;
   width: max-content;
   max-width: 100%;
-  max-height: min(calc(76vh - 20px), 800px);
+  max-height: min(calc(62vh - 20px), 630px);
   border-radius: 0.75rem;
 }
 
 .fancybox__slide > .f-html live-photo.live-photo > img {
   width: auto;
   max-width: 100%;
-  max-height: min(calc(76vh - 20px), 800px);
+  max-height: min(calc(62vh - 20px), 630px);
   object-fit: contain;
 }
 
@@ -88,8 +88,8 @@
 }
 
 .fancybox__slide img.f-panzoom__content {
-  max-width: min(82vw, 1200px);
-  max-height: min(76vh, 820px);
+  max-width: min(60vw, 900px);
+  max-height: min(62vh, 650px);
   border-radius: 0.75rem;
 }
 
@@ -142,6 +142,21 @@
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+  .fancybox__slide > .f-html:has(> live-photo.live-photo) {
+    max-width: 88vw;
+    max-height: 68vh;
+  }
+
+  .fancybox__slide > .f-html live-photo.live-photo,
+  .fancybox__slide > .f-html live-photo.live-photo > img {
+    max-height: calc(68vh - 20px);
+  }
+
+  .fancybox__slide img.f-panzoom__content {
+    max-width: 88vw;
+    max-height: 68vh;
+  }
+
   .fancybox__toolbar {
     padding: 4px;
   }
