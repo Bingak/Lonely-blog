@@ -1,9 +1,18 @@
 /* Fancybox 自定义样式 */
 .fancybox__container {
-  --fancybox-bg: rgba(0, 0, 0, 0.9);
+  --fancybox-bg: rgba(7, 10, 20, 0.4);
   --fancybox-thumbs-width: 64px;
   --fancybox-thumbs-ratio: 1;
   --fancybox-thumbs-border-radius: 4px;
+}
+
+.fancybox__backdrop {
+  background: rgba(7, 10, 20, 0.4);
+  backdrop-filter: blur(22px) saturate(1.2);
+}
+
+.fancybox__carousel {
+  background: transparent;
 }
 
 .fancybox__toolbar {
@@ -29,10 +38,42 @@
 }
 
 .fancybox__thumbs {
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(20, 25, 42, 0.48);
   padding: 2px;
   border-radius: 8px;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(16px) saturate(1.2);
+}
+
+.fancybox__slide > .f-html:has(> live-photo.live-photo) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  background: transparent;
+}
+
+.fancybox__slide > .f-html live-photo.live-photo {
+  display: inline-grid;
+  width: max-content;
+  max-width: min(100%, calc(100vw - 2rem));
+  max-height: calc(100dvh - 160px);
+  border-radius: 0.75rem;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
+}
+
+.fancybox__slide > .f-html live-photo.live-photo > img {
+  width: auto;
+  max-width: 100%;
+  max-height: calc(100dvh - 160px);
+  object-fit: contain;
+}
+
+.fancybox__slide > .f-html live-photo.live-photo > video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .fancybox__thumb {

@@ -13,18 +13,19 @@ const { src, albumId, alt = "" } = Astro.props;
 const livePhoto = parseLivePhotoReference(src);
 const imageSrc = livePhoto?.cover || src;
 const video = !livePhoto && isVideo(src);
+const livePhotoId = livePhoto ? `gallery-live-photo-${crypto.randomUUID()}` : undefined;
 const lqipProps = video ? { style: "" } : getLqipProps(imageSrc, undefined, true);
 ---
 
 <div class="gallery-photo-card break-inside-avoid mb-3">
   <div
     data-fancybox={`gallery-${albumId}`}
-    data-src={imageSrc}
-    data-type={video ? "html5video" : "image"}
+    data-src={livePhoto ? `#${livePhotoId}` : imageSrc}
+    data-type={livePhoto ? "clone" : video ? "html5video" : "image"}
     class="block rounded-xl overflow-hidden relative group cursor-pointer"
   >
     {livePhoto ? (
-      <live-photo data-video-url={livePhoto.video}>
+      <live-photo id={livePhotoId} data-video-url={livePhoto.video}>
         <img src={livePhoto.cover} alt={alt} loading="lazy" decoding="async" class="w-full h-auto object-cover" />
       </live-photo>
     ) : video ? (

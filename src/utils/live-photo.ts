@@ -1,23 +1,31 @@
+const boundPlayButtons = new WeakSet<HTMLButtonElement>();
+
 class LivePhoto extends HTMLElement {
 	connectedCallback() {
-		if (this.dataset.ready || !this.dataset.videoUrl) return;
+		if (!this.dataset.videoUrl) return;
 		const image = this.querySelector("img");
 		if (!image) return;
-		this.dataset.ready = "true";
 		this.classList.add("live-photo");
 		this.setAttribute("role", "group");
 
-		const playButton = document.createElement("button");
-		playButton.type = "button";
-		playButton.className = "live-photo-play";
-		playButton.setAttribute("aria-label", "播放动态照片");
-		playButton.innerHTML = '<span class="live-photo-play-icon" aria-hidden="true"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M5 3.7c0-.6.7-1 1.2-.7l6.1 4.1a1 1 0 0 1 0 1.7l-6.1 4.1a.8.8 0 0 1-1.2-.7z"/></svg></span><span>动态照片</span>';
-		playButton.addEventListener("click", (event) => {
-			event.preventDefault();
-			event.stopPropagation();
-			this.play(image, playButton);
-		});
-		this.append(playButton);
+		let playButton = this.querySelector<HTMLButtonElement>(".live-photo-play");
+		if (!playButton) {
+			playButton = document.createElement("button");
+			playButton.type = "button";
+			playButton.className = "live-photo-play";
+			playButton.setAttribute("aria-label", "播放动态照片");
+			playButton.innerHTML = '<span class="live-photo-play-icon" aria-hidden="true"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M5 3.7c0-.6.7-1 1.2-.7l6.1 4.1a1 1 0 0 1 0 1.7l-6.1 4.1a.8.8 0 0 1-1.2-.7z"/></svg></span><span>动态照片</span>';
+			this.append(playButton);
+		}
+		if (!boundPlayButtons.has(playButton)) {
+			boundPlayButtons.add(playButton);
+			playButton.addEventListener("click", (event) => {
+				event.preventDefault();
+				event.stopPropagation();
+				this.play(image, playButton!);
+			});
+		}
+		this.dataset.ready = "true";
 	}
 
 	private play(image: HTMLImageElement, playButton: HTMLButtonElement) {
