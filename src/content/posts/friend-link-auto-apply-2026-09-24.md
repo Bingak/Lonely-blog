@@ -92,7 +92,7 @@ export const friendsConfig: FriendLink[] = friendsData;
 
 ### 坑 1：弹窗跑到左上角
 
-上线第一版弹窗贴在页面左上角。原因是 `<dialog>` 默认靠 `margin: auto` 居中，而 Tailwind 的 preflight 把全局 margin 重置成 0，居中机制当场失效。补一个 `m-auto` 就回去了喵~
+上线第一版弹窗贴在页面左上角。原因是 `<dialog>` 默认靠 `margin: auto` 居中，而 Tailwind 的 preflight 把全局 margin 重置成 0，居中机制当场失效。补一个 `m-auto` 就回去了
 
 ### 坑 2：`form.title` 不是输入框
 
@@ -122,7 +122,7 @@ dialog.dataset.bound = "1";
 
 ## 三、Turnstile 只在打开时才加载
 
-Cloudflare 的人机验证脚本要几百毫秒才能拉下来，而且没人点按钮的时候没必要提前塞进首页喵~ 所以走**显式渲染（explicit render）**：页面不带 `<script>`，第一次点「申请友链」才动态插：
+Cloudflare 的人机验证脚本要几百毫秒才能拉下来，而且没人点按钮的时候没必要提前塞进首页，所以走**显式渲染（explicit render）**：页面不带 `<script>`，第一次点「申请友链」才动态插：
 
 ```js
 script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=__turnstileOnload&render=explicit";
@@ -140,7 +140,7 @@ widgetId = window.turnstile.render(turnstileBox, {
 });
 ```
 
-因为脚本是异步插的，渲染时机不固定，所以拿一个 `window.__turnstileQueue` 兜住「widget 已经打开但脚本还没到」这个窗口期。提交失败时记得 `turnstile.reset()`——一次性 token 用掉就作废了，不重置的话访客改完内容再点会一直 403 喵~
+因为脚本是异步插的，渲染时机不固定，所以拿一个 `window.__turnstileQueue` 兜住「widget 已经打开但脚本还没到」这个窗口期。提交失败时记得 `turnstile.reset()`——一次性 token 用掉就作废了，不重置的话访客改完内容再点会一直 403
 
 前端只做「有没有验证过」的软判断，**硬的校验全在 Worker**，不然绕开 JS 直接 curl 就打进来了喵~
 
@@ -194,7 +194,7 @@ function siteKeyOf(url) {
 }
 ```
 
-命中已有条目直接 409「该站点已在友链列表中，无需重复申请」喵~
+命中已有条目直接 409「该站点已在友链列表中，无需重复申请」
 
 ### 开 PR 的四连调用
 
@@ -272,7 +272,7 @@ turnstileSiteKey: import.meta.env?.PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAFCFMk3
 
 ## 说明与反馈
 
-- 目前只做了中文文案，表单里的字段名是写死的，暂时没进 i18n 词条喵~
+- 目前只做了中文文案，表单里的字段名是写死的，暂时没进 i18n 词条
 - Worker 只往 `src/data/friends.json` 这一个文件写，不会碰仓库其他内容；给它的 PAT 也只有 Contents + Pull requests 两项权限
 - 合并 PR 之后 Workers Builds 会自动重新构建部署，站长不需要再做任何手动操作
 - 重复提交同一个站点会被 409 挡掉；想改已上线的友链还是直接改 JSON 比较快

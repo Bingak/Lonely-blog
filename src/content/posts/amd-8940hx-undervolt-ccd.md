@@ -84,7 +84,7 @@ PBO 里
 
 这样下来功耗温度曲线特别平，不再忽高忽低，风扇转速跟着平，不会一会儿安静一会儿狂转
 
-## 实测：温度掉了，帧数几乎没动喵~
+## 实测：温度掉了，帧数几乎没动
 
 
 ![游戏实测：CPU 约 69°C / 44W，GPU 67°C，帧数依然稳得住](https://img.lonelybing.top/file/post/amd-ingame-result.jpg)

@@ -20,7 +20,7 @@ seriesOrder: 2
 
 MiBand10-Daily-Word-Practice 是个跑在小米手环 10 标准版上的每日背单词小程序. 
 它本来是 9 Pro 版的 [MiBand-Daily-Word-Practice](https://github.com/Bingak/MiBand-Daily-Word-Practice) 往手环 10 上移植的适配版，
-功能和实现方式跟 9 Pro 那版一模一样喵~
+功能和实现方式跟 9 Pro 那版一模一样
 
 尝试把「墨墨背单词」最核心的那点思路——让记忆越模糊的单词出现得越频繁——塞进手环里，（~~肯定有不少bug~~）. *~~高中生福利喵~~~*
 
@@ -75,7 +75,7 @@ MiBand10-Daily-Word-Practice 是个跑在小米手环 10 标准版上的每日�
 
 ### 复习与学习统计
 
-除了当天的任务，还提供复习功能，可以回看近 7 日学习统计. *数据不会骗人*——坚持没坚持，一眼就能看出来喵~.
+除了当天的任务，还提供复习功能，可以回看近 7 日学习统计. *数据不会骗人*——坚持没坚持，一眼就能看出来.
 
 ![数据统计界面](https://img.lonelybing.top/file/post/miband10-daily-word-practice-stats.png)
 
@@ -131,9 +131,9 @@ git clone https://github.com/Bingak/MiBand10-Daily-Word-Practice.git
 
 ### 日常使用
 
-1. 打开小程序，进当天的练习，自动从「待练习单词」里抽 50 个喵~
+1. 打开小程序，进当天的练习，自动从「待练习单词」里抽 50 个
 2. 一个个答，按记忆实况选 熟知 / 认识 / 模糊 / 忘记
-3. 生词会被反复叩问好几轮，直到当天任务做完喵~
+3. 生词会被反复叩问好几轮，直到当天任务做完
 4. 有空翻翻近 7 日学习统计，看看自己是不是又偷懒了喵~!
 
 ## 说明与反馈

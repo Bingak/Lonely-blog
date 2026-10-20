@@ -60,7 +60,7 @@ series: 博客
 
 ![动态编辑](https://img.lonelybing.top/file/post/动态.png)
 
-- **🖼 相册 Gallery**：相册已经从配置文件迁移为内容集合，每个相册对应一个 `src/content/gallery/{id}.md` 文件，图片列表直接写在 frontmatter 的 `photos` 数组里，和文章/项目/动态一样规范。后台发布时直接写入这个 md 文件，同 id 覆盖、新 id 追加，相册批量添加图片也支持喵~
+- **🖼 相册 Gallery**：相册已经从配置文件迁移为内容集合，每个相册对应一个 `src/content/gallery/{id}.md` 文件，图片列表直接写在 frontmatter 的 `photos` 数组里，和文章/项目/动态一样规范。后台发布时直接写入这个 md 文件，同 id 覆盖、新 id 追加，相册批量添加图片也支持
 
 ![相册编辑](https://img.lonelybing.top/file/post/相册.png)
 
@@ -68,7 +68,7 @@ series: 博客
 
 ## 四、安全：密码存在服务端
 
-静态博客没有真正的"后端"，那登录怎么保证安全？答案是**把用户名和密码存在 Cloudflare Worker 的 Secrets 里**，前端永远拿不到凭据喵~
+静态博客没有真正的"后端"，那登录怎么保证安全？答案是**把用户名和密码存在 Cloudflare Worker 的 Secrets 里**，前端永远拿不到凭据
 
 ![登录界面](https://img.lonelybing.top/file/post/登录.png)
 
@@ -97,7 +97,7 @@ series: 博客
 
 ## 六、后续更新
 
-上线后又陆续补了一堆功能和修复，一并记在这里喵~
+上线后又陆续补了一堆功能和修复，一并记在这里
 
 ### GitHub 仓库同步
 
@@ -113,7 +113,7 @@ series: 博客
 
 ### 表单折叠与必填标注
 
-文章配置字段多的时候，左侧面板会按分类折叠成「基础信息」「封面图片」「标签与分类」「高级设置」「自定义字段」几组，点击标题即可展开/收起。每个字段还标注了必填（红色 `*`）和选填，一目了然喵~
+文章配置字段多的时候，左侧面板会按分类折叠成「基础信息」「封面图片」「标签与分类」「高级设置」「自定义字段」几组，点击标题即可展开/收起。每个字段还标注了必填（红色 `*`）和选填，一目了然
 
 ### 体验修复
 
@@ -125,7 +125,7 @@ series: 博客
 
 ### 相册迁移为内容集合
 
-博客的相册从原来的 `galleryConfig.ts` + `public/gallery/{id}/urls.txt` 迁移为内容集合 `src/content/gallery/*.md`，和文章/项目/动态统一管理，更规范也更方便后台读写喵~
+博客的相册从原来的 `galleryConfig.ts` + `public/gallery/{id}/urls.txt` 迁移为内容集合 `src/content/gallery/*.md`，和文章/项目/动态统一管理，更规范也更方便后台读写
 
 ---
 ## 最后

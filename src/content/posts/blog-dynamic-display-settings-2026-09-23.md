@@ -16,7 +16,7 @@ series: "博客"
 
 ## 一、添加设置面板
 
-Firefly 主题本来就带一个显示设置面板组件，只是默认 `enable: false` 关着的——因为开启后整套运行时切换逻辑会打进客户端产物，大概 +33 KB/页。本尊权衡了一下还是决定开，毕竟谁不想不重新构建就能换壁纸和配色喵~
+Firefly 主题本来就带一个显示设置面板组件，只是默认 `enable: false` 关着的——因为开启后整套运行时切换逻辑会打进客户端产物，大概 +33 KB/页。本尊权衡了一下还是决定开，毕竟谁不想不重新构建就能换壁纸和配色
 
 ```typescript
 // src/config/displaySettingsConfig.ts
@@ -92,7 +92,7 @@ JS 只在 `<html>` 上写 `--mc-*` 这两个变量，没写的时候浏览器自
 - **默认那一档（色调点 + 2025）根本不注入任何覆盖变量**，站点看着跟原来一模一样，还是本尊调了半天的青蓝色
 - 只有主动切了别的风格，M3 配色才接管
 
-这个设计很重要喵~ 不然一上线全站颜色就变了
+这个设计很重要，不然一上线全站颜色就变了
 
 ### 明暗切换和色相联动
 
@@ -157,9 +157,9 @@ html[data-wallpaper-mode="none"][data-texture-preset="starlight"] #texture-canva
 --texture-c: oklch(0.68 0.13 calc(var(--hue) - 70));
 ```
 
-所以换主题色时纹理会自己跟着变，暗色模式下另有单独一档浓度（浅色 `0.4` / 暗色 `0.35`）喵~
+所以换主题色时纹理会自己跟着变，暗色模式下另有单独一档浓度（浅色 `0.4` / 暗色 `0.35`）
 
-这里踩过一个小坑：一开始照搬参考实现里的 `0.12`，结果在浅色页面上**几乎完全看不见**，本尊一度以为是 mask 没生效。原因是本站浅色底色的亮度高达 `oklch(0.95)`，纹理色大概 `0.7`，`0.12` 的不透明度混合下来只差 0.03 个亮度，肉眼根本分不出来。所以浓度这东西得按自己主题的明度算，别照抄喵~
+这里踩过一个小坑：一开始照搬参考实现里的 `0.12`，结果在浅色页面上**几乎完全看不见**，本尊一度以为是 mask 没生效。原因是本站浅色底色的亮度高达 `oklch(0.95)`，纹理色大概 `0.7`，`0.12` 的不透明度混合下来只差 0.03 个亮度，肉眼根本分不出来。所以浓度这东西得按自己主题的明度算，别照抄
 
 ### 面板图标要加进离线集合
 
@@ -175,7 +175,7 @@ for (const w of want) {
 }
 ```
 
-顺便一提，`block-rounded` 这个名字在 material-symbols 里**根本不存在**，得用 `block`——查名字最靠谱的办法是直接翻 `node_modules/@iconify-json/*/icons.json` 的 `icons` 键喵~
+顺便一提，`block-rounded` 这个名字在 material-symbols 里**根本不存在**，得用 `block`——查名字最靠谱的办法是直接翻 `node_modules/@iconify-json/*/icons.json` 的 `icons` 键
 
 ### 两个小细节
 
@@ -228,7 +228,7 @@ ui.waveBar.setAttribute('d', _wavePath(Math.max(head, 0.01), amp, -WAVE_LEN));
 ui.waveTrack.setAttribute('d', _linePath(head, waveW));
 ```
 
-`viewBox` 宽度被设成容器的实际像素宽（`1 用户单位 = 1px`），所以 CSS 里 `translateX(-40px)` 刚好是一个波长，流动动画无缝循环喵~
+`viewBox` 宽度被设成容器的实际像素宽（`1 用户单位 = 1px`），所以 CSS 里 `translateX(-40px)` 刚好是一个波长，流动动画无缝循环
 
 ### 播放 / 暂停的状态变化
 
@@ -314,7 +314,7 @@ patchedDependencies:
 
 ## 说明与反馈
 
-- 配色引擎、波浪进度条、背景纹理三块都借鉴自 [Shirone](https://github.com/LyraVoid/Shirone)，README 中英文与关于页都写了来源和版权行，这里再正式感谢一次 [LyraVoid](https://github.com/LyraVoid) 的开源分享喵~
+- 配色引擎、波浪进度条、背景纹理三块都借鉴自 [Shirone](https://github.com/LyraVoid/Shirone)，README 中英文与关于页都写了来源和版权行，这里再正式感谢一次 [LyraVoid](https://github.com/LyraVoid) 的开源分享
 - 面板总开关关掉时，M3 引擎和纹理逻辑都不会进主包，构建体积不受影响
 - 欢迎反馈问题与建议：**LonelyBing@outlook.com**
 

@@ -139,7 +139,7 @@ frida -U -f 某包名 -l hook_native.js --no-pause
 [+] nativeGetSecretKey 返回值: xxxxxxxx_SuperSecretKey_xxxxxxxx
 ```
 
-拿到密钥，签名算法就完全复刻出来了喵~
+拿到密钥，签名算法就完全复刻出来了
 
 ### 验证一下
 

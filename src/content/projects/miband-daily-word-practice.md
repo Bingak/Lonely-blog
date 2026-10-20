@@ -28,7 +28,7 @@ lang: "zh_CN"
 
 ## 项目是啥
 
-MiBand-Daily-Word-Practice 是个跑在小米手环 9 Pro 上的每日背单词小程序. 它把「墨墨背单词」最核心的思路——让记忆越模糊的单词出现得越频繁——搬到了腕上这块小屏幕里，让你没带手机的时候也能刷两下单词喵~
+MiBand-Daily-Word-Practice 是个跑在小米手环 9 Pro 上的每日背单词小程序. 它把「墨墨背单词」最核心的思路——让记忆越模糊的单词出现得越频繁——搬到了腕上这块小屏幕里，让你没带手机的时候也能刷两下单词
 
 开源地址：[https://github.com/Bingak/MiBand-Daily-Word-Practice](https://github.com/Bingak/MiBand-Daily-Word-Practice)
 
