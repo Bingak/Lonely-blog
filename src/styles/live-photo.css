@@ -68,6 +68,33 @@ live-photo .live-photo-play {
 	transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
 }
 
+live-photo .live-photo-lightbox-close {
+	position: absolute;
+	top: 0.75rem;
+	right: 0.75rem;
+	z-index: 5;
+	display: grid;
+	width: 2.6rem;
+	height: 2.6rem;
+	place-items: center;
+	border: 1px solid rgb(255 255 255 / 32%);
+	border-radius: 50%;
+	background: rgb(15 18 28 / 58%);
+	color: white;
+	cursor: pointer;
+	box-shadow: 0 4px 16px rgb(0 0 0 / 24%);
+	backdrop-filter: blur(12px);
+}
+
+live-photo .live-photo-lightbox-close:hover {
+	background: rgb(15 18 28 / 82%);
+}
+
+live-photo .live-photo-lightbox-close svg {
+	width: 1.2rem;
+	height: 1.2rem;
+}
+
 live-photo .live-photo-play:hover {
 	transform: translateY(-1px);
 	border-color: rgb(255 255 255 / 48%);

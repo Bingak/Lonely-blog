@@ -49,10 +49,9 @@
   backdrop-filter: blur(16px) saturate(1.2);
 }
 
-.fancybox__slide > .f-html:has(> live-photo.live-photo) {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.fancybox__slide > .f-html.live-photo {
+  display: inline-grid;
+  box-sizing: border-box;
   width: auto;
   height: auto;
   max-width: min(60vw, 900px);
@@ -66,22 +65,14 @@
   backdrop-filter: blur(22px) saturate(1.25);
 }
 
-.fancybox__slide > .f-html live-photo.live-photo {
-  display: inline-grid;
-  width: max-content;
-  max-width: 100%;
-  max-height: min(calc(62vh - 20px), 630px);
-  border-radius: 0.75rem;
-}
-
-.fancybox__slide > .f-html live-photo.live-photo > img {
+.fancybox__slide > .f-html.live-photo > img {
   width: auto;
   max-width: 100%;
   max-height: min(calc(62vh - 20px), 630px);
   object-fit: contain;
 }
 
-.fancybox__slide > .f-html live-photo.live-photo > video {
+.fancybox__slide > .f-html.live-photo > video {
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -142,13 +133,12 @@
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .fancybox__slide > .f-html:has(> live-photo.live-photo) {
+  .fancybox__slide > .f-html.live-photo {
     max-width: 88vw;
     max-height: 68vh;
   }
 
-  .fancybox__slide > .f-html live-photo.live-photo,
-  .fancybox__slide > .f-html live-photo.live-photo > img {
+  .fancybox__slide > .f-html.live-photo > img {
     max-height: calc(68vh - 20px);
   }
 

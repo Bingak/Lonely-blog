@@ -25,7 +25,19 @@ class LivePhoto extends HTMLElement {
 				this.play(image, playButton!);
 			});
 		}
+		this.ensureLightboxCloseButton();
 		this.dataset.ready = "true";
+	}
+
+	private ensureLightboxCloseButton() {
+		if (!this.closest(".fancybox__slide") || this.querySelector(".live-photo-lightbox-close")) return;
+		const closeButton = document.createElement("button");
+		closeButton.type = "button";
+		closeButton.className = "live-photo-lightbox-close";
+		closeButton.setAttribute("data-fancybox-close", "");
+		closeButton.setAttribute("aria-label", "关闭大图");
+		closeButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+		this.append(closeButton);
 	}
 
 	private play(image: HTMLImageElement, playButton: HTMLButtonElement) {
