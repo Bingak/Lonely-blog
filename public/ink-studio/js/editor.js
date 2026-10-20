@@ -238,11 +238,11 @@ window.InkEditor = (function () {
   function livePhotoInsert() {
     askModal("插入动态照片", [
       { k: "alt", label: "描述（alt）" },
-      { k: "cover", label: "静态封面图片 URL", ph: "https://img.lonelybing.top/file/cover.jpg" },
-      { k: "video", label: "动态视频 URL（MP4/MOV）", ph: "https://img.lonelybing.top/file/motion.mp4" },
+      { k: "pair", label: "动态照片链接（封面 URL|视频 URL，粘贴后自动识别）", ph: "https://img.lonelybing.top/file/cover.jpg|https://img.lonelybing.top/file/motion.mp4" },
     ], v => {
-      if (!v.cover || !v.video) return;
-      wrapOrInsert(`![${v.alt || ""}](${v.cover.trim()} "live-photo=${v.video.trim()}")`);
+      const pair = parseLivePhotoPair(v.pair);
+      if (!pair) return;
+      wrapOrInsert(`![${v.alt || ""}](${pair.cover} "live-photo=${pair.video}")`);
     });
   }
   function gridInsert() {
@@ -650,7 +650,8 @@ window.InkEditor = (function () {
   function parseLivePhotoPair(text) {
     const parts = String(text || "").trim().split("|");
     if (parts.length !== 2) return null;
-    const [cover, video] = parts.map(value => value.trim());
+    const [cover, rawVideo] = parts.map(value => value.trim());
+    const video = rawVideo.replace(/^live-photo=/i, "");
     try {
       const coverUrl = new URL(cover);
       const videoUrl = new URL(video);

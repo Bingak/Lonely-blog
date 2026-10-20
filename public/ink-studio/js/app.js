@@ -138,7 +138,8 @@
   function parseLivePhotoPair(text) {
     const parts = String(text || "").trim().split("|");
     if (parts.length !== 2) return null;
-    const [cover, video] = parts.map(value => value.trim());
+    const [cover, rawVideo] = parts.map(value => value.trim());
+    const video = rawVideo.replace(/^live-photo=/i, "");
     try {
       const coverUrl = new URL(cover);
       const videoUrl = new URL(video);
@@ -505,12 +506,12 @@ function buildMarkdown(d) {
     const addGlive = host.querySelector("[data-addglive]");
     if (addGlive) addGlive.onclick = () => {
       askModal("添加动态照片", [
-        { k: "cover", label: "静态封面图片 URL", ph: "https://img.lonelybing.top/file/cover.jpg" },
-        { k: "video", label: "动态视频 URL（MP4/MOV）", ph: "https://img.lonelybing.top/file/motion.mp4" },
+        { k: "pair", label: "动态照片链接（封面 URL|视频 URL，粘贴后自动识别）", ph: "https://img.lonelybing.top/file/cover.jpg|https://img.lonelybing.top/file/motion.mp4" },
         { k: "alt", label: "图注（可留空）" },
       ], v => {
-        if (!v.cover || !v.video) return;
-        cur.galleryImgs.push({ src: `${v.cover.trim()}|live-photo=${v.video.trim()}`, alt: v.alt || "" });
+        const pair = parseLivePhotoPair(v.pair);
+        if (!pair) return;
+        cur.galleryImgs.push({ src: `${pair.cover}|live-photo=${pair.video}`, alt: v.alt || "" });
         renderGimgs(); touch();
       });
     };
