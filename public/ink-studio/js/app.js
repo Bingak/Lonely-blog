@@ -131,8 +131,29 @@
   function galleryBody(d) {
     if (d.type !== "gallery" || !d.galleryImgs.length) return d.body;
     // 博客 remark-image-grid 只认 [grid]（列数按图片数自动计算，最多 4 列），图片不带列表前缀
-    const items = d.galleryImgs.map(g => `![${g.alt || ""}](${g.src})`).join("\n");
+    const items = d.galleryImgs.map(g => `![${g.alt || ""}](${normalizeLivePhotoSrc(g.src)})`).join("\n");
     return `[grid]\n${items}\n[/grid]\n\n` + (d.body || "").replace(/^\n+/, "");
+  }
+
+  function parseLivePhotoPair(text) {
+    const parts = String(text || "").trim().split("|");
+    if (parts.length !== 2) return null;
+    const [cover, video] = parts.map(value => value.trim());
+    try {
+      const coverUrl = new URL(cover);
+      const videoUrl = new URL(video);
+      if (!/^https?:$/.test(coverUrl.protocol) || !/^https?:$/.test(videoUrl.protocol)) return null;
+      if (!/\.(jpe?g|png|webp|heic|heif|avif)$/i.test(coverUrl.pathname)) return null;
+      if (!/\.(mp4|mov|m4v|webm)$/i.test(videoUrl.pathname)) return null;
+      return { cover, video };
+    } catch {
+      return null;
+    }
+  }
+
+  function normalizeLivePhotoSrc(src) {
+    const pair = parseLivePhotoPair(src);
+    return pair ? `${pair.cover}|live-photo=${pair.video}` : String(src || "").trim();
   }
 
 function buildMarkdown(d) {
@@ -294,6 +315,15 @@ function buildMarkdown(d) {
         <input data-gi="${i}" data-k="alt" value="${MD.esc(g.alt || "")}" placeholder="图注（可留空）">
       </div>`).join("");
     host.querySelectorAll("[data-gi]").forEach(inp => inp.oninput = () => { arr[+inp.dataset.gi][inp.dataset.k] = inp.value; touch(); });
+    host.querySelectorAll('[data-gi][data-k="src"]').forEach(inp => inp.addEventListener("paste", ev => {
+      const pair = parseLivePhotoPair(ev.clipboardData?.getData("text/plain"));
+      if (!pair) return;
+      ev.preventDefault();
+      const value = `${pair.cover}|live-photo=${pair.video}`;
+      arr[+inp.dataset.gi].src = value;
+      inp.value = value;
+      touch();
+    }));
     host.querySelectorAll("[data-delgimg]").forEach(b => b.onclick = () => { arr.splice(+b.dataset.delgimg, 1); renderGimgs(); touch(); });
   }
   /* ------- 批量添加相册媒体 ------- */
@@ -303,6 +333,12 @@ function buildMarkdown(d) {
       const lines = v.text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
       let n = 0;
       lines.forEach(l => {
+        const pair = parseLivePhotoPair(l);
+        if (pair) {
+          cur.galleryImgs.push({ src: `${pair.cover}|live-photo=${pair.video}`, alt: "" });
+          n++;
+          return;
+        }
         const [src, alt] = l.split("|").map(x => (x || "").trim());
         if (src) { cur.galleryImgs.push({ src, alt: alt || "" }); n++; }
       });
@@ -1076,7 +1112,7 @@ function buildMarkdown(d) {
     const f = d.fm;
     const q = v => JSON.stringify(String(v ?? ""));
     const arr = v => `[${(v || []).map(x => JSON.stringify(String(x))).join(", ")}]`;
-    const photos = (d.galleryImgs || []).map(g => (g.src || "").trim()).filter(Boolean);
+    const photos = (d.galleryImgs || []).map(g => normalizeLivePhotoSrc(g.src)).filter(Boolean);
     const lines = [
       `id: ${q(f.id)}`,
       `name: ${q(f.name)}`,

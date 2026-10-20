@@ -629,12 +629,37 @@ window.InkEditor = (function () {
   function onPaste(ev) {
     const html = ev.clipboardData.getData("text/html");
     const text = ev.clipboardData.getData("text/plain");
+    const pastedLines = String(text || "").trim().split(/\r?\n/).filter(Boolean);
+    const livePhotos = pastedLines.map(parseLivePhotoPair);
+    if (pastedLines.length && livePhotos.every(Boolean)) {
+      ev.preventDefault();
+      const markdown = livePhotos.map(livePhoto => `![](${livePhoto.cover} "live-photo=${livePhoto.video}")`).join("\n");
+      const { s, e } = sel();
+      replaceRange(s, e, markdown);
+      return;
+    }
     if (html && text && !/^\s*</.test(text) && /<[a-z][\s\S]*>/i.test(html)) {
       // 看起来是从网页/文档复制的富文本
       ev.preventDefault();
       const md = htmlToMd(html);
       const { s, e } = sel();
       replaceRange(s, e, md);
+    }
+  }
+
+  function parseLivePhotoPair(text) {
+    const parts = String(text || "").trim().split("|");
+    if (parts.length !== 2) return null;
+    const [cover, video] = parts.map(value => value.trim());
+    try {
+      const coverUrl = new URL(cover);
+      const videoUrl = new URL(video);
+      if (!/^https?:$/.test(coverUrl.protocol) || !/^https?:$/.test(videoUrl.protocol)) return null;
+      if (!/\.(jpe?g|png|webp|heic|heif|avif)$/i.test(coverUrl.pathname)) return null;
+      if (!/\.(mp4|mov|m4v|webm)$/i.test(videoUrl.pathname)) return null;
+      return { cover, video };
+    } catch {
+      return null;
     }
   }
 

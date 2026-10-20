@@ -26,11 +26,20 @@ export type LivePhotoReference = { cover: string; video: string };
 
 export function parseLivePhotoReference(src: string): LivePhotoReference | null {
 	const marker = "|live-photo=";
-	const index = src.indexOf(marker);
-	if (index < 0) return null;
-	const cover = src.slice(0, index).trim();
-	const video = src.slice(index + marker.length).trim();
-	return cover && video ? { cover, video } : null;
+	const markerIndex = src.indexOf(marker);
+	const parts = markerIndex >= 0
+		? [src.slice(0, markerIndex).trim(), src.slice(markerIndex + marker.length).trim()]
+		: src.split("|").map((part) => part.trim());
+	if (parts.length !== 2 || !parts[0] || !parts[1]) return null;
+	try {
+		const cover = new URL(parts[0]);
+		const video = new URL(parts[1]);
+		if (!/^https?:$/.test(cover.protocol) || !/^https?:$/.test(video.protocol)) return null;
+		if (!IMAGE_RE.test(cover.pathname) || !VIDEO_RE.test(video.pathname)) return null;
+	} catch {
+		return null;
+	}
+	return { cover: parts[0], video: parts[1] };
 }
 
 export function isVideo(src: string): boolean {
