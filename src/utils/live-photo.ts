@@ -11,7 +11,7 @@ class LivePhoto extends HTMLElement {
 		playButton.type = "button";
 		playButton.className = "live-photo-play";
 		playButton.setAttribute("aria-label", "播放动态照片");
-		playButton.innerHTML = '<span aria-hidden="true">▶</span><span>动态照片</span>';
+		playButton.innerHTML = '<span class="live-photo-play-icon" aria-hidden="true"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M5 3.7c0-.6.7-1 1.2-.7l6.1 4.1a1 1 0 0 1 0 1.7l-6.1 4.1a.8.8 0 0 1-1.2-.7z"/></svg></span><span>动态照片</span>';
 		playButton.addEventListener("click", (event) => {
 			event.preventDefault();
 			event.stopPropagation();
@@ -28,22 +28,30 @@ class LivePhoto extends HTMLElement {
 		video.poster = image.currentSrc || image.src;
 		video.playsInline = true;
 		video.preload = "metadata";
-		video.addEventListener("ended", () => {
-			video.remove();
-			image.hidden = false;
-			playButton.hidden = false;
-		});
-		video.addEventListener("error", () => {
-			video.remove();
-			image.hidden = false;
-			playButton.hidden = false;
-		});
-		image.hidden = true;
+		video.setAttribute("aria-label", "动态照片视频");
+		const finish = () => {
+			if (video.dataset.finishing) return;
+			video.dataset.finishing = "true";
+			this.classList.remove("is-playing");
+			const cleanup = () => {
+				video.remove();
+				playButton.hidden = false;
+			};
+			video.addEventListener("transitionend", (event) => {
+				if (event.propertyName === "opacity") cleanup();
+			}, { once: true });
+			window.setTimeout(cleanup, 400);
+		};
+		video.addEventListener("playing", () => {
+			requestAnimationFrame(() => this.classList.add("is-playing"));
+		}, { once: true });
+		video.addEventListener("ended", finish);
+		video.addEventListener("error", finish);
 		playButton.hidden = true;
 		this.insertBefore(video, playButton);
 		void video.play().catch(() => {
 			video.remove();
-			image.hidden = false;
+			this.classList.remove("is-playing");
 			playButton.hidden = false;
 		});
 	}
