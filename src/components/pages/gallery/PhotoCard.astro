@@ -1,6 +1,6 @@
 ---
 import { getLqipProps } from "@/utils/lqip-utils";
-import { isVideo } from "@/utils/gallery-utils";
+import { isVideo, parseLivePhotoReference } from "@/utils/gallery-utils";
 
 interface Props {
 	src: string;
@@ -10,18 +10,24 @@ interface Props {
 
 const { src, albumId, alt = "" } = Astro.props;
 
-const video = isVideo(src);
-const lqipProps = video ? { style: "" } : getLqipProps(src, undefined, true);
+const livePhoto = parseLivePhotoReference(src);
+const imageSrc = livePhoto?.cover || src;
+const video = !livePhoto && isVideo(src);
+const lqipProps = video ? { style: "" } : getLqipProps(imageSrc, undefined, true);
 ---
 
 <div class="gallery-photo-card break-inside-avoid mb-3">
   <div
     data-fancybox={`gallery-${albumId}`}
-    data-src={src}
+    data-src={imageSrc}
     data-type={video ? "html5video" : "image"}
     class="block rounded-xl overflow-hidden relative group cursor-pointer"
   >
-    {video ? (
+    {livePhoto ? (
+      <live-photo data-video-url={livePhoto.video}>
+        <img src={livePhoto.cover} alt={alt} loading="lazy" decoding="async" class="w-full h-auto object-cover" />
+      </live-photo>
+    ) : video ? (
       <>
         <video
           src={src}

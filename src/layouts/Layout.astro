@@ -39,6 +39,7 @@ import { getOgLocale } from "@/utils/site-config-utils";
 import { getCanonicalUrl, url } from "@/utils/url-utils";
 
 import "@/styles/main.css";
+import "@/styles/live-photo.css";
 import "@/styles/textures.css";
 import "@/styles/immersive-reading.css";
 import "@/styles/variables.styl";
@@ -571,6 +572,9 @@ const ogImageAlt = propsOgImageAlt ?? pageTitle;
     <ConfigCarrier />
     <MusicManager />
     <slot />
+    <script>
+      import "@/utils/live-photo";
+    </script>
 
     <!-- 播放器视图脚本：必须在 <slot /> 之后（解析到它时所有 widget 的 DOM 要已存在），
          且在 MusicManager 之后（swup 重跑按文档顺序，window.__fireflyMusic 得先就位） -->

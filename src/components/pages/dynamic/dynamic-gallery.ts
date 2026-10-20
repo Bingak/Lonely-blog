@@ -4,6 +4,7 @@ type GalleryImage = {
 	alt: string;
 	element: HTMLImageElement;
 	src: string;
+	video?: string;
 };
 
 export function registerDynamicGallery(): void {
@@ -21,11 +22,16 @@ export function registerDynamicGallery(): void {
 			if (!source) return;
 			const elements = [...source.querySelectorAll<HTMLImageElement>("img")];
 			if (elements.length === 0) return;
-			this.images = elements.map((element) => ({
-				alt: element.alt,
-				element,
-				src: element.currentSrc || element.src,
-			}));
+			this.images = elements.map((element) => {
+				const livePhoto = element.closest<HTMLElement>("live-photo")?.dataset.videoUrl ||
+					element.title.match(/^live-photo[=:](https?:\/\/\S+)$/i)?.[1];
+				return {
+					alt: element.alt,
+					element,
+					src: element.currentSrc || element.src,
+					...(livePhoto ? { video: livePhoto } : {}),
+				};
+			});
 			this.buildGrid();
 			this.buildThumbnails();
 			this.bindControls();
@@ -61,7 +67,15 @@ export function registerDynamicGallery(): void {
 					element.closest<HTMLElement>("figure") ??
 					element;
 				element.alt = alt;
-				button.append(element);
+				if (this.images[index].video) {
+					const livePhoto = document.createElement("live-photo");
+					livePhoto.dataset.videoUrl = this.images[index].video || "";
+					element.removeAttribute("title");
+					livePhoto.append(element);
+					button.append(livePhoto);
+				} else {
+					button.append(element);
+				}
 				if (index === 5 && this.images.length > 6) {
 					const more = document.createElement("span");
 					more.className = "dynamic-gallery-more";

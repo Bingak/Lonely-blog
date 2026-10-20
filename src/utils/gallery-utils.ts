@@ -22,8 +22,21 @@ const IMAGE_RE = /\.(jpe?g|png|webp|avif|gif)$/i;
 // Formats supported by the browser's native HTML5 video player.
 const VIDEO_RE = /\.(mp4|webm|mov|ogv|m4v)$/i;
 
+export type LivePhotoReference = { cover: string; video: string };
+
+export function parseLivePhotoReference(src: string): LivePhotoReference | null {
+	const marker = "|live-photo=";
+	const index = src.indexOf(marker);
+	if (index < 0) return null;
+	const cover = src.slice(0, index).trim();
+	const video = src.slice(index + marker.length).trim();
+	return cover && video ? { cover, video } : null;
+}
+
 export function isVideo(src: string): boolean {
 	if (!src) return false;
+	const livePhoto = parseLivePhotoReference(src);
+	if (livePhoto) src = livePhoto.cover;
 	try {
 		const url = new URL(src, "https://x.local");
 		return VIDEO_RE.test(url.pathname);
@@ -77,12 +90,14 @@ export function getAlbumCover(
 	photos: string[],
 ): string {
 	if (entry.data.cover && !isVideo(entry.data.cover)) {
-		return withBase(entry.data.cover);
+		return withBase(parseLivePhotoReference(entry.data.cover)?.cover || entry.data.cover);
 	}
-	const coverFile = photos.find((p) => /\/cover\./i.test(p));
-	if (coverFile && !isVideo(coverFile)) return coverFile;
+	const coverFile = photos.find((p) => /\/cover\./i.test(parseLivePhotoReference(p)?.cover || p));
+	if (coverFile && !isVideo(coverFile)) {
+		return parseLivePhotoReference(coverFile)?.cover || coverFile;
+	}
 	const firstImage = photos.find((p) => !isVideo(p));
-	return firstImage || "";
+	return firstImage ? parseLivePhotoReference(firstImage)?.cover || firstImage : "";
 }
 
 // 保留 CollectionEntry 类型引用避免未使用告警

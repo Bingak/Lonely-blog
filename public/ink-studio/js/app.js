@@ -237,7 +237,7 @@ function buildMarkdown(d) {
       h += `<div class="field-row">${txt("password", f.password, "", "访问密码（可选）", "访问密码", false)}${txt("passwordHint", f.passwordHint, "", "输错密码时显示", "密码提示", false)}</div>`;
       h += `</div></div>`;
       h += `<div class="fset" open><summary>相册标签</summary><div class="fbody">${chips("tags", f.tags, "回车添加标签")}</div></div>`;
-      h += `<div class="fset" open><summary>图片与视频</summary><div class="fbody"><div data-gimgs></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn small add-mini" data-addgimg>＋ 添加图片</button><button class="btn small add-mini" data-addgvideo>＋ 添加视频</button><button class="btn small" data-batchgimg>📋 批量添加媒体</button></div><div class="hint">发布时写入 src/content/gallery/{ID}.md 的 photos 数组。支持图片地址或 MP4/WebM/MOV 视频直链；批量添加每行一条，可用 <code>URL|图注</code> 格式。</div></div></div>`;
+      h += `<div class="fset" open><summary>图片与视频</summary><div class="fbody"><div data-gimgs></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn small add-mini" data-addgimg>＋ 添加图片</button><button class="btn small add-mini" data-addgvideo>＋ 添加视频</button><button class="btn small" data-addglive>📸 上传动态照片</button><button class="btn small" data-batchgimg>📋 批量添加媒体</button></div><div class="hint">发布时写入 src/content/gallery/{ID}.md 的 photos 数组。动态照片使用封面与 MP4/MOV 视频直链；批量添加每行一条，可用 <code>URL|图注</code> 格式。</div></div></div>`;
     } else { // post
       h += `<div class="fset" open><summary>基础信息</summary><div class="fbody">`;
       h += txt("title", f.title, "文章标题", "标题中的冒号、引号会自动转义，无需手写 YAML", "文章标题", true);
@@ -464,6 +464,18 @@ function buildMarkdown(d) {
       askModal("添加相册视频", [{ k: "src", label: "视频文件直链（MP4/WebM/MOV）", ph: "https://…/video.mp4" }], v => {
         if (!v.src) return;
         cur.galleryImgs.push({ src: v.src.trim(), alt: "" }); renderGimgs(); touch();
+      });
+    };
+    const addGlive = host.querySelector("[data-addglive]");
+    if (addGlive) addGlive.onclick = () => {
+      askModal("添加动态照片", [
+        { k: "cover", label: "静态封面图片 URL", ph: "https://img.lonelybing.top/file/cover.jpg" },
+        { k: "video", label: "动态视频 URL（MP4/MOV）", ph: "https://img.lonelybing.top/file/motion.mp4" },
+        { k: "alt", label: "图注（可留空）" },
+      ], v => {
+        if (!v.cover || !v.video) return;
+        cur.galleryImgs.push({ src: `${v.cover.trim()}|live-photo=${v.video.trim()}`, alt: v.alt || "" });
+        renderGimgs(); touch();
       });
     };
     const batchGimg = host.querySelector("[data-batchgimg]");

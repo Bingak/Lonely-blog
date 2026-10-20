@@ -19,6 +19,7 @@ import rehypeEmailProtection from "../plugins/rehype-email-protection.mjs";
 import rehypeExternalLinks from "../plugins/rehype-external-links.mjs";
 import rehypeFigure from "../plugins/rehype-figure.mjs";
 import rehypeImageReferrerPolicy from "../plugins/rehype-image-referrerpolicy.mjs";
+import rehypeLivePhoto from "../plugins/rehype-live-photo.mjs";
 import { rehypeMermaid } from "../plugins/rehype-mermaid.mjs";
 import { rehypePlantuml } from "../plugins/rehype-plantuml.mjs";
 import { parseDirectiveNode } from "../plugins/remark-directive-rehype.js";
@@ -63,6 +64,7 @@ export const markdownRehypePlugins = [
 	rehypePlantuml,
 	rehypeDiagramPanZoom,
 	rehypeFigure,
+	rehypeLivePhoto,
 	[
 		rehypeImageReferrerPolicy,
 		{ domains: siteConfig.imageOptimization?.noReferrerDomains || [] },

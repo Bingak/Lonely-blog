@@ -167,11 +167,13 @@ window.InkEditor = (function () {
     {
       icon: "🖼▾", title: "图片 / 媒体", menu: [
         ["🖼 图片", () => imageInsert()],
+        ["📸 上传动态照片", () => livePhotoInsert()],
         ["🎞 图片相册 [grid]", () => gridInsert()],
         ["📺 视频嵌入 (B站/YouTube)", () => videoInsert()],
         ["🪟 自定义 Iframe", () => iframeInsert()],
       ]
     },
+    { icon: "📸", title: "上传动态照片", run: () => livePhotoInsert() },
     {
       icon: "▦▾", title: "表格 / 代码", menu: [
         ["▦ 表格", () => tableInsert()],
@@ -231,6 +233,16 @@ window.InkEditor = (function () {
       if (!v.src) return;
       const size = normalizeImgSize(v.size);
       wrapOrInsert(`![${v.alt || ""}](${v.src}${size ? ` "${size}"` : ""})`);
+    });
+  }
+  function livePhotoInsert() {
+    askModal("插入动态照片", [
+      { k: "alt", label: "描述（alt）" },
+      { k: "cover", label: "静态封面图片 URL", ph: "https://img.lonelybing.top/file/cover.jpg" },
+      { k: "video", label: "动态视频 URL（MP4/MOV）", ph: "https://img.lonelybing.top/file/motion.mp4" },
+    ], v => {
+      if (!v.cover || !v.video) return;
+      wrapOrInsert(`![${v.alt || ""}](${v.cover.trim()} "live-photo=${v.video.trim()}")`);
     });
   }
   function gridInsert() {
@@ -388,7 +400,7 @@ window.InkEditor = (function () {
     ["☑", "任务列表", "- [ ] "], ["—", "分割线", "\n---\n"],
     ["</>", "代码块", () => codeInsert()], ["▦", "表格", () => tableInsert()],
     ["💡", "提示块", () => admon("TIP")], ["🔗", "链接", () => linkInsert()],
-    ["🖼", "图片", () => imageInsert()], ["🎞", "图片相册", () => gridInsert()],
+    ["🖼", "图片", () => imageInsert()], ["📸", "动态照片", () => livePhotoInsert()], ["🎞", "图片相册", () => gridInsert()],
     ["📺", "视频嵌入", () => videoInsert()], ["🐙", "GitHub 卡片", () => githubInsert()],
     ["📄", "内部链接", () => wikiInsert()], ["🃏", "文章卡片", () => cardInsert()],
     ["🧜", "Mermaid", () => langCode("mermaid", "graph TD;\n  A --> B;")], ["∑", "块级公式", "\n$$\n\n$$\n"],
