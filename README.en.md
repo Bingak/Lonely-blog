@@ -24,7 +24,7 @@
   </tr>
   <tr>
     <td align="center"><img src="https://img.lonelybing.top/file/post/音乐播放栏.png" width="300"><br>Wavy music player progress bar</td>
-    <td align="center"><img src="https://img.lonelybing.top/file/post/页脚.png" width="470"><br>Footer Busuanzi stats + site lifetime counter</td>
+    <td align="center"><img src="https://img.lonelybing.top/file/post/页脚.png" width="470"><br>Footer Vercount stats + site lifetime counter</td>
   </tr>
   <tr>
     <td align="center"><img src="https://img.lonelybing.top/file/post/友链申请.png" width="470"><br>Self-service friend-link form (Cloudflare Turnstile)</td>
@@ -52,7 +52,7 @@ A heavily customized fork based on Firefly V6.16.8. Key changes include:
 - **Wavy Music Player Progress Bar**: A sine wave flows while playing and settles into a straight line when paused; supports click and drag-to-seek, colored by the theme. The wave path algorithm (M3 Expressive LinearWavy) is borrowed from [Shirone](https://github.com/LyraVoid/Shirone)'s `wavy-progress` implementation.
 - **Background Textures**: In solid-color mode you can overlay one of six decorative textures (None / Starlight / Cyber Dots / Topography / Geometric / Sakura Petals). Single-layer SVG masks whose colors derive from `--hue`, so they follow the theme color automatically; three carry slow animations that stop under `prefers-reduced-motion`. Patterns and animations are borrowed from [Shirone](https://github.com/LyraVoid/Shirone)'s `textures.css`.
 - **Blue Card Borders**: Homepage post cards feature a 1.5px cyan-blue border (`oklch()` adaptive for light/dark mode), adding visual depth against the wallpaper background.
-- **Busuanzi Visitor Stats**: Footer shows site-wide PV / UV, article pages show per-post read counts, plus a real-time "Site alive for X days X hours X minutes X seconds" counter (counting from 2026.9.12). All zero-backend implementation.
+- **Vercount Visitor Stats**: Footer shows site-wide PV / UV, plus a real-time "Site alive for X days X hours X minutes X seconds" counter (counting from 2026.9.12). All zero-backend implementation.
 - **Project Page Comments**: Project showcase page integrates a comment system, each project can toggle comments individually via `comment` field in frontmatter.
 - **Full-screen Random Wallpaper + Quotes**: Full-screen wallpaper mode pulls from multiple random image APIs, refreshing on each page load, with a random Chinese quote at the bottom. The homepage Inspiration Spotlight also rotates through these APIs every 5 seconds.
 - **Inline Image Sizing**: A new `remark-image-size` plugin supports Typora-style size annotations — `![alt](url "=x400")` / `"=60%"` / `"=480x360"` (the quotes are mandatory; a bare `=x400` makes CommonMark fail the whole image syntax). Images without explicit sizing now default to `min(55%, 520px)` width, stay full-width on mobile, and `[grid]` gallery images are not shrunk further.
@@ -99,7 +99,7 @@ All configuration is centralized in `src/config/`, imported via `@/config` (barr
 | `profileConfig.ts` | User profile: avatar, nickname, bio, social links |
 | `backgroundWallpaper.ts` | Wallpaper mode config (this site uses full-screen random images + quotes, heavily customized) |
 | `commentConfig.ts` | Comment system config (Waline/Twikoo/Giscus/Artalk/Disqus) |
-| `FooterConfig.html` | Footer HTML injection (includes Busuanzi stats and uptime timer) |
+| `FooterConfig.html` | Footer HTML injection (includes Vercount stats and uptime timer) |
 | `musicConfig.ts` | Music player config (Meting API / local music) |
 | `pioConfig.ts` | Live2D / Spine widget config |
 | `fontConfig.ts` | Custom font config |
@@ -132,7 +132,7 @@ The `image` field in article frontmatter supports three formats: relative paths 
 |------|-------|
 | Hosting | Build output `dist/` is a pure static site, deployable to Vercel, Cloudflare Pages, Netlify, Nginx, etc. The changelog and friend-link apply endpoints rely on a same-origin Worker — see below |
 | Comment system | This site uses Giscus, repo pointing to `Bingak/Lonely-blog`, configure in `src/config/commentConfig.ts` |
-| Visitor stats | Busuanzi PV/UV and uptime timer are zero-backend solutions, no deployment needed; finer analytics can be added via `siteConfig.ts` analytics settings |
+| Visitor stats | Vercount PV/UV and uptime timer are zero-backend solutions, no deployment needed; finer analytics can be added via `siteConfig.ts` analytics settings |
 | Content writing | `.pages.yml` configured — write articles online via GitHub web UI with Pages CMS |
 | Changelog | The client requests the same-origin `/api/commits`; `worker/index.js` fetches GitHub with `GITHUB_TOKEN` server-side and caches at the edge (list 5 min / single commit 7 days). Without a token it falls back to anonymous access, 60 req/hour/edge IP |
 | Friend link applications | The client requests `POST /api/friend-apply`, which needs two Worker secrets — `TURNSTILE_SECRET_KEY` and `FRIEND_APPLY_GITHUB_TOKEN` (fine-grained PAT with `Contents: Read & write` + `Pull requests: Read & write` on this repo only) — plus a Turnstile site key registered for your domain. Missing either secret returns a 503 that names it. `PUBLIC_TURNSTILE_SITE_KEY` is a **build-time** variable, not a runtime one; since `.env` is gitignored, the public site key is hardcoded in `friendApplyConfig.ts` as a fallback |
