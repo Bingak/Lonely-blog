@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1117" media="(prefers-color-scheme: dark)">
+<meta name="format-detection" content="telephone=no">
+<title>阶段八 参考答案（练习 3 · 纸上作业 + 练习 6 Makefile）</title>
+<style>pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #ffffcc }
+.codehilite { background: #f8f8f8; }
+.codehilite .c { color: #3D7B7B; font-style: italic } /* Comment */
+.codehilite .err { border: 1px solid #F00 } /* Error */
+.codehilite .k { color: #008000; font-weight: bold } /* Keyword */
+.codehilite .o { color: #666 } /* Operator */
+.codehilite .ch { color: #3D7B7B; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #3D7B7B; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #9C6500 } /* Comment.Preproc */
+.codehilite .cpf { color: #3D7B7B; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #3D7B7B; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
+.codehilite .gd { color: #A00000 } /* Generic.Deleted */
+.codehilite .ge { font-style: italic } /* Generic.Emph */
+.codehilite .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #E40000 } /* Generic.Error */
+.codehilite .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #008400 } /* Generic.Inserted */
+.codehilite .go { color: #717171 } /* Generic.Output */
+.codehilite .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.codehilite .gt { color: #04D } /* Generic.Traceback */
+.codehilite .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #008000 } /* Keyword.Pseudo */
+.codehilite .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #B00040 } /* Keyword.Type */
+.codehilite .m { color: #666 } /* Literal.Number */
+.codehilite .s { color: #BA2121 } /* Literal.String */
+.codehilite .na { color: #687822 } /* Name.Attribute */
+.codehilite .nb { color: #008000 } /* Name.Builtin */
+.codehilite .nc { color: #00F; font-weight: bold } /* Name.Class */
+.codehilite .no { color: #800 } /* Name.Constant */
+.codehilite .nd { color: #A2F } /* Name.Decorator */
+.codehilite .ni { color: #717171; font-weight: bold } /* Name.Entity */
+.codehilite .ne { color: #CB3F38; font-weight: bold } /* Name.Exception */
+.codehilite .nf { color: #00F } /* Name.Function */
+.codehilite .nl { color: #767600 } /* Name.Label */
+.codehilite .nn { color: #00F; font-weight: bold } /* Name.Namespace */
+.codehilite .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #19177C } /* Name.Variable */
+.codehilite .ow { color: #A2F; font-weight: bold } /* Operator.Word */
+.codehilite .w { color: #BBB } /* Text.Whitespace */
+.codehilite .mb { color: #666 } /* Literal.Number.Bin */
+.codehilite .mf { color: #666 } /* Literal.Number.Float */
+.codehilite .mh { color: #666 } /* Literal.Number.Hex */
+.codehilite .mi { color: #666 } /* Literal.Number.Integer */
+.codehilite .mo { color: #666 } /* Literal.Number.Oct */
+.codehilite .sa { color: #BA2121 } /* Literal.String.Affix */
+.codehilite .sb { color: #BA2121 } /* Literal.String.Backtick */
+.codehilite .sc { color: #BA2121 } /* Literal.String.Char */
+.codehilite .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.codehilite .s2 { color: #BA2121 } /* Literal.String.Double */
+.codehilite .se { color: #AA5D1F; font-weight: bold } /* Literal.String.Escape */
+.codehilite .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.codehilite .si { color: #A45A77; font-weight: bold } /* Literal.String.Interpol */
+.codehilite .sx { color: #008000 } /* Literal.String.Other */
+.codehilite .sr { color: #A45A77 } /* Literal.String.Regex */
+.codehilite .s1 { color: #BA2121 } /* Literal.String.Single */
+.codehilite .ss { color: #19177C } /* Literal.String.Symbol */
+.codehilite .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #00F } /* Name.Function.Magic */
+.codehilite .vc { color: #19177C } /* Name.Variable.Class */
+.codehilite .vg { color: #19177C } /* Name.Variable.Global */
+.codehilite .vi { color: #19177C } /* Name.Variable.Instance */
+.codehilite .vm { color: #19177C } /* Name.Variable.Magic */
+.codehilite .il { color: #666 } /* Literal.Number.Integer.Long */</style>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --bg: #f7f8fa;
+  --bg-elev: #ffffff;
+  --ink: #1f2328;
+  --ink-soft: #4c5560;
+  --muted: #8a9199;
+  --accent: #b03a2e;
+  --link: #1a6fb5;
+  --line: #e4e7ea;
+  --line-soft: #eef0f2;
+  --code-bg: #f6f7f9;
+  --code-ink: #c0214a;
+  --quote-bg: #fff8e8;
+  --quote-line: #e6a23c;
+  --quote-ink: #6b5900;
+  --th-bg: #f2f4f6;
+  --tr-alt: #fafbfc;
+  --shadow: 0 1px 2px rgba(16,24,40,.04), 0 8px 24px rgba(16,24,40,.05);
+  --shadow-lift: 0 2px 6px rgba(16,24,40,.06), 0 16px 40px rgba(16,24,40,.09);
+  --radius: 14px;
+  --maxw: 50rem;
+  --scroll-shadow: rgba(15, 23, 42, .16);
+  --mono: "JetBrains Mono", "Cascadia Mono", Consolas, "SF Mono", Menlo, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Microsoft YaHei", "Noto Sans SC", "Source Han Sans SC", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1117;
+    --bg-elev: #161b23;
+    --ink: #e7eaf0;
+    --ink-soft: #b8c0cd;
+    --muted: #8b93a3;
+    --accent: #ff8f7e;
+    --link: #82b6ff;
+    --line: #262d38;
+    --line-soft: #1c232c;
+    --code-bg: #1b212b;
+    --code-ink: #ff9db0;
+    --quote-bg: #241f13;
+    --quote-line: #b98a2e;
+    --quote-ink: #e8d3a0;
+    --th-bg: #1d232c;
+    --tr-alt: #171d25;
+    --shadow: 0 1px 2px rgba(0,0,0,.45), 0 10px 30px rgba(0,0,0,.35);
+    --shadow-lift: 0 2px 8px rgba(0,0,0,.5), 0 20px 50px rgba(0,0,0,.45);
+    --scroll-shadow: rgba(255, 255, 255, .16);
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-wrap: break-word;
+}
+
+::selection { background: rgba(26,111,181,.22); }
+
+.wrap {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 28px clamp(14px, 4vw, 28px) 96px;
+}
+
+/* ── 顶部文档导航：吸顶 + 横向滑动 ───────────────────────── */
+nav.docnav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  padding: 10px 12px;
+  margin: 0 0 26px;
+  background: var(--bg-elev);
+  background: color-mix(in srgb, var(--bg-elev) 88%, transparent);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+nav.docnav::-webkit-scrollbar { display: none; }
+nav.docnav b {
+  flex: none;
+  color: var(--accent);
+  font-size: 12.5px;
+  letter-spacing: .06em;
+  padding-right: 4px;
+}
+nav.docnav a {
+  flex: none;
+  display: inline-block;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: background .18s, color .18s;
+}
+nav.docnav a:hover { background: var(--line-soft); color: var(--ink); }
+nav.docnav a.cur {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 650;
+}
+@media (prefers-color-scheme: dark) {
+  nav.docnav a.cur { color: #1a0f0d; }
+}
+nav.docnav a.home { color: var(--link); }
+
+/* 桌面端：导航平铺换行，全部可见，不吸顶（避免遮挡正文） */
+@media (min-width: 861px) {
+  nav.docnav {
+    position: static;
+    flex-wrap: wrap;
+    overflow: visible;
+    white-space: normal;
+    row-gap: 4px;
+  }
+}
+
+/* ── 页眉 ──────────────────────────────────────────────── */
+header.doc {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+  margin-bottom: 26px;
+}
+header.doc .kicker {
+  display: inline-block;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: .16em;
+  font-size: 11.5px;
+  text-transform: uppercase;
+}
+h1 {
+  font-size: clamp(21px, 4.4vw, 30px);
+  line-height: 1.38;
+  margin: 8px 0 0;
+  letter-spacing: -.01em;
+}
+
+/* ── 正文排版 ──────────────────────────────────────────── */
+h2 {
+  font-size: clamp(18px, 3vw, 23px);
+  line-height: 1.42;
+  margin: 2.1em 0 .9em;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  scroll-margin-top: 72px;
+}
+h3 {
+  font-size: clamp(16px, 2.3vw, 19px);
+  margin: 1.7em 0 .6em;
+  color: var(--ink);
+  scroll-margin-top: 72px;
+}
+h4 { font-size: 16px; margin: 1.4em 0 .5em; color: var(--ink-soft); }
+p { margin: .85em 0; }
+p, li { text-align: left; }
+
+a { color: var(--link); text-decoration: none; border-bottom: 1px solid transparent; }
+a:hover { border-bottom-color: currentColor; }
+
+strong { color: var(--accent); font-weight: 700; }
+em { color: var(--ink-soft); }
+
+blockquote {
+  margin: 1.2em 0;
+  padding: 12px 16px;
+  background: var(--quote-bg);
+  border-left: 4px solid var(--quote-line);
+  border-radius: 0 12px 12px 0;
+  color: var(--quote-ink);
+}
+blockquote p { margin: .35em 0; }
+blockquote strong { color: inherit; }
+
+hr {
+  border: none;
+  border-top: 1px dashed var(--line);
+  margin: 2.2em 0;
+}
+
+/* ── 行内代码 ──────────────────────────────────────────── */
+code {
+  font-family: var(--mono);
+  font-size: .885em;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  padding: .12em .42em;
+  border-radius: 6px;
+  border: 1px solid var(--line-soft);
+  word-break: break-word;
+}
+
+/* ── 代码块：横向滚动，不撑破屏幕 ───────────────────────── */
+.codehilite {
+  position: relative;
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 1.1em 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  font-size: 14px;
+  line-height: 1.62;
+}
+.codehilite pre {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: inherit;
+  line-height: inherit;
+  tab-size: 4;
+}
+.codehilite code {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+  white-space: pre;
+}
+
+/* 细滚动条（代码块 / 表格横向滚动时更轻盈） */
+.codehilite, .table-wrap {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.codehilite::-webkit-scrollbar,
+.table-wrap::-webkit-scrollbar { height: 7px; }
+.codehilite::-webkit-scrollbar-track,
+.table-wrap::-webkit-scrollbar-track { background: transparent; }
+.codehilite::-webkit-scrollbar-thumb,
+.table-wrap::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 99px;
+}
+.codehilite::-webkit-scrollbar-thumb:hover,
+.table-wrap::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ── 表格：外层可横向滚动 ──────────────────────────────── */
+.table-wrap {
+  margin: 1.1em 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  border-radius: 12px;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+th, td {
+  border: 1px solid var(--line);
+  padding: 8px 11px;
+  text-align: left;
+  vertical-align: top;
+}
+th { background: var(--th-bg); font-weight: 650; white-space: nowrap; }
+tbody tr:nth-child(even) td { background: var(--tr-alt); }
+table code { white-space: nowrap; }
+
+/* ── 任务清单复选框 ────────────────────────────────────── */
+ul.task-list, ul.contains-task-list { list-style: none; padding-left: 2px; }
+ul.task-list li, ul.contains-task-list li { margin: .4em 0; }
+ul.task-list input[type=checkbox] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 17px; height: 17px;
+  border: 1.5px solid var(--muted);
+  border-radius: 5px;
+  margin-right: 9px;
+  vertical-align: -3px;
+  background: var(--bg-elev);
+  flex: none;
+}
+ul.task-list input[type=checkbox]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'><path d='M6.4 11.2 3.2 8l-1.1 1.1 4.3 4.3 8-8-1.1-1.1z'/></svg>");
+  background-size: 12px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ── 目录折叠块 ────────────────────────────────────────── */
+details.toc {
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 18px;
+  margin-bottom: 26px;
+  box-shadow: var(--shadow);
+}
+details.toc summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--link);
+  padding: 4px 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+details.toc summary::-webkit-details-marker { display: none; }
+details.toc summary::before {
+  content: "";
+  width: 0; height: 0;
+  border-left: 6px solid currentColor;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  transition: transform .2s;
+}
+details.toc[open] summary::before { transform: rotate(90deg); }
+details.toc ol { margin: 10px 0 6px; padding-left: 22px; }
+details.toc li { margin: .3em 0; }
+details.toc a { font-size: 14px; color: var(--ink-soft); }
+details.toc a:hover { color: var(--link); }
+
+/* ── 页脚 ──────────────────────────────────────────────── */
+footer.doc {
+  margin-top: 56px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12.5px;
+  text-align: center;
+  line-height: 1.8;
+}
+
+/* ── 回到顶部 ──────────────────────────────────────────── */
+#totop {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  z-index: 40;
+  width: 46px; height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--bg-elev);
+  color: var(--ink-soft);
+  box-shadow: var(--shadow-lift);
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity .22s, transform .22s, visibility .22s;
+}
+#totop.show { opacity: 1; visibility: visible; transform: none; }
+#totop:active { transform: scale(.94); }
+
+/* ── 平板 ──────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .wrap { padding-top: 18px; }
+  body { font-size: 15.5px; line-height: 1.8; }
+  .codehilite { font-size: 13.2px; padding: 12px 13px; }
+  table { font-size: 13.2px; }
+  th, td { padding: 7px 9px; }
+}
+
+/* ── 手机 ──────────────────────────────────────────────── */
+@media (max-width: 560px) {
+  html { scroll-behavior: auto; }
+  .wrap { padding: 12px 13px 84px; }
+  body { font-size: 15px; line-height: 1.78; }
+
+  nav.docnav { top: 0; border-radius: 12px; padding: 8px 9px; margin-bottom: 18px; }
+  nav.docnav b { display: none; }
+  nav.docnav a { font-size: 12.5px; padding: 6px 10px; }
+
+  header.doc { padding-bottom: 12px; margin-bottom: 18px; }
+  header.doc .kicker { font-size: 10.5px; letter-spacing: .12em; }
+
+  h1 { font-size: 20px; }
+  h2 { font-size: 17.5px; padding-left: 9px; border-left-width: 3px; margin-top: 1.8em; }
+  h3 { font-size: 15.5px; }
+  h4 { font-size: 14.5px; }
+  p { margin: .8em 0; }
+
+  blockquote { padding: 10px 12px; border-radius: 0 10px 10px 0; }
+
+  .codehilite { font-size: 12.2px; padding: 11px 12px; border-radius: 10px; }
+  table { font-size: 12.6px; }
+  th, td { padding: 6px 8px; }
+  th { white-space: normal; }
+
+  details.toc { padding: 10px 14px; margin-bottom: 18px; }
+  details.toc ol { padding-left: 18px; }
+  details.toc a { font-size: 13px; }
+
+  /* 触控目标不小于 40px */
+  ul.task-list li { padding: 2px 0; }
+  ul.task-list input[type=checkbox] { width: 19px; height: 19px; }
+
+  footer.doc { margin-top: 40px; font-size: 11.5px; }
+  #totop { width: 42px; height: 42px; font-size: 16px; }
+}
+
+/* ── 打印 ──────────────────────────────────────────────── */
+@media print {
+  nav.docnav, #totop, details.toc { display: none !important; }
+  body { background: #fff; color: #000; font-size: 11pt; }
+  .wrap { max-width: none; padding: 0; }
+  .codehilite, table, blockquote { box-shadow: none; }
+  a { color: #000; }
+  h2, h3 { page-break-after: avoid; }
+  .codehilite, table { page-break-inside: avoid; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+</style>
+<style>
+.doc.ex-tasks header.doc .kicker { color: var(--accent); }
+.doc.ex-tasks h2 { border-left-color: var(--accent); }
+.doc.ex-answers header.doc .kicker { color: #1a7f5a; }
+.doc.ex-answers h2 { border-left-color: #1a7f5a; }
+@media (prefers-color-scheme: dark) {
+  .doc.ex-answers header.doc .kicker { color: #4fd39a; }
+  .doc.ex-answers h2 { border-left-color: #4fd39a; }
+}
+.ex-tag {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  vertical-align: 3px;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
+}
+.doc.ex-answers .ex-tag {
+  color: #1a7f5a;
+  background: rgba(26, 127, 90, .12);
+  border-color: rgba(26, 127, 90, .32);
+}
+@media (prefers-color-scheme: dark) {
+  .doc.ex-answers .ex-tag { color: #4fd39a; background: rgba(79,211,154,.13); border-color: rgba(79,211,154,.34); }
+}
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+pre { line-height: 125%; }
+td.linenos .normal { color: #aaaaaa; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #aaaaaa; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #404040 }
+.codehilite { background: #202020; color: #D0D0D0 }
+.codehilite .c { color: #ABABAB; font-style: italic } /* Comment */
+.codehilite .err { color: #A61717; background-color: #E3D2D2 } /* Error */
+.codehilite .esc { color: #D0D0D0 } /* Escape */
+.codehilite .g { color: #D0D0D0 } /* Generic */
+.codehilite .k { color: #6EBF26; font-weight: bold } /* Keyword */
+.codehilite .l { color: #D0D0D0 } /* Literal */
+.codehilite .n { color: #D0D0D0 } /* Name */
+.codehilite .o { color: #D0D0D0 } /* Operator */
+.codehilite .x { color: #D0D0D0 } /* Other */
+.codehilite .p { color: #D0D0D0 } /* Punctuation */
+.codehilite .ch { color: #ABABAB; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #ABABAB; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #FF3A3A; font-weight: bold } /* Comment.Preproc */
+.codehilite .cpf { color: #ABABAB; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #ABABAB; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #E50808; font-weight: bold; background-color: #520000 } /* Comment.Special */
+.codehilite .gd { color: #FF3A3A } /* Generic.Deleted */
+.codehilite .ge { color: #D0D0D0; font-style: italic } /* Generic.Emph */
+.codehilite .ges { color: #D0D0D0; font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #FF3A3A } /* Generic.Error */
+.codehilite .gh { color: #FFF; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #589819 } /* Generic.Inserted */
+.codehilite .go { color: #CCC } /* Generic.Output */
+.codehilite .gp { color: #AAA } /* Generic.Prompt */
+.codehilite .gs { color: #D0D0D0; font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #FFF; text-decoration: underline } /* Generic.Subheading */
+.codehilite .gt { color: #FF3A3A } /* Generic.Traceback */
+.codehilite .kc { color: #6EBF26; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #6EBF26; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #6EBF26; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #6EBF26 } /* Keyword.Pseudo */
+.codehilite .kr { color: #6EBF26; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #6EBF26; font-weight: bold } /* Keyword.Type */
+.codehilite .ld { color: #D0D0D0 } /* Literal.Date */
+.codehilite .m { color: #51B2FD } /* Literal.Number */
+.codehilite .s { color: #ED9D13 } /* Literal.String */
+.codehilite .na { color: #BBB } /* Name.Attribute */
+.codehilite .nb { color: #2FBCCD } /* Name.Builtin */
+.codehilite .nc { color: #71ADFF; text-decoration: underline } /* Name.Class */
+.codehilite .no { color: #40FFFF } /* Name.Constant */
+.codehilite .nd { color: #FFA500 } /* Name.Decorator */
+.codehilite .ni { color: #D0D0D0 } /* Name.Entity */
+.codehilite .ne { color: #BBB } /* Name.Exception */
+.codehilite .nf { color: #71ADFF } /* Name.Function */
+.codehilite .nl { color: #D0D0D0 } /* Name.Label */
+.codehilite .nn { color: #71ADFF; text-decoration: underline } /* Name.Namespace */
+.codehilite .nx { color: #D0D0D0 } /* Name.Other */
+.codehilite .py { color: #D0D0D0 } /* Name.Property */
+.codehilite .nt { color: #6EBF26; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #40FFFF } /* Name.Variable */
+.codehilite .ow { color: #6EBF26; font-weight: bold } /* Operator.Word */
+.codehilite .pm { color: #D0D0D0 } /* Punctuation.Marker */
+.codehilite .w { color: #666 } /* Text.Whitespace */
+.codehilite .mb { color: #51B2FD } /* Literal.Number.Bin */
+.codehilite .mf { color: #51B2FD } /* Literal.Number.Float */
+.codehilite .mh { color: #51B2FD } /* Literal.Number.Hex */
+.codehilite .mi { color: #51B2FD } /* Literal.Number.Integer */
+.codehilite .mo { color: #51B2FD } /* Literal.Number.Oct */
+.codehilite .sa { color: #ED9D13 } /* Literal.String.Affix */
+.codehilite .sb { color: #ED9D13 } /* Literal.String.Backtick */
+.codehilite .sc { color: #ED9D13 } /* Literal.String.Char */
+.codehilite .dl { color: #ED9D13 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #ED9D13 } /* Literal.String.Doc */
+.codehilite .s2 { color: #ED9D13 } /* Literal.String.Double */
+.codehilite .se { color: #ED9D13 } /* Literal.String.Escape */
+.codehilite .sh { color: #ED9D13 } /* Literal.String.Heredoc */
+.codehilite .si { color: #ED9D13 } /* Literal.String.Interpol */
+.codehilite .sx { color: #FFA500 } /* Literal.String.Other */
+.codehilite .sr { color: #ED9D13 } /* Literal.String.Regex */
+.codehilite .s1 { color: #ED9D13 } /* Literal.String.Single */
+.codehilite .ss { color: #ED9D13 } /* Literal.String.Symbol */
+.codehilite .bp { color: #2FBCCD } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #71ADFF } /* Name.Function.Magic */
+.codehilite .vc { color: #40FFFF } /* Name.Variable.Class */
+.codehilite .vg { color: #40FFFF } /* Name.Variable.Global */
+.codehilite .vi { color: #40FFFF } /* Name.Variable.Instance */
+.codehilite .vm { color: #40FFFF } /* Name.Variable.Magic */
+.codehilite .il { color: #51B2FD } /* Literal.Number.Integer.Long */
+}
+</style>
+<style>
+.scroll-hint { position: relative; }
+.scroll-hint::after {
+  content: "";
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 30px;
+  border-radius: 0 12px 12px 0;
+  pointer-events: none;
+  background: linear-gradient(270deg, var(--scroll-shadow), transparent);
+  opacity: 0;
+  transition: opacity .18s;
+}
+.scroll-hint.has-more::after { opacity: 1; }
+.scroll-hint.at-end::after { opacity: 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="docnav" id="docnav"><b>EXERCISES</b><a class="home" href="../../index.html">教程目录</a><a href="../../09_阶段八_多文件工程与考核冲刺.html">← 阶段八_多文件工程与考核冲刺</a><a href="./练习_题目.html">📋 题目</a><a href="./答案_参考_文字题.html" class="cur">📖 答案_参考_文字题</a></nav>
+<header class="doc ex-answers"><span class="kicker">C 语言学习计划 · 参考答案 · 阶段八</span><h1>阶段八 参考答案（练习 3 · 纸上作业 + 练习 6 Makefile）<span class="ex-tag">参考答案</span></h1></header>
+<blockquote>
+<p>先自己做，再看答案。以下报错原文均来自本机 GCC 16.2.0（<code>-Wall -Wextra -std=c99</code>）实测，
+路径和行号省略，只保留关键词；你的机器上路径会不同，关键词一样。</p>
+</blockquote>
+<h2 id="hbbf97dcd">练习 3 编译链接推演（标准答案）</h2>
+<p>先记住三个阶段，四问全部挂在这张表上：</p>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>谁在工作</th>
+<th>输入 → 输出</th>
+<th>这一步能发现什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>编译</td>
+<td>编译器（cc1）</td>
+<td><code>.c</code> → <code>.o</code></td>
+<td>语法错、原型缺失、签名冲突、重复定义（同一编译单元内）</td>
+</tr>
+<tr>
+<td>链接</td>
+<td>链接器（ld）</td>
+<td>多个 <code>.o</code> → <code>.exe</code></td>
+<td>函数/变量找不到（undefined reference）、多个同名全局符号（multiple definition）</td>
+</tr>
+<tr>
+<td>运行</td>
+<td>你的程序</td>
+<td><code>.exe</code> + 输入 → 输出</td>
+<td>逻辑错、越界、空指针——编译器已经管不到了</td>
+</tr>
+</tbody>
+</table></div></div>
+<h3 id="ha2a83f25">① 每个 <code>.c</code> 单独 <code>-c</code> 的产物</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="n">gcc</span> <span class="n">-Wall</span> <span class="n">-Wextra</span> <span class="n">-std</span><span class="p">=</span><span class="n">c99</span> <span class="n">-c</span> <span class="n">main</span><span class="p">.</span><span class="n">c</span>      <span class="c"># 产物 main.o</span>
+<span class="n">gcc</span> <span class="n">-Wall</span> <span class="n">-Wextra</span> <span class="n">-std</span><span class="p">=</span><span class="n">c99</span> <span class="n">-c</span> <span class="n">student</span><span class="p">.</span><span class="n">c</span>   <span class="c"># 产物 student.o</span>
+<span class="n">gcc</span> <span class="n">-Wall</span> <span class="n">-Wextra</span> <span class="n">-std</span><span class="p">=</span><span class="n">c99</span> <span class="n">-c</span> <span class="n">util</span><span class="p">.</span><span class="n">c</span>      <span class="c"># 产物 util.o</span>
+</code></pre></div></div>
+
+<p>也可以一条命令一次生成三个：<code>gcc -Wall -Wextra -std=c99 -c main.c student.c util.c</code>。</p>
+<p>三个 <code>.o</code> 里装的是：</p>
+<ul>
+<li>本文件函数的机器码；</li>
+<li>符号表：本文件<strong>定义</strong>了哪些符号（<code>stu_total</code>、<code>stu_average</code>、<code>stu_print</code>、<code>main</code>），
+  <strong>引用了但还没找到</strong>哪些符号（<code>main.o</code> 里的 <code>stu_total</code> / <code>stu_average</code> / <code>stu_print</code>，
+  <code>student.o</code> 里的 <code>stu_print</code> 不需要——它没调用打印）；</li>
+<li>重定位记录：等链接时再把「调用地址」填上。</li>
+</ul>
+<p>关键点：<code>-c</code> 到汇编为止，<strong>不链接</strong>，所以 <code>main.o</code> 里允许存在「暂时找不到地址」的调用。</p>
+<h3 id="h9053461a">② 从 <code>.o</code> 到 <code>exe</code> 的链接命令</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="n">gcc</span> <span class="n">-Wall</span> <span class="n">-Wextra</span> <span class="n">-std</span><span class="p">=</span><span class="n">c99</span> <span class="n">main</span><span class="p">.</span><span class="n">o</span> <span class="n">student</span><span class="p">.</span><span class="n">o</span> <span class="n">util</span><span class="p">.</span><span class="n">o</span> <span class="n">-o</span> <span class="n">score</span><span class="p">.</span><span class="n">exe</span>
+</code></pre></div></div>
+
+<p>一条命令从源码直接到程序也可以（编译 + 链接一次完成，初学最常用）：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="n">gcc</span> <span class="n">-Wall</span> <span class="n">-Wextra</span> <span class="n">-std</span><span class="p">=</span><span class="n">c99</span> <span class="n">main</span><span class="p">.</span><span class="n">c</span> <span class="n">student</span><span class="p">.</span><span class="n">c</span> <span class="n">util</span><span class="p">.</span><span class="n">c</span> <span class="n">-o</span> <span class="n">score</span><span class="p">.</span><span class="n">exe</span>
+</code></pre></div></div>
+
+<p>链接器做三件事：① 把三个 <code>.o</code> 的代码段拼在一起；② 给每个符号确定最终地址；
+③ 把 <code>main.o</code> 里「待填」的调用地址补上。补不上就报 <code>undefined reference</code>。</p>
+<p>本工程链接成功后运行，实测输出：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>Alice     90
+Bob       75
+Cara      88
+总分 = 253，平均分 = 84.33
+</code></pre></div></div>
+
+<h3 id="hb1bbc679">③ <code>main.c</code> 里把 <code>stu_average</code> 拼成 <code>stu_averge</code></h3>
+<p>分两种情况，报错发生在不同阶段，关键词也不同：</p>
+<p><strong>情况 A：拼错的名字没有原型（最常见）——编译期就拦下。</strong></p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>main.c:13:38: error: implicit declaration of function 'stu_averge'; did you mean 'stu_average'? [-Wimplicit-function-declaration]
+main.c:12:36: warning: format '%f' expects argument of type 'double', but argument 3 has type 'int' [-Wformat=]
+</code></pre></div></div>
+
+<p>第一行是根因：编译器没见过 <code>stu_averge</code>，C99 不允许隐式声明。
+第二行是连锁反应：隐式声明会「猜」返回 <code>int</code>，于是 <code>%f</code> 收到 <code>int</code>，格式不匹配。</p>
+<p>关键词：<strong>implicit declaration of function</strong>、<strong>-Wimplicit-function-declaration</strong>。</p>
+<p><strong>情况 B：<code>main.c</code> 自己声明了一个不存在的函数，或者 <code>student.c</code> 里定义名拼错——编译期全过，链接期爆炸。</strong></p>
+<p>例如头文件里写的是 <code>stu_average</code>，<code>main.c</code> 却自己声明并调用了 <code>stu_averge</code>；
+再比如 <code>student.c</code> 里把定义写成 <code>stu_averge</code>（头文件仍是正确的 <code>stu_average</code>）。
+两种情况都会走到链接器，实测报：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>undefined reference to `stu_average'
+collect2.exe: error: ld returned 1 exit status
+</code></pre></div></div>
+
+<p>关键词：<strong>undefined reference to</strong>、<strong>ld returned 1 exit status</strong>、<strong>collect2.exe</strong>。</p>
+<p>一句话：<strong>名字拼错 → 先在编译期问「你声明了吗」，声明了但没人实现 → 链接期问「它在哪」。</strong></p>
+<h3 id="h5dc7b130">④ 头文件声明与 <code>.c</code> 定义签名不一致</h3>
+<p><strong>情况 A：<code>student.c</code> 正确 <code>#include "student.h"</code>——编译器当场对质。</strong></p>
+<p>把定义改成 <code>double stu_average(const Stu *list)</code>（少一个 <code>int n</code>），实测：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>student.c:12:8: error: conflicting types for 'stu_average'; have 'double(const Stu *)'
+student.h:12:8: note: previous declaration of 'stu_average' with type 'double(const Stu *, int)'
+student.c:14:9: error: 'n' undeclared (first use in this function)
+</code></pre></div></div>
+
+<p>第一行是签名冲突，第二行指出「之前在这里声明过」，第三行是函数体里继续用 <code>n</code> 引发的连锁错误。
+关键词：<strong>conflicting types for</strong>、<strong>previous declaration of</strong>。</p>
+<p><strong>情况 B：<code>student.c</code> 忘了 <code>#include "student.h"</code>——编译器闭嘴，链接器也不查签名，最危险。</strong></p>
+<p>C 链接器只按<strong>符号名</strong>配对，不看参数表、不看返回类型。所以：</p>
+<ul>
+<li>如果漏 include 后签名恰好一致：能编、能链、能跑，只是你失去了编译器的核对（运气好而已）；</li>
+<li>如果签名不一致（比如返回类型 <code>int</code> vs <code>double</code>，或参数类型不同）：<strong>编译通过、链接通过、
+  运行时按错误的 ABI 解释参数和返回值</strong>，结果可能是乱码、可能是随机值、可能当场崩。
+  本机用一个最小例子复现过：<code>main</code> 声明 <code>int compute(int a, int b)</code>，<code>compute.c</code> 实际定义
+  <code>int compute(int a)</code>，链接零警告，运行 <code>compute(21, 0)</code> 输出 <code>42</code>——第二个参数被静默忽略。</li>
+</ul>
+<p>关键词：<strong>没有报错</strong>。这正是它危险的原因：错误被推迟到运行期，还可能看起来「差不多对」。</p>
+<p><strong>结论：每个 <code>.c</code> 都必须 <code>#include</code> 自己的 <code>.h</code>。</strong> 头文件是模块对外的合同，
+<code>.c</code> 自查合同，编译器才能在你写错签名的那一刻拦住你。</p>
+<h3 id="hf453fac8">阶段对照速查表（背下来）</h3>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>你看到的关键词</th>
+<th>阶段</th>
+<th>常见原因</th>
+<th>怎么修</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>implicit declaration of function</code></td>
+<td>编译</td>
+<td>没写原型 / 名字拼错 / 没 include 头文件</td>
+<td>补原型、改拼写、补 <code>#include</code></td>
+</tr>
+<tr>
+<td><code>conflicting types for</code></td>
+<td>编译</td>
+<td>头文件与 <code>.c</code> 定义签名不一致</td>
+<td>让定义与原型逐字一致（最好 <code>.c</code> include 自己的 <code>.h</code>）</td>
+</tr>
+<tr>
+<td><code>redefinition of</code></td>
+<td>编译</td>
+<td>同一个 <code>.c</code> 里定义了两遍（头文件没守卫）</td>
+<td>加 <code>#ifndef</code> 守卫</td>
+</tr>
+<tr>
+<td><code>undefined reference to</code></td>
+<td>链接</td>
+<td>函数只有声明没有定义 / 少传一个 <code>.o</code> / 名字拼错</td>
+<td>补实现、补 <code>.o</code>、改拼写</td>
+</tr>
+<tr>
+<td><code>multiple definition of</code></td>
+<td>链接</td>
+<td>头文件里写了函数体，被两个 <code>.c</code> 包含</td>
+<td>函数体搬回 <code>.c</code>，头文件只留原型</td>
+</tr>
+<tr>
+<td><code>ld returned 1 exit status</code></td>
+<td>链接</td>
+<td>上面任一链接错误的收尾行</td>
+<td>往上看第一条 <code>undefined/multiple</code></td>
+</tr>
+</tbody>
+</table></div></div>
+<h3 id="h3e6cbfea">常见错误（自查）</h3>
+<ul>
+<li>❌ 只编译 <code>main.c</code> 就运行——<code>undefined reference</code> 一大片，因为另外两个 <code>.c</code> 根本没参与；</li>
+<li>❌ 头文件里写函数体——单个 <code>.c</code> 能过，两个 <code>.c</code> 一包含就 <code>multiple definition</code>；</li>
+<li>❌ 头文件里写 <code>int count = 0;</code>——同上，变量定义只能出现在一个 <code>.c</code> 里；</li>
+<li>❌ 以为 <code>-Wall</code> 能在链接期查参数——链接器不看参数表，签名错要靠「<code>.c</code> include 自己的 <code>.h</code>」防；</li>
+<li>❌ 改完 <code>.h</code> 只重编一个 <code>.c</code>——所有包含该头文件的 <code>.c</code> 都要重编（Makefile 的依赖就是干这个的）。</li>
+</ul>
+<hr />
+<h2 id="hd19199c0">练习 6 Makefile 完整参考答案</h2>
+<h3 id="hda2d46a3">完整 Makefile（命令行缩进必须是 TAB）</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="nv">CC</span><span class="w">      </span><span class="o">=</span><span class="w"> </span>gcc
+<span class="nv">CFLAGS</span><span class="w">  </span><span class="o">=</span><span class="w"> </span>-Wall<span class="w"> </span>-Wextra<span class="w"> </span>-std<span class="o">=</span>c99
+<span class="nv">TARGET</span><span class="w">  </span><span class="o">=</span><span class="w"> </span>grade.exe
+<span class="nv">OBJS</span><span class="w">    </span><span class="o">=</span><span class="w"> </span>main.o<span class="w"> </span>student.o
+<span class="nv">DEPS</span><span class="w">    </span><span class="o">=</span><span class="w"> </span>student.h
+
+<span class="nf">$(TARGET)</span><span class="o">:</span><span class="w"> </span><span class="k">$(</span><span class="nv">OBJS</span><span class="k">)</span>
+<span class="w">    </span><span class="k">$(</span>CC<span class="k">)</span><span class="w"> </span><span class="k">$(</span>CFLAGS<span class="k">)</span><span class="w"> </span><span class="k">$(</span>OBJS<span class="k">)</span><span class="w"> </span>-o<span class="w"> </span><span class="k">$(</span>TARGET<span class="k">)</span>
+
+<span class="nf">%.o</span><span class="o">:</span><span class="w"> </span>%.<span class="n">c</span> <span class="k">$(</span><span class="nv">DEPS</span><span class="k">)</span>
+<span class="w">    </span><span class="k">$(</span>CC<span class="k">)</span><span class="w"> </span><span class="k">$(</span>CFLAGS<span class="k">)</span><span class="w"> </span>-c<span class="w"> </span>$&lt;<span class="w"> </span>-o<span class="w"> </span><span class="nv">$@</span>
+
+<span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">clean</span>
+<span class="nf">clean</span><span class="o">:</span>
+<span class="w">    </span>-del<span class="w"> </span>/Q<span class="w"> </span><span class="k">$(</span>OBJS<span class="k">)</span><span class="w"> </span><span class="k">$(</span>TARGET<span class="k">)</span><span class="w"> </span><span class="m">2</span>&gt;NUL
+</code></pre></div></div>
+
+<blockquote>
+<p>上面代码块里的缩进是真的 TAB。从网页复制到编辑器后，务必确认没有被换成空格——
+用 VSCode 打开，选中行首按 Tab 应显示一个箭头，而不是几个小点。</p>
+</blockquote>
+<h3 id="h6998db2b">逐行解释</h3>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>行</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CC = gcc</code></td>
+<td>编译器命令。想换编译器只改这一行（如 <code>CC = clang</code>）。</td>
+</tr>
+<tr>
+<td><code>CFLAGS = -Wall -Wextra -std=c99</code></td>
+<td>编译选项。所有编译命令都用 <code>$(CFLAGS)</code>，统一改、统一生效。</td>
+</tr>
+<tr>
+<td><code>TARGET = grade.exe</code></td>
+<td>最终产物名。改名字只改这里。</td>
+</tr>
+<tr>
+<td><code>OBJS = main.o student.o</code></td>
+<td>参与链接的目标文件列表。</td>
+</tr>
+<tr>
+<td><code>DEPS = student.h</code></td>
+<td>公共头文件。单独拎出来，后面两条规则都要用。</td>
+</tr>
+<tr>
+<td><code>$(TARGET): $(OBJS)</code></td>
+<td>规则：<code>grade.exe</code> 依赖两个 <code>.o</code>。任何一个 <code>.o</code> 比 exe 新，就重新链接。</td>
+</tr>
+<tr>
+<td><code>\t$(CC) $(CFLAGS) $(OBJS) -o $(TARGET)</code></td>
+<td>链接命令（TAB 开头）。这里不再 <code>-c</code>，因为输入已经是 <code>.o</code>。</td>
+</tr>
+<tr>
+<td><code>%.o: %.c $(DEPS)</code></td>
+<td>模式规则：任意 <code>X.o</code> 依赖 <code>X.c</code> 和 <code>student.h</code>。<code>%</code> 是通配的「主干」。</td>
+</tr>
+<tr>
+<td><code>\t$(CC) $(CFLAGS) -c $&lt; -o $@</code></td>
+<td><code>$&lt;</code> = 第一个依赖（<code>X.c</code>），<code>$@</code> = 目标（<code>X.o</code>）。只编译不链接。</td>
+</tr>
+<tr>
+<td><code>.PHONY: clean</code></td>
+<td>声明 <code>clean</code> 是「假目标」，不是文件。</td>
+</tr>
+<tr>
+<td><code>clean:</code></td>
+<td>清理规则，没有依赖，所以每次调用都执行。</td>
+</tr>
+<tr>
+<td><code>\t-del /Q $(OBJS) $(TARGET) 2&gt;NUL</code></td>
+<td>Windows 删除命令；行首 <code>-</code> 让 make 忽略「文件不存在」的失败，<code>2&gt;NUL</code> 吞掉错误提示。Linux 上改成 <code>rm -f $(OBJS) $(TARGET)</code>。</td>
+</tr>
+</tbody>
+</table></div></div>
+<h3 id="hd2a03d66">实测构建过程（本机 <code>mingw32-make</code>）</h3>
+<p>全量构建：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>gcc -Wall -Wextra -std=c99 -c main.c -o main.o
+gcc -Wall -Wextra -std=c99 -c student.c -o student.o
+gcc -Wall -Wextra -std=c99 main.o student.o -o grade.exe
+</code></pre></div></div>
+
+<p>只改 <code>student.c</code>（哪怕只加一个空格）后再构建：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>gcc -Wall -Wextra -std=c99 -c student.c -o student.o
+gcc -Wall -Wextra -std=c99 main.o student.o -o grade.exe
+</code></pre></div></div>
+
+<p>只改 <code>student.h</code> 后再构建（两个 <code>.c</code> 都包含它，所以两个都重编）：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>gcc -Wall -Wextra -std=c99 -c main.c -o main.o
+gcc -Wall -Wextra -std=c99 -c student.c -o student.o
+gcc -Wall -Wextra -std=c99 main.o student.o -o grade.exe
+</code></pre></div></div>
+
+<p>什么都没改再构建：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>mingw32-make: 'grade.exe' is up to date.
+</code></pre></div></div>
+
+<p>执行 <code>mingw32-make clean</code>：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>del /Q main.o student.o grade.exe 2&gt;NUL
+</code></pre></div></div>
+
+<p>清理后目录里只剩 <code>main.c</code>、<code>student.c</code>、<code>student.h</code>、<code>Makefile</code> 四个文件。</p>
+<h3 id="h00ada4ef">为什么只改一个 <code>.c</code> 只重编一个？</h3>
+<p>三个词：<strong>目标、依赖、时间戳</strong>。</p>
+<ul>
+<li><code>student.o</code> 是<strong>目标</strong>，它的<strong>依赖</strong>是 <code>student.c</code> 和 <code>student.h</code>；</li>
+<li>make 比较「目标文件的修改时间」和「依赖文件的修改时间」；</li>
+<li><code>student.c</code> 刚改过 → 比 <code>student.o</code> 新 → 规则触发，只重编 <code>student.o</code>；</li>
+<li><code>main.c</code> 没动 → <code>main.o</code> 比 <code>main.c</code> 新 → 跳过；</li>
+<li>但 <code>grade.exe</code> 依赖的两个 <code>.o</code> 里有一个变新了 → 链接这一步必须重跑。</li>
+</ul>
+<p>注意：make 只看时间戳，不看内容。<code>touch</code> 一下文件（内容没变）也会触发重编；
+反过来，如果系统时间乱了、或者从压缩包解压导致时间戳全一样，make 可能误判「不用重编」，
+这时 <code>mingw32-make clean</code> 后重来最稳。</p>
+<h3 id="h2230c9ac"><code>.PHONY</code> 到底防什么？</h3>
+<p>如果目录里恰好有一个名叫 <code>clean</code> 的文件，而 <code>clean</code> 规则又没有依赖：</p>
+<ul>
+<li>没有 <code>.PHONY</code>：make 发现 <code>clean</code> 已存在且没有依赖比它新 → 认为「clean 是最新的」→ <strong>什么都不做</strong>；</li>
+<li>有 <code>.PHONY</code>：make 知道 <code>clean</code> 不是文件，<strong>每次都执行</strong>命令。</li>
+</ul>
+<p>同理，<code>all</code>、<code>run</code>、<code>test</code> 这类不对应真实文件的目标都应该进 <code>.PHONY</code>。</p>
+<h3 id="h8a6abb6a"><code>$@</code>、<code>$&lt;</code>、<code>$^</code> 速记</h3>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>自动变量</th>
+<th>含义</th>
+<th>在 <code>%.o: %.c student.h</code> 里</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>$@</code></td>
+<td>目标名</td>
+<td><code>main.o</code></td>
+</tr>
+<tr>
+<td><code>$&lt;</code></td>
+<td>第一个依赖</td>
+<td><code>main.c</code></td>
+</tr>
+<tr>
+<td><code>$^</code></td>
+<td>所有依赖（去重）</td>
+<td><code>main.c student.h</code></td>
+</tr>
+</tbody>
+</table></div></div>
+<p>本题的编译命令只需要 <code>$&lt;</code> 和 <code>$@</code>；如果把头文件也写进命令（没必要），才会用到 <code>$^</code>。</p>
+<h3 id="h9b10dcc1">改 <code>CFLAGS</code> 的坑（练习 6 第 5 问）</h3>
+<p>把 <code>CFLAGS</code> 改成 <code>-std=c89</code> 后直接 <code>mingw32-make</code>，<strong>很可能什么都不重编</strong>——
+因为 Makefile 本身不在依赖列表里，make 不知道「编译选项变了」。
+正确做法：先 <code>mingw32-make clean</code>，再构建。</p>
+<p>另外，本练习的代码恰好全是 C89 兼容写法（声明都在块首、注释都用 <code>/* */</code>），
+所以 <code>-std=c89</code> 实测仍然零警告通过。想亲眼看到 C99 特性报错，可以临时做两件事之一：</p>
+<ul>
+<li>把 <code>for (i = 0; ...)</code> 改成 <code>for (int i = 0; ...)</code>，实测报：
+  <code>error: 'for' loop initial declarations are only allowed in C99 or C11 mode</code>；</li>
+<li>在文件里加一行 <code>//</code> 注释，实测报：
+  <code>error: C++ style comments are not allowed in ISO C90</code>。</li>
+</ul>
+<p>看完记得改回 <code>-std=c99</code> 并 <code>clean</code> 重建。</p>
+<h3 id="hbe7d4124">练习 6 五问速答</h3>
+<ol>
+<li><strong>构建/清理</strong>：<code>mingw32-make</code> 全量构建，<code>mingw32-make clean</code> 清理；
+   <code>make</code> 没装时用 <code>mingw32-make</code>（本机即如此）。</li>
+<li><strong>只改 <code>student.c</code></strong>：只重编 <code>student.o</code>，然后重新链接；<code>main.o</code> 不动。</li>
+<li><strong>为什么</strong>：目标 <code>student.o</code> 的依赖 <code>student.c</code> 时间戳更新，规则被触发；其余目标都还「新」。</li>
+<li><strong><code>.PHONY</code></strong>：让 <code>clean</code> 永远执行，不受同名文件干扰。</li>
+<li><strong>改 <code>CFLAGS</code></strong>：Makefile 不是依赖，改选项不会自动重编；先 <code>clean</code> 再构建。</li>
+</ol>
+<footer class="doc">
+  阶段八 的配套材料 · 代码答案（.c）在本地仓库 exercises\阶段八\ 目录<br>
+  <a href="../../index.html">返回教程目录</a>
+</footer>
+</div>
+<button id="totop" type="button" aria-label="回到顶部" title="回到顶部">↑</button>
+<script>
+(function () {
+  var nav = document.getElementById('docnav');
+  var cur = nav && nav.querySelector('a.cur');
+  if (cur && nav.scrollWidth > nav.clientWidth) {
+    nav.scrollLeft = cur.offsetLeft - nav.clientWidth / 2 + cur.offsetWidth / 2;
+  }
+  var btn = document.getElementById('totop');
+  if (!btn) return;
+  var onScroll = function () {
+    btn.classList.toggle('show', window.scrollY > 480);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  btn.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+(function () {
+  var boxes = document.querySelectorAll('.scroll-hint');
+  Array.prototype.forEach.call(boxes, function (box) {
+    var sc = box.firstElementChild;
+    if (!sc) return;
+    function upd() {
+      var more = sc.scrollWidth - sc.clientWidth > 4;
+      box.classList.toggle('has-more', more);
+      box.classList.toggle('at-end', more && sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 4);
+    }
+    upd();
+    sc.addEventListener('scroll', upd, { passive: true });
+    window.addEventListener('resize', upd);
+  });
+})();
+
+</script>
+</body>
+</html>

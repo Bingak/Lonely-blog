@@ -1,0 +1,28 @@
+name = "study-lonelybing"
+main = "src/worker.js"
+compatibility_date = "2025-10-01"
+account_id = "2437df852592bf0ce8104da7ae8b037c"
+
+# 自定义域名（顶层键，必须在任何 [table] 之前，否则会被算进上一张表里）
+routes = [
+  { pattern = "study.lonelybing.top", custom_domain = true }
+]
+
+# 非机密变量（Turnstile Site Key 本来就会出现在前端 HTML 里）
+[vars]
+TURNSTILE_SITE_KEY = "0x4AAAAAAFkI58zgOin02KwC"   # 正式 Site Key（已按 study.lonelybing.top 建好）
+
+# 教程静态页（md 转 html 后拷到这里）
+[assets]
+directory = "./public"
+binding = "ASSETS"
+# 【关键】必须为 true：否则命中同名静态资源时 Cloudflare 会直接返回文件、
+# 完全绕过 Worker 的登录门禁 —— 教程会被匿名访问。
+run_worker_first = true
+# 关掉自动的 .html ↔ 干净 URL 重定向：本站链接一律写全 .html，
+# 用 none 可让 URL 与磁盘文件名一一对应，不再多一跳 307。
+# 根路径 "/" 由 worker.js 显式改写成 /index.html。
+html_handling = "none"
+
+# 机密用 wrangler secret put 写入（见 README_部署指南.md）：
+#   STUDY_USER / STUDY_PASS / STUDY_SESSION_SECRET / TURNSTILE_SECRET_KEY

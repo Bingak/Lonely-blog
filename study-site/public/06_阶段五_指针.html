@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1117" media="(prefers-color-scheme: dark)">
+<meta name="format-detection" content="telephone=no">
+<title>06 阶段五：指针（一个存地址的变量）</title>
+<style>pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #ffffcc }
+.codehilite { background: #f8f8f8; }
+.codehilite .c { color: #3D7B7B; font-style: italic } /* Comment */
+.codehilite .err { border: 1px solid #F00 } /* Error */
+.codehilite .k { color: #008000; font-weight: bold } /* Keyword */
+.codehilite .o { color: #666 } /* Operator */
+.codehilite .ch { color: #3D7B7B; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #3D7B7B; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #9C6500 } /* Comment.Preproc */
+.codehilite .cpf { color: #3D7B7B; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #3D7B7B; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
+.codehilite .gd { color: #A00000 } /* Generic.Deleted */
+.codehilite .ge { font-style: italic } /* Generic.Emph */
+.codehilite .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #E40000 } /* Generic.Error */
+.codehilite .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #008400 } /* Generic.Inserted */
+.codehilite .go { color: #717171 } /* Generic.Output */
+.codehilite .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.codehilite .gt { color: #04D } /* Generic.Traceback */
+.codehilite .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #008000 } /* Keyword.Pseudo */
+.codehilite .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #B00040 } /* Keyword.Type */
+.codehilite .m { color: #666 } /* Literal.Number */
+.codehilite .s { color: #BA2121 } /* Literal.String */
+.codehilite .na { color: #687822 } /* Name.Attribute */
+.codehilite .nb { color: #008000 } /* Name.Builtin */
+.codehilite .nc { color: #00F; font-weight: bold } /* Name.Class */
+.codehilite .no { color: #800 } /* Name.Constant */
+.codehilite .nd { color: #A2F } /* Name.Decorator */
+.codehilite .ni { color: #717171; font-weight: bold } /* Name.Entity */
+.codehilite .ne { color: #CB3F38; font-weight: bold } /* Name.Exception */
+.codehilite .nf { color: #00F } /* Name.Function */
+.codehilite .nl { color: #767600 } /* Name.Label */
+.codehilite .nn { color: #00F; font-weight: bold } /* Name.Namespace */
+.codehilite .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #19177C } /* Name.Variable */
+.codehilite .ow { color: #A2F; font-weight: bold } /* Operator.Word */
+.codehilite .w { color: #BBB } /* Text.Whitespace */
+.codehilite .mb { color: #666 } /* Literal.Number.Bin */
+.codehilite .mf { color: #666 } /* Literal.Number.Float */
+.codehilite .mh { color: #666 } /* Literal.Number.Hex */
+.codehilite .mi { color: #666 } /* Literal.Number.Integer */
+.codehilite .mo { color: #666 } /* Literal.Number.Oct */
+.codehilite .sa { color: #BA2121 } /* Literal.String.Affix */
+.codehilite .sb { color: #BA2121 } /* Literal.String.Backtick */
+.codehilite .sc { color: #BA2121 } /* Literal.String.Char */
+.codehilite .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.codehilite .s2 { color: #BA2121 } /* Literal.String.Double */
+.codehilite .se { color: #AA5D1F; font-weight: bold } /* Literal.String.Escape */
+.codehilite .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.codehilite .si { color: #A45A77; font-weight: bold } /* Literal.String.Interpol */
+.codehilite .sx { color: #008000 } /* Literal.String.Other */
+.codehilite .sr { color: #A45A77 } /* Literal.String.Regex */
+.codehilite .s1 { color: #BA2121 } /* Literal.String.Single */
+.codehilite .ss { color: #19177C } /* Literal.String.Symbol */
+.codehilite .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #00F } /* Name.Function.Magic */
+.codehilite .vc { color: #19177C } /* Name.Variable.Class */
+.codehilite .vg { color: #19177C } /* Name.Variable.Global */
+.codehilite .vi { color: #19177C } /* Name.Variable.Instance */
+.codehilite .vm { color: #19177C } /* Name.Variable.Magic */
+.codehilite .il { color: #666 } /* Literal.Number.Integer.Long */</style>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --bg: #f7f8fa;
+  --bg-elev: #ffffff;
+  --ink: #1f2328;
+  --ink-soft: #4c5560;
+  --muted: #8a9199;
+  --accent: #b03a2e;
+  --link: #1a6fb5;
+  --line: #e4e7ea;
+  --line-soft: #eef0f2;
+  --code-bg: #f6f7f9;
+  --code-ink: #c0214a;
+  --quote-bg: #fff8e8;
+  --quote-line: #e6a23c;
+  --quote-ink: #6b5900;
+  --th-bg: #f2f4f6;
+  --tr-alt: #fafbfc;
+  --shadow: 0 1px 2px rgba(16,24,40,.04), 0 8px 24px rgba(16,24,40,.05);
+  --shadow-lift: 0 2px 6px rgba(16,24,40,.06), 0 16px 40px rgba(16,24,40,.09);
+  --radius: 14px;
+  --maxw: 50rem;
+  --scroll-shadow: rgba(15, 23, 42, .16);
+  --mono: "JetBrains Mono", "Cascadia Mono", Consolas, "SF Mono", Menlo, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Microsoft YaHei", "Noto Sans SC", "Source Han Sans SC", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1117;
+    --bg-elev: #161b23;
+    --ink: #e7eaf0;
+    --ink-soft: #b8c0cd;
+    --muted: #8b93a3;
+    --accent: #ff8f7e;
+    --link: #82b6ff;
+    --line: #262d38;
+    --line-soft: #1c232c;
+    --code-bg: #1b212b;
+    --code-ink: #ff9db0;
+    --quote-bg: #241f13;
+    --quote-line: #b98a2e;
+    --quote-ink: #e8d3a0;
+    --th-bg: #1d232c;
+    --tr-alt: #171d25;
+    --shadow: 0 1px 2px rgba(0,0,0,.45), 0 10px 30px rgba(0,0,0,.35);
+    --shadow-lift: 0 2px 8px rgba(0,0,0,.5), 0 20px 50px rgba(0,0,0,.45);
+    --scroll-shadow: rgba(255, 255, 255, .16);
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-wrap: break-word;
+}
+
+::selection { background: rgba(26,111,181,.22); }
+
+.wrap {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 28px clamp(14px, 4vw, 28px) 96px;
+}
+
+/* ── 顶部文档导航：吸顶 + 横向滑动 ───────────────────────── */
+nav.docnav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  padding: 10px 12px;
+  margin: 0 0 26px;
+  background: var(--bg-elev);
+  background: color-mix(in srgb, var(--bg-elev) 88%, transparent);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+nav.docnav::-webkit-scrollbar { display: none; }
+nav.docnav b {
+  flex: none;
+  color: var(--accent);
+  font-size: 12.5px;
+  letter-spacing: .06em;
+  padding-right: 4px;
+}
+nav.docnav a {
+  flex: none;
+  display: inline-block;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: background .18s, color .18s;
+}
+nav.docnav a:hover { background: var(--line-soft); color: var(--ink); }
+nav.docnav a.cur {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 650;
+}
+@media (prefers-color-scheme: dark) {
+  nav.docnav a.cur { color: #1a0f0d; }
+}
+nav.docnav a.home { color: var(--link); }
+
+/* 桌面端：导航平铺换行，全部可见，不吸顶（避免遮挡正文） */
+@media (min-width: 861px) {
+  nav.docnav {
+    position: static;
+    flex-wrap: wrap;
+    overflow: visible;
+    white-space: normal;
+    row-gap: 4px;
+  }
+}
+
+/* ── 页眉 ──────────────────────────────────────────────── */
+header.doc {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+  margin-bottom: 26px;
+}
+header.doc .kicker {
+  display: inline-block;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: .16em;
+  font-size: 11.5px;
+  text-transform: uppercase;
+}
+h1 {
+  font-size: clamp(21px, 4.4vw, 30px);
+  line-height: 1.38;
+  margin: 8px 0 0;
+  letter-spacing: -.01em;
+}
+
+/* ── 正文排版 ──────────────────────────────────────────── */
+h2 {
+  font-size: clamp(18px, 3vw, 23px);
+  line-height: 1.42;
+  margin: 2.1em 0 .9em;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  scroll-margin-top: 72px;
+}
+h3 {
+  font-size: clamp(16px, 2.3vw, 19px);
+  margin: 1.7em 0 .6em;
+  color: var(--ink);
+  scroll-margin-top: 72px;
+}
+h4 { font-size: 16px; margin: 1.4em 0 .5em; color: var(--ink-soft); }
+p { margin: .85em 0; }
+p, li { text-align: left; }
+
+a { color: var(--link); text-decoration: none; border-bottom: 1px solid transparent; }
+a:hover { border-bottom-color: currentColor; }
+
+strong { color: var(--accent); font-weight: 700; }
+em { color: var(--ink-soft); }
+
+blockquote {
+  margin: 1.2em 0;
+  padding: 12px 16px;
+  background: var(--quote-bg);
+  border-left: 4px solid var(--quote-line);
+  border-radius: 0 12px 12px 0;
+  color: var(--quote-ink);
+}
+blockquote p { margin: .35em 0; }
+blockquote strong { color: inherit; }
+
+hr {
+  border: none;
+  border-top: 1px dashed var(--line);
+  margin: 2.2em 0;
+}
+
+/* ── 行内代码 ──────────────────────────────────────────── */
+code {
+  font-family: var(--mono);
+  font-size: .885em;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  padding: .12em .42em;
+  border-radius: 6px;
+  border: 1px solid var(--line-soft);
+  word-break: break-word;
+}
+
+/* ── 代码块：横向滚动，不撑破屏幕 ───────────────────────── */
+.codehilite {
+  position: relative;
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 1.1em 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  font-size: 14px;
+  line-height: 1.62;
+}
+.codehilite pre {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: inherit;
+  line-height: inherit;
+  tab-size: 4;
+}
+.codehilite code {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+  white-space: pre;
+}
+
+/* 细滚动条（代码块 / 表格横向滚动时更轻盈） */
+.codehilite, .table-wrap {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.codehilite::-webkit-scrollbar,
+.table-wrap::-webkit-scrollbar { height: 7px; }
+.codehilite::-webkit-scrollbar-track,
+.table-wrap::-webkit-scrollbar-track { background: transparent; }
+.codehilite::-webkit-scrollbar-thumb,
+.table-wrap::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 99px;
+}
+.codehilite::-webkit-scrollbar-thumb:hover,
+.table-wrap::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ── 表格：外层可横向滚动 ──────────────────────────────── */
+.table-wrap {
+  margin: 1.1em 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  border-radius: 12px;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+th, td {
+  border: 1px solid var(--line);
+  padding: 8px 11px;
+  text-align: left;
+  vertical-align: top;
+}
+th { background: var(--th-bg); font-weight: 650; white-space: nowrap; }
+tbody tr:nth-child(even) td { background: var(--tr-alt); }
+table code { white-space: nowrap; }
+
+/* ── 任务清单复选框 ────────────────────────────────────── */
+ul.task-list, ul.contains-task-list { list-style: none; padding-left: 2px; }
+ul.task-list li, ul.contains-task-list li { margin: .4em 0; }
+ul.task-list input[type=checkbox] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 17px; height: 17px;
+  border: 1.5px solid var(--muted);
+  border-radius: 5px;
+  margin-right: 9px;
+  vertical-align: -3px;
+  background: var(--bg-elev);
+  flex: none;
+}
+ul.task-list input[type=checkbox]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'><path d='M6.4 11.2 3.2 8l-1.1 1.1 4.3 4.3 8-8-1.1-1.1z'/></svg>");
+  background-size: 12px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ── 目录折叠块 ────────────────────────────────────────── */
+details.toc {
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 18px;
+  margin-bottom: 26px;
+  box-shadow: var(--shadow);
+}
+details.toc summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--link);
+  padding: 4px 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+details.toc summary::-webkit-details-marker { display: none; }
+details.toc summary::before {
+  content: "";
+  width: 0; height: 0;
+  border-left: 6px solid currentColor;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  transition: transform .2s;
+}
+details.toc[open] summary::before { transform: rotate(90deg); }
+details.toc ol { margin: 10px 0 6px; padding-left: 22px; }
+details.toc li { margin: .3em 0; }
+details.toc a { font-size: 14px; color: var(--ink-soft); }
+details.toc a:hover { color: var(--link); }
+
+/* ── 页脚 ──────────────────────────────────────────────── */
+footer.doc {
+  margin-top: 56px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12.5px;
+  text-align: center;
+  line-height: 1.8;
+}
+
+/* ── 回到顶部 ──────────────────────────────────────────── */
+#totop {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  z-index: 40;
+  width: 46px; height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--bg-elev);
+  color: var(--ink-soft);
+  box-shadow: var(--shadow-lift);
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity .22s, transform .22s, visibility .22s;
+}
+#totop.show { opacity: 1; visibility: visible; transform: none; }
+#totop:active { transform: scale(.94); }
+
+/* ── 平板 ──────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .wrap { padding-top: 18px; }
+  body { font-size: 15.5px; line-height: 1.8; }
+  .codehilite { font-size: 13.2px; padding: 12px 13px; }
+  table { font-size: 13.2px; }
+  th, td { padding: 7px 9px; }
+}
+
+/* ── 手机 ──────────────────────────────────────────────── */
+@media (max-width: 560px) {
+  html { scroll-behavior: auto; }
+  .wrap { padding: 12px 13px 84px; }
+  body { font-size: 15px; line-height: 1.78; }
+
+  nav.docnav { top: 0; border-radius: 12px; padding: 8px 9px; margin-bottom: 18px; }
+  nav.docnav b { display: none; }
+  nav.docnav a { font-size: 12.5px; padding: 6px 10px; }
+
+  header.doc { padding-bottom: 12px; margin-bottom: 18px; }
+  header.doc .kicker { font-size: 10.5px; letter-spacing: .12em; }
+
+  h1 { font-size: 20px; }
+  h2 { font-size: 17.5px; padding-left: 9px; border-left-width: 3px; margin-top: 1.8em; }
+  h3 { font-size: 15.5px; }
+  h4 { font-size: 14.5px; }
+  p { margin: .8em 0; }
+
+  blockquote { padding: 10px 12px; border-radius: 0 10px 10px 0; }
+
+  .codehilite { font-size: 12.2px; padding: 11px 12px; border-radius: 10px; }
+  table { font-size: 12.6px; }
+  th, td { padding: 6px 8px; }
+  th { white-space: normal; }
+
+  details.toc { padding: 10px 14px; margin-bottom: 18px; }
+  details.toc ol { padding-left: 18px; }
+  details.toc a { font-size: 13px; }
+
+  /* 触控目标不小于 40px */
+  ul.task-list li { padding: 2px 0; }
+  ul.task-list input[type=checkbox] { width: 19px; height: 19px; }
+
+  footer.doc { margin-top: 40px; font-size: 11.5px; }
+  #totop { width: 42px; height: 42px; font-size: 16px; }
+}
+
+/* ── 打印 ──────────────────────────────────────────────── */
+@media print {
+  nav.docnav, #totop, details.toc { display: none !important; }
+  body { background: #fff; color: #000; font-size: 11pt; }
+  .wrap { max-width: none; padding: 0; }
+  .codehilite, table, blockquote { box-shadow: none; }
+  a { color: #000; }
+  h2, h3 { page-break-after: avoid; }
+  .codehilite, table { page-break-inside: avoid; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+pre { line-height: 125%; }
+td.linenos .normal { color: #aaaaaa; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #aaaaaa; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #404040 }
+.codehilite { background: #202020; color: #D0D0D0 }
+.codehilite .c { color: #ABABAB; font-style: italic } /* Comment */
+.codehilite .err { color: #A61717; background-color: #E3D2D2 } /* Error */
+.codehilite .esc { color: #D0D0D0 } /* Escape */
+.codehilite .g { color: #D0D0D0 } /* Generic */
+.codehilite .k { color: #6EBF26; font-weight: bold } /* Keyword */
+.codehilite .l { color: #D0D0D0 } /* Literal */
+.codehilite .n { color: #D0D0D0 } /* Name */
+.codehilite .o { color: #D0D0D0 } /* Operator */
+.codehilite .x { color: #D0D0D0 } /* Other */
+.codehilite .p { color: #D0D0D0 } /* Punctuation */
+.codehilite .ch { color: #ABABAB; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #ABABAB; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #FF3A3A; font-weight: bold } /* Comment.Preproc */
+.codehilite .cpf { color: #ABABAB; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #ABABAB; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #E50808; font-weight: bold; background-color: #520000 } /* Comment.Special */
+.codehilite .gd { color: #FF3A3A } /* Generic.Deleted */
+.codehilite .ge { color: #D0D0D0; font-style: italic } /* Generic.Emph */
+.codehilite .ges { color: #D0D0D0; font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #FF3A3A } /* Generic.Error */
+.codehilite .gh { color: #FFF; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #589819 } /* Generic.Inserted */
+.codehilite .go { color: #CCC } /* Generic.Output */
+.codehilite .gp { color: #AAA } /* Generic.Prompt */
+.codehilite .gs { color: #D0D0D0; font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #FFF; text-decoration: underline } /* Generic.Subheading */
+.codehilite .gt { color: #FF3A3A } /* Generic.Traceback */
+.codehilite .kc { color: #6EBF26; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #6EBF26; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #6EBF26; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #6EBF26 } /* Keyword.Pseudo */
+.codehilite .kr { color: #6EBF26; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #6EBF26; font-weight: bold } /* Keyword.Type */
+.codehilite .ld { color: #D0D0D0 } /* Literal.Date */
+.codehilite .m { color: #51B2FD } /* Literal.Number */
+.codehilite .s { color: #ED9D13 } /* Literal.String */
+.codehilite .na { color: #BBB } /* Name.Attribute */
+.codehilite .nb { color: #2FBCCD } /* Name.Builtin */
+.codehilite .nc { color: #71ADFF; text-decoration: underline } /* Name.Class */
+.codehilite .no { color: #40FFFF } /* Name.Constant */
+.codehilite .nd { color: #FFA500 } /* Name.Decorator */
+.codehilite .ni { color: #D0D0D0 } /* Name.Entity */
+.codehilite .ne { color: #BBB } /* Name.Exception */
+.codehilite .nf { color: #71ADFF } /* Name.Function */
+.codehilite .nl { color: #D0D0D0 } /* Name.Label */
+.codehilite .nn { color: #71ADFF; text-decoration: underline } /* Name.Namespace */
+.codehilite .nx { color: #D0D0D0 } /* Name.Other */
+.codehilite .py { color: #D0D0D0 } /* Name.Property */
+.codehilite .nt { color: #6EBF26; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #40FFFF } /* Name.Variable */
+.codehilite .ow { color: #6EBF26; font-weight: bold } /* Operator.Word */
+.codehilite .pm { color: #D0D0D0 } /* Punctuation.Marker */
+.codehilite .w { color: #666 } /* Text.Whitespace */
+.codehilite .mb { color: #51B2FD } /* Literal.Number.Bin */
+.codehilite .mf { color: #51B2FD } /* Literal.Number.Float */
+.codehilite .mh { color: #51B2FD } /* Literal.Number.Hex */
+.codehilite .mi { color: #51B2FD } /* Literal.Number.Integer */
+.codehilite .mo { color: #51B2FD } /* Literal.Number.Oct */
+.codehilite .sa { color: #ED9D13 } /* Literal.String.Affix */
+.codehilite .sb { color: #ED9D13 } /* Literal.String.Backtick */
+.codehilite .sc { color: #ED9D13 } /* Literal.String.Char */
+.codehilite .dl { color: #ED9D13 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #ED9D13 } /* Literal.String.Doc */
+.codehilite .s2 { color: #ED9D13 } /* Literal.String.Double */
+.codehilite .se { color: #ED9D13 } /* Literal.String.Escape */
+.codehilite .sh { color: #ED9D13 } /* Literal.String.Heredoc */
+.codehilite .si { color: #ED9D13 } /* Literal.String.Interpol */
+.codehilite .sx { color: #FFA500 } /* Literal.String.Other */
+.codehilite .sr { color: #ED9D13 } /* Literal.String.Regex */
+.codehilite .s1 { color: #ED9D13 } /* Literal.String.Single */
+.codehilite .ss { color: #ED9D13 } /* Literal.String.Symbol */
+.codehilite .bp { color: #2FBCCD } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #71ADFF } /* Name.Function.Magic */
+.codehilite .vc { color: #40FFFF } /* Name.Variable.Class */
+.codehilite .vg { color: #40FFFF } /* Name.Variable.Global */
+.codehilite .vi { color: #40FFFF } /* Name.Variable.Instance */
+.codehilite .vm { color: #40FFFF } /* Name.Variable.Magic */
+.codehilite .il { color: #51B2FD } /* Literal.Number.Integer.Long */
+}
+</style>
+<style>
+.scroll-hint { position: relative; }
+.scroll-hint::after {
+  content: "";
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 30px;
+  border-radius: 0 12px 12px 0;
+  pointer-events: none;
+  background: linear-gradient(270deg, var(--scroll-shadow), transparent);
+  opacity: 0;
+  transition: opacity .18s;
+}
+.scroll-hint.has-more::after { opacity: 1; }
+.scroll-hint.at-end::after { opacity: 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="docnav" id="docnav"><b>DOCS</b><a class="home" href="./index.html">目录页</a><a href="00_任务与进度分析.html">00_任务与进度分析</a><a href="01_学习路线总览.html">01_学习路线总览</a><a href="02_阶段一_环境搭建与调试.html">02_阶段一_环境搭建与调试</a><a href="03_阶段二_基础语法与控制流.html">03_阶段二_基础语法与控制流</a><a href="04_阶段三_函数.html">04_阶段三_函数</a><a href="05_阶段四_数组与字符串.html">05_阶段四_数组与字符串</a><a href="06_阶段五_指针.html" class="cur">06_阶段五_指针</a><a href="07_阶段六_结构体联合与枚举.html">07_阶段六_结构体联合与枚举</a><a href="08_阶段七_类型深入与位运算.html">08_阶段七_类型深入与位运算</a><a href="09_阶段八_多文件工程与考核冲刺.html">09_阶段八_多文件工程与考核冲刺</a><a href="10_阶段九_动态内存与文件IO.html">10_阶段九_动态内存与文件IO</a><a href="11_阶段十_51单片机C语言预备.html">11_阶段十_51单片机C语言预备</a><a href="12_51实战一_数码管与按键.html">12_51实战一_数码管与按键</a><a href="13_51实战二_定时器串口与I2C.html">13_51实战二_定时器串口与I2C</a><a href="14_51实战三_时钟液晶AD与综合项目.html">14_51实战三_时钟液晶AD与综合项目</a></nav>
+<header class="doc"><span class="kicker">C 语言学习计划 · AI 生成教程</span><h1>06 阶段五：指针（一个存地址的变量）</h1></header>
+<details class="toc" id="toc"><summary>本文目录</summary><div class="toc">
+<ul>
+<li><a href="#h4994a1a2">1. 本节目标与前置知识</a></li>
+<li><a href="#h9faafa3d">2. 场景引入：两条悬念，一个答案</a></li>
+<li><a href="#h5049e3c0">3. 核心概念一：地址、&amp; 与 %p</a><ul>
+<li><a href="#h0a8e349a">3.1 每个变量都有地址</a></li>
+</ul>
+</li>
+<li><a href="#h721d151e">4. 核心概念二：指针变量——门牌号写在纸条上</a><ul>
+<li><a href="#hc33c2c34">4.1 定义与解引用</a></li>
+<li><a href="#h31282eff">4.2 门牌号心智模型（贴冰箱上）</a></li>
+<li><a href="#h013e8686">4.3 指针自己也是变量</a></li>
+</ul>
+</li>
+<li><a href="#hdc60fc73">5. 核心概念三：NULL 与指针初始化纪律</a></li>
+<li><a href="#ha4348ca5">6. 核心概念四：传指针改原件——真 swap（收网时刻）</a></li>
+<li><a href="#h73560b92">7. 核心概念五：指针与数组——a[i] 的真身是 *(a+i)</a><ul>
+<li><a href="#h790bb09b">7.1 一等式</a></li>
+<li><a href="#hf132585d">7.2 指针算术：步长由类型决定</a></li>
+<li><a href="#h1ad160a5">7.3 指针遍历数组</a></li>
+</ul>
+</li>
+<li><a href="#h5f3dd230">8. 核心概念六：const 的四种位置</a></li>
+<li><a href="#h5f8db2d6">9. 核心概念七：指针与字符串——考核手写库的升级版</a><ul>
+<li><a href="#h32beb9e4">9.1 指针遍历字符串</a></li>
+<li><a href="#h6968ea02">9.2 指针版 my_strlen</a></li>
+<li><a href="#ha5e2d901">9.3 *p++ 与 (*p)++——纸上推演（必做）</a></li>
+</ul>
+</li>
+<li><a href="#h680ee3e0">10. 核心概念八：野指针三大场景（血的教训集中营）</a><ul>
+<li><a href="#h68a6ecfe">10.1 未初始化指针</a></li>
+<li><a href="#haecb3759">10.2 指向已销毁的局部变量（返回局部变量的地址）</a></li>
+<li><a href="#h4292b796">10.3 越界指针</a></li>
+</ul>
+</li>
+<li><a href="#h8607e809">11. 核心概念九：函数设计——传出参数模式</a></li>
+<li><a href="#hc707b190">12. 编译与运行（阶段五全部代码）</a></li>
+<li><a href="#hc1d2d9d1">13. 本阶段练习（题目在 exercises\阶段五\练习_题目.md，答案同目录）</a></li>
+<li><a href="#h73ea9697">13.5 零基础补充：指针的「门牌号模型」总复习</a><ul>
+<li><a href="#hceb4ea7e">13.5.1 一个等式贯穿全部内容</a></li>
+<li><a href="#hc031c827">13.5.2 四种 const 位置（一次记牢）</a></li>
+<li><a href="#hd50b5ac7">13.5.3 *p++ 与 (*p)++：纸上推演一遍</a></li>
+<li><a href="#h232433e9">13.5.4 指针作参数：真 swap 的完整代码</a></li>
+<li><a href="#h480e931c">13.5.5 指针问题的「三看」调试法</a></li>
+<li><a href="#hb39da41c">13.5.6 五分钟自测</a></li>
+</ul>
+</li>
+<li><a href="#hf00cdf95">14. 常见错误与调试速查（本阶段相关）</a></li>
+<li><a href="#hf346de61">15. 安全与规范：本阶段三条铁律</a></li>
+<li><a href="#he9454a55">16. 任务作战指南（任务六 + 考核：知识映射 + 自查清单，独立完成）</a><ul>
+<li><a href="#h24f37158">16.1 任务六（交换两个 student 结构体）需要的知识</a></li>
+<li><a href="#h8133fbe7">16.2 考核「至少一处指针」需要的知识</a></li>
+<li><a href="#haee405ab">16.3 提交前自查清单</a></li>
+</ul>
+</li>
+<li><a href="#h724ce896">17. 验收清单（全部打勾才进入阶段六）</a></li>
+<li><a href="#h24699665">18. 本阶段复盘与下一阶段衔接</a></li>
+</ul>
+</div>
+</details>
+<script>if(window.matchMedia('(min-width:861px)').matches){var t=document.getElementById('toc');if(t)t.open=true;}</script>
+<blockquote>
+<p>预计学时：7~9 天（每天 1.5~2 小时）
+本阶段解锁任务：<strong>✅任务六（结构体指针交换）的地基</strong>、考核任务「至少一处指针」的全部原理
+配套代码：<code>code\阶段五_指针\</code>（5 个）；练习：<code>exercises\阶段五\</code>
+前置：阶段三（函数、传值调用、数组作参数）、阶段四（数组与字符串、下标即偏移量）</p>
+</blockquote>
+<hr />
+<h2 id="h4994a1a2">1. 本节目标与前置知识</h2>
+<p><strong>目标：</strong>
+1. 理解<strong>地址</strong>是什么，会用 <code>&amp;</code> 取地址、<code>%p</code> 打印地址。
+2. 掌握指针变量的定义（<code>int *p</code>）、解引用（<code>*p</code>），建立「门牌号」心智模型。
+3. 建立<strong>指针初始化纪律</strong>（<code>int *p = NULL;</code>）——你的「未初始化」老毛病在指针上会升级成灾难。
+4. 写出<strong>真正的 swap</strong>（传指针改原件），亲手收网阶段三 swap_wrong 的悬念。
+5. 理解 <code>a[i]</code> ≡ <code>*(a+i)</code>，指针算术 <code>p+1</code> 的步长 = <code>sizeof(元素)</code>，彻底明白下标为什么从 0 开始。
+6. 分清 const 的四种位置：<code>const int *p</code> 与 <code>int *const p</code> 各管什么。
+7. 用指针遍历字符串，写出<strong>指针版 my_strlen</strong>，纸上推演 <code>*p++</code> 与 <code>(*p)++</code>。
+8. 认识<strong>野指针三大场景</strong>，学会用 <code>-Wall</code> 和调试器把它们抓出来。
+9. 掌握<strong>传出参数</strong>模式（<code>void divmod(int a, int b, int *q, int *r)</code>）——「一个返回值不够用」的正解。</p>
+<p><strong>前置：</strong> 阶段三的「复印件定理」、阶段四的「下标本源是偏移量」「数组参数传的是地址」。本阶段就是把这三个反复出现的现象统一收网。</p>
+<hr />
+<h2 id="h9faafa3d">2. 场景引入：两条悬念，一个答案</h2>
+<p>阶段三你做过一个「失败」的实验（<code>02_swap_fail.c</code>）：<code>swap_wrong(x, y)</code> 在函数内部明明交换成功了，回到 main 一看，<code>x</code> 和 <code>y</code> 纹丝不动。当时我们给了它一个名字——<strong>复印件定理</strong>：传值调用时，函数拿到的是值的复印件，改复印件改不到原件。你还亲手画了那张内存图（阶段三练习 3）：<code>x</code>、<code>y</code> 和 <code>a</code>、<code>b</code> 住在四个不同的格子里。</p>
+<p>同样是阶段三，另一个实验却「成功」得莫名其妙：把数组传给函数，函数里改 <code>arr[0]</code>，main 里的真数组<strong>真的变了</strong>。为什么变量传过去是复印件，数组传过去就能改原件？</p>
+<p>阶段四又添了几条线索：「<code>s1 == s2</code> 比的是<strong>地址</strong>不是内容」「<code>a[i]</code> 的下标本源是<strong>偏移量</strong>」「<code>%p</code> 打印出来的是<strong>地址</strong>」。</p>
+<p>现在统一收网：<strong>C 函数之间真正能传递的「遥控器」，就是地址。</strong> 数组参数能改真数组，是因为传过去的本质是数组首元素的地址；swap_wrong 失败，是因为你只给了值、没给地址。想让别人改你的变量，你不能给他复印件，得给他<strong>你家的门牌号</strong>——这就是指针。</p>
+<p><strong>指针不神秘：它就是一个存地址的变量。</strong> 你已经用过它的全部现象，本阶段只是补上名字和原理。</p>
+<hr />
+<h2 id="h5049e3c0">3. 核心概念一：地址、<code>&amp;</code> 与 <code>%p</code></h2>
+<h3 id="h0a8e349a">3.1 每个变量都有地址</h3>
+<p>程序运行时，每个变量都住在内存的某个格子里，格子的编号就是<strong>地址</strong>。用取地址运算符 <code>&amp;</code> 拿到它，用 <code>%p</code> 打印它：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">pi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3.14</span><span class="p">;</span>
+<span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">'A'</span><span class="p">;</span>
+
+<span class="n">printf</span><span class="p">(</span><span class="s">"x  的值=%d, 地址=%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">x</span><span class="p">);</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"pi 的值=%.2f, 地址=%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">pi</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">pi</span><span class="p">);</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"c  的值=%c, 地址=%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">c</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>三件事要记住：</p>
+<ol>
+<li><code>%p</code> 配 <code>(void *)</code> 强制转换是标准写法，能消除 <code>-Wall</code> 下的类型警告；</li>
+<li>地址长这样：<code>000000000061FE1C</code>——一串十六进制数。<strong>每次运行都可能不同</strong>（操作系统随机摆放），所以别背地址，看规律；</li>
+<li>你在阶段三调试器里悬停变量时见过的「地址」，和 <code>%p</code> 打印的是同一个东西——调试器和 printf 在互相印证。</li>
+</ol>
+<p>配套 <code>01_pointer_basics.c</code>：打印三种类型变量的值与地址，再观察相邻变量的地址差——你会发现 <code>int</code> 邻居地址差 4、<code>double</code> 差 8，这不是巧合，是 <code>sizeof</code> 在内存里的实体化。</p>
+<hr />
+<h2 id="h721d151e">4. 核心概念二：指针变量——门牌号写在纸条上</h2>
+<h3 id="hc33c2c34">4.1 定义与解引用</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">x</span><span class="p">;</span><span class="w">      </span><span class="cm">/* p 是一个「指向 int 的指针」，装着 x 的地址 */</span>
+
+<span class="n">printf</span><span class="p">(</span><span class="s">"%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">p</span><span class="p">);</span><span class="w">    </span><span class="cm">/* p 的内容：x 的地址（那张门牌号） */</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">);</span><span class="w">           </span><span class="cm">/* *p：按门牌号找到房子，取里面的东西 → 42 */</span>
+
+<span class="o">*</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">99</span><span class="p">;</span><span class="w">          </span><span class="cm">/* 按门牌号找到房子，把里面的东西换成 99 */</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">);</span><span class="w">            </span><span class="cm">/* x 真的变成了 99 —— 复印件定理被打破 */</span>
+</code></pre></div></div>
+
+<p>两个 <code>*</code> 千万别混：</p>
+<ul>
+<li><strong>定义时</strong> <code>int *p;</code>：<code>*</code> 是类型的一部分，读作「p 是指向 int 的指针」；</li>
+<li><strong>使用时</strong> <code>*p</code>：<code>*</code> 是<strong>解引用</strong>运算符，读作「p 指向的那个东西」。</li>
+</ul>
+<h3 id="h31282eff">4.2 门牌号心智模型（贴冰箱上）</h3>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>说法</th>
+<th>对应</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>变量 = 房子</td>
+<td><code>int x = 42;</code> 一间叫 x 的房子，里面住着 42</td>
+</tr>
+<tr>
+<td>地址 = 门牌号</td>
+<td><code>&amp;x</code> 这间房子的门牌号（如 幸福路 61FE1C 号）</td>
+</tr>
+<tr>
+<td>指针 = 记着门牌号的纸条</td>
+<td><code>int *p = &amp;x;</code> 纸条上写着 x 的门牌号</td>
+</tr>
+<tr>
+<td>解引用 = 按门牌号找上门</td>
+<td><code>*p</code> 照纸条找到那间房子，对里面的东西读写</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><code>swap_wrong</code> 为什么失败？你给了函数一张<strong>写着「42」的纸条</strong>（值），它怎么改都只是改纸条。真 swap 为什么成功？你给了函数<strong>写着门牌号的纸条</strong>，它按图索骥，改的是房子本身。</p>
+<h3 id="h013e8686">4.3 指针自己也是变量</h3>
+<p>纸条本身也占格子：<code>int *p</code> 在 64 位 MinGW 下 <code>sizeof(p)</code> 是 8（字节），不管它指向 int 还是 double——<strong>门牌号的纸条大小统一，区别在于「按这个门牌号找到的房子是几居室」</strong>（指针的类型决定解引用时读几个字节、指针算术时一步跨多远，§6 展开）。</p>
+<hr />
+<h2 id="hdc60fc73">5. 核心概念三：NULL 与指针初始化纪律</h2>
+<p>阶段二你的老毛病是「未初始化变量读出垃圾值」。指针不初始化，后果<strong>升维</strong>：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">;</span><span class="w">         </span><span class="cm">/* 危险！p 里是随机垃圾地址 */</span>
+<span class="o">*</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span><span class="w">        </span><span class="cm">/* 灾难：往一个随机地址写数据，可能改坏任何东西、可能直接崩 */</span>
+</code></pre></div></div>
+
+<p>未初始化的 int 顶多是算错数；未初始化的指针是<strong>拿着一张乱写的门牌号去撬别人家的门</strong>。这就是为什么本阶段第一条铁律是：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w">    </span><span class="cm">/* 出生先置空：明确的「暂时没有指向」 */</span>
+</code></pre></div></div>
+
+<p><code>NULL</code> 是地址 0，是一块<strong>谁都知道不能碰</strong>的禁区。纪律用法：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="cm">/* ... 某个时刻 p = &amp;x; ... */</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="o">*</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span><span class="w">               </span><span class="cm">/* 确认纸条上有真门牌号，才敢上门 */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>好处有两个：① 忘了赋值时，<code>p != NULL</code> 检查能拦住你；② 万一没拦住，对 NULL 解引用<strong>通常立刻崩溃</strong>——「立刻崩」是好消息，bug 在案发现场被抓，比「跑了一小时才算错一个数」强一百倍。配套 <code>01_pointer_basics.c</code> 演示这个 if 守卫的完整写法。</p>
+<hr />
+<h2 id="ha4348ca5">6. 核心概念四：传指针改原件——真 swap（收网时刻）</h2>
+<p>阶段三的悬念，今天结案：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">swap</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">)</span><span class="w">     </span><span class="cm">/* 收两张门牌号纸条 */</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">;</span><span class="w">     </span><span class="cm">/* 按 a 的纸条，取出那间房子里的值 */</span>
+<span class="w">    </span><span class="o">*</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">;</span><span class="w">        </span><span class="cm">/* 按 b 的纸条取值，写进 a 纸条指向的房子 */</span>
+<span class="w">    </span><span class="o">*</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t</span><span class="p">;</span><span class="w">         </span><span class="cm">/* 把暂存的值写进 b 纸条指向的房子 */</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">    </span><span class="n">swap</span><span class="p">(</span><span class="o">&amp;</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">y</span><span class="p">);</span><span class="w">             </span><span class="cm">/* 把 x、y 的门牌号交出去 */</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"x=%d y=%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">);</span><span class="w">   </span><span class="cm">/* x=2 y=1 —— 真的换了！ */</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>对照记忆（这张表请背下来）：</p>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>swap_wrong（阶段三）</th>
+<th>swap（本阶段）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>形参</td>
+<td><code>int a, int b</code>（复印件）</td>
+<td><code>int *a, int *b</code>（门牌号）</td>
+</tr>
+<tr>
+<td>调用</td>
+<td><code>swap_wrong(x, y)</code></td>
+<td><code>swap(&amp;x, &amp;y)</code></td>
+</tr>
+<tr>
+<td>函数内</td>
+<td>改 a、b 这两个复印件</td>
+<td><code>*a</code>、<code>*b</code> 按门牌号改原件</td>
+</tr>
+<tr>
+<td>结果</td>
+<td>main 里 x、y 不变</td>
+<td>main 里 x、y 互换</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><strong>内存图（把阶段三练习 3 那张图升级画完）：</strong></p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>main 的地盘                    swap 的地盘
+┌───────┐ 幸福路...1C         ┌───────┐
+│ x = 2 │◄────────────────────│ a =...1C │──┐ 纸条写着 x 的门牌号
+└───────┘                     └───────┘  │ *a 就顺藤摸到 x
+┌───────┐ 幸福路...18         ┌───────┐  │
+│ y = 1 │◄────────────────────│ b =...18 │──┘
+└───────┘                     └───────┘
+</code></pre></div></div>
+
+<p>a、b 本身依然是复印件（传值调用没有例外！）——但这次复印的是<strong>地址</strong>。复印件定理没有被违反，而是你复印了「能找上门的钥匙」。配套 <code>02_swap_real.c</code> 把新旧两个 swap 放在同一个程序里对拍，并打印地址亲眼验证「<code>*a</code> 就是 x」。</p>
+<blockquote>
+<p>预告：任务六要交换的是两个 <strong>student 结构体</strong>。现在你先吃透「交换两个 int」；阶段六结构体一学，同样的门牌号手法原封不动搬过去——变的只是纸条上写的是什么房子的门牌号。</p>
+</blockquote>
+<hr />
+<h2 id="h73560b92">7. 核心概念五：指针与数组——<code>a[i]</code> 的真身是 <code>*(a+i)</code></h2>
+<h3 id="h790bb09b">7.1 一等式</h3>
+<p>阶段四埋的伏笔揭晓：<strong>数组名 <code>a</code> 在绝大多数场合会自动退化为「指向首元素的指针」</strong>（<code>&amp;a[0]</code>）。于是有恒等式：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w">  </span><span class="err">≡</span><span class="w">  </span><span class="o">*</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>下标访问只是语法糖，编译器内部一律翻译成「首地址 + 偏移，再解引用」。这就是为什么阶段四说「数组参数能改真数组」——函数收到的 <code>arr</code> 本质就是首元素地址，<code>arr[i] = ...</code> 就是 <code>*(arr+i) = ...</code>，改的是原件。</p>
+<p><strong>下标从 0 开始的终极解释</strong>：<code>a[i]</code> 的地址 = 首地址 + i × sizeof（元素）。第一个元素就在首地址上，偏移 0。下标不是「第几个」，是「离起点几格」——所以第一个元素是 <code>a[0]</code>。这不是习惯，是地址算术的必然。</p>
+<h3 id="hf132585d">7.2 指针算术：步长由类型决定</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="mi">40</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">};</span>
+<span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">;</span><span class="w">                 </span><span class="cm">/* p 指向 a[0] */</span>
+
+<span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">);</span><span class="w">         </span><span class="cm">/* 10 */</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="n">p</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">));</span><span class="w">   </span><span class="cm">/* 20 —— p+1 不是地址+1 字节，而是「前进 1 个 int」 */</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="n">p</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">4</span><span class="p">));</span><span class="w">   </span><span class="cm">/* 50 */</span>
+</code></pre></div></div>
+
+<p><code>p + 1</code> 的真实地址变化是 <strong>+sizeof(int) = +4 字节</strong>；换成 <code>double *</code>，<code>p + 1</code> 就是 +8 字节。<strong>指针算术以「几个元素」为单位，编译器自动乘上 sizeof</strong>——这正是 3.1 节你亲眼看到的「int 邻居地址差 4」的用途。指针的类型不是装饰，它决定一步跨多远。</p>
+<h3 id="h1ad160a5">7.3 指针遍历数组</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">;</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">;</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"> </span><span class="n">p</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">   </span><span class="cm">/* 从首元素走到「末尾再往后一格」之前 */</span>
+<span class="w">    </span><span class="n">sum</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code>a + 5</code> 是「末尾再往后一格」的位置，它是合法的<strong>哨兵</strong>（可以比较、不能解引用）——<code>p &lt; a + 5</code> 就是指针版的 <code>i &lt; 5</code>。配套 <code>03_pointer_array.c</code>：四种等价写法（<code>a[i]</code>、<code>*(a+i)</code>、<code>p[i]</code>、<code>*(p+i)</code>）打印同一数组，再用指针遍历求和。<strong>四种写法打印结果完全一样，这就是恒等式的实证。</strong></p>
+<hr />
+<h2 id="h5f3dd230">8. 核心概念六：const 的四种位置</h2>
+<p>你在阶段三就见过 <code>void print_array(const int arr[], int n)</code>——那个 <code>const</code> 是什么意思？四种位置一张表：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">p1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">x</span><span class="p">;</span><span class="w">   </span><span class="cm">/* ① 指向「常量 int」的指针：不许通过 p1 改值，纸条可以换 */</span>
+<span class="kt">int</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">*</span><span class="n">p2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">x</span><span class="p">;</span><span class="w">   </span><span class="cm">/* ② 与 ① 完全相同（const 在 * 左边 = 管值） */</span>
+<span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="k">const</span><span class="w"> </span><span class="n">p3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">x</span><span class="p">;</span><span class="w">   </span><span class="cm">/* ③ 指针本身是常量：纸条不许换（永远指着 x），值可以改 */</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="k">const</span><span class="w"> </span><span class="n">p4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">x</span><span class="p">;</span><span class="w">  </span><span class="cm">/* ④ 双锁：值不许改，纸条也不许换 */</span>
+</code></pre></div></div>
+
+<p>判读口诀：<strong>从右往左读，const 修饰它左边最近的东西</strong>；const 在最左就修饰右边的类型。</p>
+<ul>
+<li><code>*p1 = 99;</code> ✘ 编译错（承诺了只读）；<code>p1 = &amp;y;</code> ✔ 可以换纸条；</li>
+<li><code>p3 = &amp;y;</code> ✘ 编译错（纸条钉死了）；<code>*p3 = 99;</code> ✔ 可以改值。</li>
+</ul>
+<p><strong>实战意义</strong>：函数参数写 <code>const int arr[]</code> 就是向调用者立誓「我只读不改」。这既防自己手滑，也让别人敢把数据交给你。考核若要求「不得修改原串」，函数签名挂 <code>const</code> 就是标准答案的姿态。配套 <code>03_pointer_array.c</code> 的打印函数示范了这个写法。</p>
+<hr />
+<h2 id="h5f8db2d6">9. 核心概念七：指针与字符串——考核手写库的升级版</h2>
+<h3 id="h32beb9e4">9.1 指针遍历字符串</h3>
+<p>阶段四你用下标走字符串，现在用指针走：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">char</span><span class="w"> </span><span class="n">s</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"UPRE"</span><span class="p">;</span>
+<span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">;</span><span class="w">                  </span><span class="cm">/* 指向 'U' */</span>
+
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">p</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="sc">'\0'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">          </span><span class="cm">/* 没撞见封底就继续 */</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"%c "</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">);</span>
+<span class="w">    </span><span class="n">p</span><span class="o">++</span><span class="p">;</span><span class="w">                      </span><span class="cm">/* 门牌号往右挪一格 */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code>while (*p != '\0')</code> 是指针版的 <code>s[i] != '\0'</code>，惯用缩写是 <code>while (*p)</code>（<code>'\0'</code> 就是 0，0 即假）。两种写法都要认识——别人的代码里后者遍地都是。</p>
+<h3 id="h6968ea02">9.2 指针版 my_strlen</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">my_strlen_ptr</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">;</span><span class="w">        </span><span class="cm">/* 记住起点（const：只读承诺） */</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">p</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="sc">'\0'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">p</span><span class="o">++</span><span class="p">;</span><span class="w">                  </span><span class="cm">/* p 一路走到封底 */</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="n">p</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">s</span><span class="p">);</span><span class="w">      </span><span class="cm">/* 终点地址 - 起点地址 = 走了几格 = 长度 */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>新思想：<strong>指针减指针 = 之间隔了几个元素</strong>（不是字节数，是元素数——char 的元素就是 1 字节，所以对字符串二者相等）。<code>p - s</code> 的差就是 '\0' 前面字符的个数，连计数器变量都省了。这就是考核「手写库函数」的指针升级版——原理和下标版一模一样（走到封底为止），武器从「下标 i」换成了「指针 p」。</p>
+<h3 id="ha5e2d901">9.3 <code>*p++</code> 与 <code>(*p)++</code>——纸上推演（必做）</h3>
+<p>这两个东西是 C 的招牌谜题，拆开来全是旧知识（优先级 + 后缀 ++）：</p>
+<ul>
+<li><code>*p++</code> ≡ <code>*(p++)</code>：<code>++</code> 优先级高于 <code>*</code>，且后缀 ++ 「先用后加」——<strong>先取 <code>*p</code> 的值，然后 p 前进一格</strong>。经典用途：边取值边挪窝，<code>while ((*dest++ = *src++) != '\0');</code> 一行就是一个 strcpy。</li>
+<li><code>(*p)++</code>：括号强制先解引用——<strong>p 不动，p 指向的那个值 +1</strong>。<code>*p</code> 是个 int，<code>(*p)++</code> 就是给那个 int 加一。</li>
+</ul>
+<p>纸上推演（配套 <code>04_pointer_string.c</code> 会跑给你看，但<strong>先自己推</strong>）：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">char</span><span class="w"> </span><span class="n">s</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"abc"</span><span class="p">;</span>
+<span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">;</span>
+<span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="o">++</span><span class="p">;</span><span class="w">    </span><span class="cm">/* 推演：c = ?  p 现在指向 ? */</span>
+</code></pre></div></div>
+
+<p>答案：<code>c = 'a'</code>，<code>p</code> 指向 <code>'b'</code>。再推 <code>int n = 5; int *q = &amp;n; int r = (*q)++;</code>——<code>r = 5</code>、<code>n = 6</code>、<code>q</code> 仍指向 n。推不出来的，画门牌号纸条图，一目了然。</p>
+<hr />
+<h2 id="h680ee3e0">10. 核心概念八：野指针三大场景（血的教训集中营）</h2>
+<p><strong>野指针</strong> = 指向无效内存的指针。三大出生场景：</p>
+<h3 id="h68a6ecfe">10.1 未初始化指针</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">;</span><span class="w">      </span><span class="cm">/* 垃圾地址 */</span>
+<span class="o">*</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span><span class="w">     </span><span class="cm">/* 撬错门：未定义行为 */</span>
+</code></pre></div></div>
+
+<p>药方：§5 的纪律，<code>int *p = NULL;</code> 起步。</p>
+<h3 id="haecb3759">10.2 指向已销毁的局部变量（返回局部变量的地址）</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="nf">bad_func</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">local</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="n">local</span><span class="p">;</span><span class="w">    </span><span class="cm">/* 经典错误！函数一结束，local 的房子就被拆了 */</span>
+<span class="p">}</span><span class="w">                     </span><span class="cm">/* 返回的是一张「已拆除房屋」的门牌号 */</span>
+</code></pre></div></div>
+
+<p>调用者拿到这个指针去解引用，读到的是废墟上的残值——可能「碰巧正确」一百次，第一百零一次塌了。<strong>好消息：<code>-Wall</code> 能直接抓到它</strong>（warning: function returns address of local variable）。这是「编译警告必须清零」最硬的理由之一。配套 <code>05_wild_pointer.c</code> 里有这个错误写法的完整注释展示（只展示、不执行），以及安全观察版。</p>
+<h3 id="h4292b796">10.3 越界指针</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">};</span>
+<span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w">    </span><span class="cm">/* 「末尾再往后一格」：合法的哨兵，可以比较 */</span>
+<span class="cm">/* *p 就是越界！ */</span><span class="w"> </span><span class="cm">/* 解引用它 = 阶段四的数组越界，换了个马甲 */</span>
+</code></pre></div></div>
+
+<p>指针越界和数组越界是同一件事的两张脸——<code>a[i]</code> 本来就是 <code>*(a+i)</code>，越界的护栏依然为零。药方：写每个 <code>*p</code> 前，心算一遍 p 的合法区间；循环结束条件用 <code>p &lt; a + n</code> 而不是 <code>p &lt;= a + n</code>。</p>
+<p><strong>抓野指针的三件武器</strong>：① <code>-Wall -Wextra</code> 警告清零（抓场景 2）；② 断点调试，VARIABLES 里盯着指针的值，看它是谁的地址、越没越界（抓场景 3）；③ NULL 初始化 + if 守卫（防场景 1）。<code>05_wild_pointer.c</code> 用「只打印地址、绝不解引用」的安全方式演示三种场景的地址证据。</p>
+<hr />
+<h2 id="h8607e809">11. 核心概念九：函数设计——传出参数模式</h2>
+<p>一个老问题：函数只能 <code>return</code> 一个值，想「算两个结果」怎么办？比如整数除法想<strong>同时</strong>要商和余数。错误姿势：开全局变量（污染、不可重入）。正解：<strong>把多余的「返回值」通过指针参数传出来</strong>：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">divmod</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">q</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">r</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="o">*</span><span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w">     </span><span class="cm">/* 商：按 q 的门牌号写回调用者的变量 */</span>
+<span class="w">    </span><span class="o">*</span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w">     </span><span class="cm">/* 余数：按 r 的门牌号写回 */</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">shang</span><span class="p">,</span><span class="w"> </span><span class="n">yu</span><span class="p">;</span>
+<span class="w">    </span><span class="n">divmod</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">shang</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">yu</span><span class="p">);</span><span class="w">   </span><span class="cm">/* 交出两个空盒子的门牌号 */</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"17 / 5 = %d ... %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">shang</span><span class="p">,</span><span class="w"> </span><span class="n">yu</span><span class="p">);</span><span class="w">   </span><span class="cm">/* 3 ... 2 */</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>模式总结：<strong>调用者准备空变量 → 把地址交给函数 → 函数通过 <code>*形参</code> 往里填</strong>。这就是「返回值不够用」的标准答案，也是 scanf 的设计原理——<code>scanf("%d", &amp;x)</code> 那个 <code>&amp;</code> 你抄了一个学期，今天终于知道它就是传出参数！配套 <code>02_swap_real.c</code> 末尾也演示了这个模式。练习 5 专门练它（含 <code>b == 0</code> 时怎么办的设计决策——用 return 值报告「成功/失败」，指针只负责传数据，双通道分工）。</p>
+<hr />
+<h2 id="hc707b190">12. 编译与运行（阶段五全部代码）</h2>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="n">gcc</span> <span class="n">-Wall</span> <span class="n">-Wextra</span> <span class="n">-g</span> <span class="n">code</span><span class="p">\</span><span class="n">阶段五_指针</span><span class="p">\</span><span class="n">01_pointer_basics</span><span class="p">.</span><span class="n">c</span> <span class="n">-o</span> <span class="n">build</span><span class="p">\</span><span class="n">01_pointer_basics</span><span class="p">.</span><span class="n">exe</span>
+<span class="p">.\</span><span class="n">build</span><span class="p">\</span><span class="n">01_pointer_basics</span><span class="p">.</span><span class="n">exe</span>
+<span class="c"># 其余同理。05_wild_pointer.c 是「安全观察版」，只打印地址不引爆，放心跑。</span>
+</code></pre></div></div>
+
+<p>预期输出见每个 .c 底部注释。<strong>老规矩：先预测，再运行</strong>——尤其 04 的 <code>*p++</code> 推演，先在纸上写答案再看输出。</p>
+<hr />
+<h2 id="hc1d2d9d1">13. 本阶段练习（题目在 <code>exercises\阶段五\练习_题目.md</code>，答案同目录）</h2>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>级别</th>
+<th>内容</th>
+<th>训练点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>基础</td>
+<td>指针读写基本功：<code>&amp;</code>、<code>*</code>、<code>%p</code>、通过指针改变量</td>
+<td>门牌号模型</td>
+</tr>
+<tr>
+<td>2</td>
+<td>基础</td>
+<td>默写真 swap，并用它做三变量环状轮转</td>
+<td>传指针改原件</td>
+</tr>
+<tr>
+<td>3</td>
+<td>基础 · 纸上</td>
+<td>内存图：<code>x, y, p=&amp;x</code> 全图 + <code>*p++</code> 与 <code>(*p)++</code> 推演</td>
+<td>指针认知（必做）</td>
+</tr>
+<tr>
+<td>4</td>
+<td>提高</td>
+<td>指针遍历数组：<code>sum_ptr</code> 用 <code>p &lt; a+n</code> 循环 + 最值</td>
+<td>指针算术、哨兵</td>
+</tr>
+<tr>
+<td>5</td>
+<td>提高</td>
+<td><code>divmod</code> 传出参数 + 除零处理（return 报告成败）</td>
+<td>传出参数模式</td>
+</tr>
+<tr>
+<td>6</td>
+<td>提高</td>
+<td>指针版 <code>my_strlen</code> + 指针版 <code>my_strcpy</code></td>
+<td>字符串指针、<code>*p++</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>挑战</td>
+<td>双指针原地逆置字符串 <code>reverse_string(char *s)</code></td>
+<td>首尾指针向中间夹</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><strong>与任务的边界照旧</strong>：以上题目均为原创通用能力训练，与任务六、考核题面不同；任务的组织与细节由你独立完成。</p>
+<hr />
+<h2 id="h73ea9697">13.5 零基础补充：指针的「门牌号模型」总复习</h2>
+<h3 id="hceb4ea7e">13.5.1 一个等式贯穿全部内容</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>  int a[5] = {10,20,30,40,50};
+
+  a[i]    ≡    *(a + i)    ≡    *(p + i)   （p 指向 a[0] 时）
+  &amp;a[i]   ≡    a + i       ≡    p + i
+</code></pre></div></div>
+
+<p>指针运算的「步长」由类型决定，不是字节数：</p>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>指针类型</th>
+<th><code>p + 1</code> 实际跳过</th>
+<th>为什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>int *</code></td>
+<td>4 字节</td>
+<td><code>sizeof(int)</code> = 4</td>
+</tr>
+<tr>
+<td><code>double *</code></td>
+<td>8 字节</td>
+<td><code>sizeof(double)</code> = 8</td>
+</tr>
+<tr>
+<td><code>char *</code></td>
+<td>1 字节</td>
+<td><code>sizeof(char)</code> = 1</td>
+</tr>
+<tr>
+<td><code>struct student *</code></td>
+<td>结构体大小</td>
+<td>由成员决定</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><strong>所以 <code>p + i</code> 永远指向「第 i 个元素」，编译器自动帮你乘了 <code>sizeof</code>。</strong> 这也是为什么 <code>void *</code> 不能做算术——它不知道步长。</p>
+<h3 id="hc031c827">13.5.2 四种 const 位置（一次记牢）</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">p1</span><span class="p">;</span><span class="w">      </span><span class="cm">/* 指向常量：*p1 不能改，p1 可以改指向 */</span>
+<span class="kt">int</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">*</span><span class="n">p2</span><span class="p">;</span><span class="w">      </span><span class="cm">/* 同 p1，两种写法等价 */</span>
+<span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">p3</span><span class="p">;</span><span class="w"> </span><span class="p">...;</span><span class="cm">/* 常量指针：p3 不能改指向，*p3 可以改 */</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">p4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">x</span><span class="p">;</span><span class="w">  </span><span class="cm">/* 都不能改 */</span>
+</code></pre></div></div>
+
+<p>记法：<strong><code>const</code> 右边的东西不能改</strong>。</p>
+<h3 id="hd50b5ac7">13.5.3 <code>*p++</code> 与 <code>(*p)++</code>：纸上推演一遍</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">};</span>
+<span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="o">++</span><span class="p">;</span><span class="w">   </span><span class="cm">/* x = 1；p 现在指向 a[1]。先取 *p，再 p++ */</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">p</span><span class="p">)</span><span class="o">++</span><span class="p">;</span><span class="w"> </span><span class="cm">/* y = 2；a[1] 变成 3；p 不变。先取 *p，再把 *p 加一 */</span>
+</code></pre></div></div>
+
+<p>推演表（自己画一遍，这是最值得花的 5 分钟）：</p>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>语句</th>
+<th>p 的指向</th>
+<th>*p 的值</th>
+<th>赋值结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>int x = *p++;</code></td>
+<td>a[0] → a[1]</td>
+<td>1</td>
+<td>x = 1</td>
+</tr>
+<tr>
+<td><code>int y = (*p)++;</code></td>
+<td>a[1]（不变）</td>
+<td>2 → 3</td>
+<td>y = 2</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>字符串遍历里 <code>*p++</code> 极其常用：<code>for (p = s; *p; p++)</code> 就是「从头走到 <code>\0</code>」。</p>
+<h3 id="h232433e9">13.5.4 指针作参数：真 swap 的完整代码</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+
+<span class="cm">/* 形参是指针：a、b 里装的是调用者变量的地址 */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">swap</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">tmp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">;</span><span class="w">   </span><span class="cm">/* 把 a 指向的那个值取出来 */</span>
+<span class="w">    </span><span class="o">*</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">;</span><span class="w">        </span><span class="cm">/* 改写调用者的 x */</span>
+<span class="w">    </span><span class="o">*</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tmp</span><span class="p">;</span><span class="w">       </span><span class="cm">/* 改写调用者的 y */</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span><span class="p">;</span>
+<span class="w">    </span><span class="n">swap</span><span class="p">(</span><span class="o">&amp;</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">y</span><span class="p">);</span><span class="w">              </span><span class="cm">/* 传地址，不是传值 */</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"%d %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">);</span><span class="w">  </span><span class="cm">/* 20 10 —— 真的换了 */</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>对照记忆：<code>swap(x, y)</code> 换的是函数里的复印件；<code>swap(&amp;x, &amp;y)</code> 换的是原件。</p>
+<h3 id="h480e931c">13.5.5 指针问题的「三看」调试法</h3>
+<p>断点停在指针操作行，VARIABLES 面板里看三样：</p>
+<ol>
+<li><strong><code>p</code> 本身</strong>——门牌号是多少？是 <code>NULL</code> 还是野值？</li>
+<li><strong><code>*p</code></strong>——房子里住的是不是你以为的那个值？</li>
+<li><strong><code>&amp;p</code></strong>——纸条自己放在哪？（理解「指针也是变量」用）</li>
+</ol>
+<p>段错误（Segmentation fault）99% 是这三样里有一样不对：<code>p</code> 是 <code>NULL</code>、<code>p</code> 是野指针、或 <code>p</code> 越过了数组末尾。</p>
+<h3 id="hb39da41c">13.5.6 五分钟自测</h3>
+<ol>
+<li><code>int a[5]; int *p = a + 3;</code> —— <code>p[-1]</code> 是哪个元素？合法吗？</li>
+<li><code>char s[] = "abc"; char *p = s;</code> 之后 <code>*p</code> 和 <code>s[0]</code> 是什么关系？<code>p + 1</code> 指向谁？</li>
+<li>为什么 <code>int *p; *p = 5;</code> 一运行就崩，而 <code>int *p = NULL; if (p) *p = 5;</code> 不会？</li>
+</ol>
+<hr />
+<h2 id="hf00cdf95">14. 常见错误与调试速查（本阶段相关）</h2>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>症状</th>
+<th>真因</th>
+<th>一句话药方</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>一运行就崩（段错误）</td>
+<td>解引用了 NULL 或野指针</td>
+<td>指针出生置 NULL、用前 <code>if (p != NULL)</code></td>
+</tr>
+<tr>
+<td>警告 returns address of local variable</td>
+<td>返回了局部变量的地址</td>
+<td>改用传出参数：调用者出变量、传地址进函数</td>
+</tr>
+<tr>
+<td>swap 后 main 里没变</td>
+<td>调用写成了 <code>swap(x, y)</code> 或函数内没用 <code>*</code></td>
+<td>传 <code>&amp;x, &amp;y</code>；函数内一律 <code>*a</code>、<code>*b</code></td>
+</tr>
+<tr>
+<td><code>*p+1</code> 结果不对</td>
+<td>想要 <code>*(p+1)</code> 却写成 <code>*p+1</code>（优先级）</td>
+<td><code>*p+1</code> 是「值加一」；要「下一格」加括号</td>
+</tr>
+<tr>
+<td><code>*p++</code> 与 <code>(*p)++</code> 搞反</td>
+<td>没分清「p 动」还是「值动」</td>
+<td>纸上推演一遍（练习 3），画纸条图</td>
+</tr>
+<tr>
+<td>指针遍历数组多走一格</td>
+<td>循环条件写成 <code>p &lt;= a+n</code></td>
+<td>哨兵是 <code>a+n</code>，条件用 <code>&lt;</code></td>
+</tr>
+<tr>
+<td><code>%p</code> 打印报警告</td>
+<td>没转 <code>(void *)</code></td>
+<td><code>printf("%p", (void *)&amp;x);</code></td>
+</tr>
+<tr>
+<td>指针减指针结果离谱</td>
+<td>两个指针不属于同一个数组</td>
+<td>指针相减只对「同数组内」有意义</td>
+</tr>
+<tr>
+<td>通过 const 指针改值，编译报错</td>
+<td><code>const int *p</code> 不许 <code>*p = ...</code></td>
+<td>报错是 const 在保护你——去掉修改，或重新设计</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><strong>调试手段</strong>：指针问题的断点大法——在指针操作行打断点，VARIABLES 里看三样东西：<strong>指针自己的值（门牌号）、<code>*p</code>（房子里的东西）、<code>&amp;p</code>（纸条住哪）</strong>。VSCode 悬停指针变量也能看到地址。把 <code>02_swap_real.c</code> 单步走一遍，看 <code>*a</code> 与 <code>x</code> 如何同生同灭，比背十遍定义都管用。</p>
+<hr />
+<h2 id="hf346de61">15. 安全与规范：本阶段三条铁律</h2>
+<ol>
+<li><strong>每个指针出生时必须初始化</strong>——要么指向真变量，要么 <code>= NULL</code>，没有第三种出生方式；</li>
+<li><strong>每次解引用前，指针的来源必须可证</strong>——要么是某变量的 <code>&amp;</code>，要么在已知数组的 <code>[a, a+n)</code> 区间内，要么刚判过 <code>!= NULL</code>；</li>
+<li><strong>函数要改调用者的变量，只走两条正道</strong>——<code>return</code> 一个值，或传出参数；<strong>永不返回局部变量的地址</strong>。</li>
+</ol>
+<hr />
+<h2 id="he9454a55">16. 任务作战指南（任务六 + 考核：知识映射 + 自查清单，独立完成）</h2>
+<blockquote>
+<p>铁律重申：本节只给「地图与清单」，<strong>不给任何任务题目的解答代码</strong>。任务六（结构体指针交换）与考核的实现由你独立完成。</p>
+</blockquote>
+<h3 id="h24f37158">16.1 任务六（交换两个 student 结构体）需要的知识</h3>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>任务要求</th>
+<th>对应教程节</th>
+<th>配套示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>定义/使用 student 结构体</td>
+<td>阶段六（结构体）——先学 <code>.</code> 成员访问与结构体变量</td>
+<td>阶段六配套</td>
+</tr>
+<tr>
+<td>「交换两个结构体」= 交换两个变量</td>
+<td>§6 传指针改原件（int 版 swap 的同一手法）</td>
+<td>02_swap_real.c</td>
+</tr>
+<tr>
+<td>函数拿到结构体的「遥控器」</td>
+<td>§3 <code>&amp;</code> 取地址；结构体指针用 <code>-&gt;</code> 访问成员（阶段六讲）</td>
+<td>02_swap_real.c</td>
+</tr>
+<tr>
+<td>交换需要第三方暂存</td>
+<td>§6 真 swap 的 <code>int t</code> 同款：结构体也能整体赋值 <code>struct Student t = *a;</code></td>
+<td>02_swap_real.c</td>
+</tr>
+<tr>
+<td>交换前后打印验证</td>
+<td>§3 <code>%p</code> + 阶段六结构体打印</td>
+<td>01_pointer_basics.c</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><strong>路线提示</strong>：先把本阶段练习 2（int 版 swap + 三变量轮转）写到能默写；阶段六学完结构体后，把 <code>int</code> 换成 <code>struct Student</code>、<code>.</code> 换成 <code>-&gt;</code>，手法一字不改。<strong>先 int 后结构体，一鱼两吃。</strong></p>
+<h3 id="h8133fbe7">16.2 考核「至少一处指针」需要的知识</h3>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>考核要求（推测方向）</th>
+<th>对应教程节</th>
+<th>配套示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>手写库函数（strlen/strcpy/strcmp 级）</td>
+<td>§9.2 指针版 my_strlen；练习 6</td>
+<td>04_pointer_string.c</td>
+</tr>
+<tr>
+<td>不得修改原数据</td>
+<td>§8 const 四种位置：<code>const char *s</code></td>
+<td>03_pointer_array.c</td>
+</tr>
+<tr>
+<td>至少一处指针（可能是遍历/传出参数/交换任一种）</td>
+<td>§7 指针遍历、§11 传出参数、§6 交换</td>
+<td>03、02、04</td>
+</tr>
+<tr>
+<td>边界健壮性（空串、满长度）</td>
+<td>§10 越界指针 + 阶段四 <code>'\0'</code> 纪律</td>
+<td>05_wild_pointer.c</td>
+</tr>
+</tbody>
+</table></div></div>
+<h3 id="haee405ab">16.3 提交前自查清单</h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 每个指针定义处都有初始化（<code>NULL</code> 或 <code>&amp;变量</code>），全文搜一遍 <code>int *</code> 逐条核对；</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 每次 <code>*p</code> 解引用前，能口头说清「p 此刻指向谁、为什么合法」；</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 交换函数：调用处传 <code>&amp;</code>，函数内全用 <code>*</code>；单步调试亲眼看交换成功；</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 结构体成员访问：指针用 <code>-&gt;</code>，变量用 <code>.</code>，没有混用；</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 只读的字符串/数组参数挂了 <code>const</code>；</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 没有任何函数返回局部变量的地址；</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>-Wall -Wextra</code> 零警告（尤其没有 returns address of local variable）；</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 自设计测试覆盖边界：空串/单元素/最大长度/交换后顺序正确；</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 关键行中文注释；push Gitee（里程碑 M5）。</li>
+</ul>
+<hr />
+<h2 id="h724ce896">17. 验收清单（全部打勾才进入阶段六）</h2>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能画出「房子 / 门牌号 / 纸条」三层图，解释 <code>&amp;x</code>、<code>p</code>、<code>*p</code> 各是哪一层。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 真 swap 能 3 分钟默写，并说清它与 swap_wrong 的四点对照（§6 表格）。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能解释 <code>a[i]</code> ≡ <code>*(a+i)</code>，并用「步长 = sizeof（元素）」解释下标从 0 开始。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 一眼分清 <code>const int *p</code> 与 <code>int *const p</code> 谁锁值、谁锁纸条。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 指针版 my_strlen 能默写，并说清 <code>p - s</code> 为什么就是长度。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>*p++</code> 与 <code>(*p)++</code> 的纸上推演全对（练习 3）。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 野指针三大场景能各举一例、各给一药方；知道 <code>-Wall</code> 能抓哪一种。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能用传出参数模式写出 divmod，并处理除零。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 练习 1~6 完成（挑战 7 强烈推荐），练习 3 纸上作业必做。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <strong>（学完阶段六后）任务六完成并通过 16.3 自查清单，push Gitee</strong>。</li>
+</ul>
+<hr />
+<h2 id="h24699665">18. 本阶段复盘与下一阶段衔接</h2>
+<p><strong>复盘三问：</strong>
+1. 「复印件定理没有被违反，只是这次复印的是地址」——这句话能帮你解释数组参数能改真数组、scanf 要加 <code>&amp;</code>、真 swap 能成功这三件事吗？统一它们的那把钥匙是什么？
+2. 你的老毛病「未初始化」在指针上为什么从「算错数」升级成「可能改坏任何东西」？<code>int *p = NULL;</code> 加 if 守卫这套纪律，和以前 <code>int sum = 0;</code> 的纪律是不是同一个灵魂？
+3. <code>05_wild_pointer.c</code> 里「返回局部变量地址」的警告你见过原文了——以后看到任何 warning，你的第一反应应该是修它还是无视它？为什么本阶段说「立刻崩是好 bug」？</p>
+<p><strong>衔接预告（阶段六：结构体）</strong>：指针刚学会，马上就有用武之地——成绩表一行有学号、姓名、三科成绩，难道开五个平行数组？结构体把「一行记录」打包成一个新类型，而<strong>结构体指针（<code>-&gt;</code>）</strong>就是任务六「交换两个 student」的最后一块砖：你已经会交换两个 int 了，交换两个结构体只是换大一点的房子、换一张写着新地址的纸条。阶段五验收清单全勾了吗？勾了，就回复「继续」进阶段六。</p>
+<footer class="doc">
+  由 Markdown 教程自动转换生成 · 配套 .c 代码在 code\ 与 exercises\ 目录<br>
+  <a href="./index.html">返回教程目录</a>
+</footer>
+</div>
+<button id="totop" type="button" aria-label="回到顶部" title="回到顶部">↑</button>
+<script>
+(function () {
+  var nav = document.getElementById('docnav');
+  var cur = nav && nav.querySelector('a.cur');
+  if (cur && nav.scrollWidth > nav.clientWidth) {
+    nav.scrollLeft = cur.offsetLeft - nav.clientWidth / 2 + cur.offsetWidth / 2;
+  }
+  var btn = document.getElementById('totop');
+  if (!btn) return;
+  var onScroll = function () {
+    btn.classList.toggle('show', window.scrollY > 480);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  btn.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+(function () {
+  var boxes = document.querySelectorAll('.scroll-hint');
+  Array.prototype.forEach.call(boxes, function (box) {
+    var sc = box.firstElementChild;
+    if (!sc) return;
+    function upd() {
+      var more = sc.scrollWidth - sc.clientWidth > 4;
+      box.classList.toggle('has-more', more);
+      box.classList.toggle('at-end', more && sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 4);
+    }
+    upd();
+    sc.addEventListener('scroll', upd, { passive: true });
+    window.addEventListener('resize', upd);
+  });
+})();
+
+</script>
+</body>
+</html>

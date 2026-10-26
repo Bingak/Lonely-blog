@@ -1,0 +1,8 @@
+{
+  "name": "study-lonelybing-localtest",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "localtest": "wrangler dev --config wrangler.local.toml --port 8799 --ip 127.0.0.1"
+  }
+}

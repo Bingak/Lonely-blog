@@ -124,6 +124,12 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 				external: true,
 				icon: "material-symbols:admin-panel-settings-rounded",
 			},
+			{
+				name: "学习站",
+				url: "https://study.lonelybing.top/",
+				external: true,
+				icon: "material-symbols:school-outline",
+			},
 		],
 	});
 

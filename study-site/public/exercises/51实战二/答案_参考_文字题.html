@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1117" media="(prefers-color-scheme: dark)">
+<meta name="format-detection" content="telephone=no">
+<title>51 实战二 参考答案（练习 3 · 纸上作业）</title>
+<style>pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #ffffcc }
+.codehilite { background: #f8f8f8; }
+.codehilite .c { color: #3D7B7B; font-style: italic } /* Comment */
+.codehilite .err { border: 1px solid #F00 } /* Error */
+.codehilite .k { color: #008000; font-weight: bold } /* Keyword */
+.codehilite .o { color: #666 } /* Operator */
+.codehilite .ch { color: #3D7B7B; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #3D7B7B; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #9C6500 } /* Comment.Preproc */
+.codehilite .cpf { color: #3D7B7B; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #3D7B7B; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
+.codehilite .gd { color: #A00000 } /* Generic.Deleted */
+.codehilite .ge { font-style: italic } /* Generic.Emph */
+.codehilite .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #E40000 } /* Generic.Error */
+.codehilite .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #008400 } /* Generic.Inserted */
+.codehilite .go { color: #717171 } /* Generic.Output */
+.codehilite .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.codehilite .gt { color: #04D } /* Generic.Traceback */
+.codehilite .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #008000 } /* Keyword.Pseudo */
+.codehilite .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #B00040 } /* Keyword.Type */
+.codehilite .m { color: #666 } /* Literal.Number */
+.codehilite .s { color: #BA2121 } /* Literal.String */
+.codehilite .na { color: #687822 } /* Name.Attribute */
+.codehilite .nb { color: #008000 } /* Name.Builtin */
+.codehilite .nc { color: #00F; font-weight: bold } /* Name.Class */
+.codehilite .no { color: #800 } /* Name.Constant */
+.codehilite .nd { color: #A2F } /* Name.Decorator */
+.codehilite .ni { color: #717171; font-weight: bold } /* Name.Entity */
+.codehilite .ne { color: #CB3F38; font-weight: bold } /* Name.Exception */
+.codehilite .nf { color: #00F } /* Name.Function */
+.codehilite .nl { color: #767600 } /* Name.Label */
+.codehilite .nn { color: #00F; font-weight: bold } /* Name.Namespace */
+.codehilite .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #19177C } /* Name.Variable */
+.codehilite .ow { color: #A2F; font-weight: bold } /* Operator.Word */
+.codehilite .w { color: #BBB } /* Text.Whitespace */
+.codehilite .mb { color: #666 } /* Literal.Number.Bin */
+.codehilite .mf { color: #666 } /* Literal.Number.Float */
+.codehilite .mh { color: #666 } /* Literal.Number.Hex */
+.codehilite .mi { color: #666 } /* Literal.Number.Integer */
+.codehilite .mo { color: #666 } /* Literal.Number.Oct */
+.codehilite .sa { color: #BA2121 } /* Literal.String.Affix */
+.codehilite .sb { color: #BA2121 } /* Literal.String.Backtick */
+.codehilite .sc { color: #BA2121 } /* Literal.String.Char */
+.codehilite .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.codehilite .s2 { color: #BA2121 } /* Literal.String.Double */
+.codehilite .se { color: #AA5D1F; font-weight: bold } /* Literal.String.Escape */
+.codehilite .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.codehilite .si { color: #A45A77; font-weight: bold } /* Literal.String.Interpol */
+.codehilite .sx { color: #008000 } /* Literal.String.Other */
+.codehilite .sr { color: #A45A77 } /* Literal.String.Regex */
+.codehilite .s1 { color: #BA2121 } /* Literal.String.Single */
+.codehilite .ss { color: #19177C } /* Literal.String.Symbol */
+.codehilite .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #00F } /* Name.Function.Magic */
+.codehilite .vc { color: #19177C } /* Name.Variable.Class */
+.codehilite .vg { color: #19177C } /* Name.Variable.Global */
+.codehilite .vi { color: #19177C } /* Name.Variable.Instance */
+.codehilite .vm { color: #19177C } /* Name.Variable.Magic */
+.codehilite .il { color: #666 } /* Literal.Number.Integer.Long */</style>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --bg: #f7f8fa;
+  --bg-elev: #ffffff;
+  --ink: #1f2328;
+  --ink-soft: #4c5560;
+  --muted: #8a9199;
+  --accent: #b03a2e;
+  --link: #1a6fb5;
+  --line: #e4e7ea;
+  --line-soft: #eef0f2;
+  --code-bg: #f6f7f9;
+  --code-ink: #c0214a;
+  --quote-bg: #fff8e8;
+  --quote-line: #e6a23c;
+  --quote-ink: #6b5900;
+  --th-bg: #f2f4f6;
+  --tr-alt: #fafbfc;
+  --shadow: 0 1px 2px rgba(16,24,40,.04), 0 8px 24px rgba(16,24,40,.05);
+  --shadow-lift: 0 2px 6px rgba(16,24,40,.06), 0 16px 40px rgba(16,24,40,.09);
+  --radius: 14px;
+  --maxw: 50rem;
+  --scroll-shadow: rgba(15, 23, 42, .16);
+  --mono: "JetBrains Mono", "Cascadia Mono", Consolas, "SF Mono", Menlo, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Microsoft YaHei", "Noto Sans SC", "Source Han Sans SC", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1117;
+    --bg-elev: #161b23;
+    --ink: #e7eaf0;
+    --ink-soft: #b8c0cd;
+    --muted: #8b93a3;
+    --accent: #ff8f7e;
+    --link: #82b6ff;
+    --line: #262d38;
+    --line-soft: #1c232c;
+    --code-bg: #1b212b;
+    --code-ink: #ff9db0;
+    --quote-bg: #241f13;
+    --quote-line: #b98a2e;
+    --quote-ink: #e8d3a0;
+    --th-bg: #1d232c;
+    --tr-alt: #171d25;
+    --shadow: 0 1px 2px rgba(0,0,0,.45), 0 10px 30px rgba(0,0,0,.35);
+    --shadow-lift: 0 2px 8px rgba(0,0,0,.5), 0 20px 50px rgba(0,0,0,.45);
+    --scroll-shadow: rgba(255, 255, 255, .16);
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-wrap: break-word;
+}
+
+::selection { background: rgba(26,111,181,.22); }
+
+.wrap {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 28px clamp(14px, 4vw, 28px) 96px;
+}
+
+/* ── 顶部文档导航：吸顶 + 横向滑动 ───────────────────────── */
+nav.docnav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  padding: 10px 12px;
+  margin: 0 0 26px;
+  background: var(--bg-elev);
+  background: color-mix(in srgb, var(--bg-elev) 88%, transparent);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+nav.docnav::-webkit-scrollbar { display: none; }
+nav.docnav b {
+  flex: none;
+  color: var(--accent);
+  font-size: 12.5px;
+  letter-spacing: .06em;
+  padding-right: 4px;
+}
+nav.docnav a {
+  flex: none;
+  display: inline-block;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: background .18s, color .18s;
+}
+nav.docnav a:hover { background: var(--line-soft); color: var(--ink); }
+nav.docnav a.cur {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 650;
+}
+@media (prefers-color-scheme: dark) {
+  nav.docnav a.cur { color: #1a0f0d; }
+}
+nav.docnav a.home { color: var(--link); }
+
+/* 桌面端：导航平铺换行，全部可见，不吸顶（避免遮挡正文） */
+@media (min-width: 861px) {
+  nav.docnav {
+    position: static;
+    flex-wrap: wrap;
+    overflow: visible;
+    white-space: normal;
+    row-gap: 4px;
+  }
+}
+
+/* ── 页眉 ──────────────────────────────────────────────── */
+header.doc {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+  margin-bottom: 26px;
+}
+header.doc .kicker {
+  display: inline-block;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: .16em;
+  font-size: 11.5px;
+  text-transform: uppercase;
+}
+h1 {
+  font-size: clamp(21px, 4.4vw, 30px);
+  line-height: 1.38;
+  margin: 8px 0 0;
+  letter-spacing: -.01em;
+}
+
+/* ── 正文排版 ──────────────────────────────────────────── */
+h2 {
+  font-size: clamp(18px, 3vw, 23px);
+  line-height: 1.42;
+  margin: 2.1em 0 .9em;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  scroll-margin-top: 72px;
+}
+h3 {
+  font-size: clamp(16px, 2.3vw, 19px);
+  margin: 1.7em 0 .6em;
+  color: var(--ink);
+  scroll-margin-top: 72px;
+}
+h4 { font-size: 16px; margin: 1.4em 0 .5em; color: var(--ink-soft); }
+p { margin: .85em 0; }
+p, li { text-align: left; }
+
+a { color: var(--link); text-decoration: none; border-bottom: 1px solid transparent; }
+a:hover { border-bottom-color: currentColor; }
+
+strong { color: var(--accent); font-weight: 700; }
+em { color: var(--ink-soft); }
+
+blockquote {
+  margin: 1.2em 0;
+  padding: 12px 16px;
+  background: var(--quote-bg);
+  border-left: 4px solid var(--quote-line);
+  border-radius: 0 12px 12px 0;
+  color: var(--quote-ink);
+}
+blockquote p { margin: .35em 0; }
+blockquote strong { color: inherit; }
+
+hr {
+  border: none;
+  border-top: 1px dashed var(--line);
+  margin: 2.2em 0;
+}
+
+/* ── 行内代码 ──────────────────────────────────────────── */
+code {
+  font-family: var(--mono);
+  font-size: .885em;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  padding: .12em .42em;
+  border-radius: 6px;
+  border: 1px solid var(--line-soft);
+  word-break: break-word;
+}
+
+/* ── 代码块：横向滚动，不撑破屏幕 ───────────────────────── */
+.codehilite {
+  position: relative;
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 1.1em 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  font-size: 14px;
+  line-height: 1.62;
+}
+.codehilite pre {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: inherit;
+  line-height: inherit;
+  tab-size: 4;
+}
+.codehilite code {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+  white-space: pre;
+}
+
+/* 细滚动条（代码块 / 表格横向滚动时更轻盈） */
+.codehilite, .table-wrap {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.codehilite::-webkit-scrollbar,
+.table-wrap::-webkit-scrollbar { height: 7px; }
+.codehilite::-webkit-scrollbar-track,
+.table-wrap::-webkit-scrollbar-track { background: transparent; }
+.codehilite::-webkit-scrollbar-thumb,
+.table-wrap::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 99px;
+}
+.codehilite::-webkit-scrollbar-thumb:hover,
+.table-wrap::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ── 表格：外层可横向滚动 ──────────────────────────────── */
+.table-wrap {
+  margin: 1.1em 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  border-radius: 12px;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+th, td {
+  border: 1px solid var(--line);
+  padding: 8px 11px;
+  text-align: left;
+  vertical-align: top;
+}
+th { background: var(--th-bg); font-weight: 650; white-space: nowrap; }
+tbody tr:nth-child(even) td { background: var(--tr-alt); }
+table code { white-space: nowrap; }
+
+/* ── 任务清单复选框 ────────────────────────────────────── */
+ul.task-list, ul.contains-task-list { list-style: none; padding-left: 2px; }
+ul.task-list li, ul.contains-task-list li { margin: .4em 0; }
+ul.task-list input[type=checkbox] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 17px; height: 17px;
+  border: 1.5px solid var(--muted);
+  border-radius: 5px;
+  margin-right: 9px;
+  vertical-align: -3px;
+  background: var(--bg-elev);
+  flex: none;
+}
+ul.task-list input[type=checkbox]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'><path d='M6.4 11.2 3.2 8l-1.1 1.1 4.3 4.3 8-8-1.1-1.1z'/></svg>");
+  background-size: 12px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ── 目录折叠块 ────────────────────────────────────────── */
+details.toc {
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 18px;
+  margin-bottom: 26px;
+  box-shadow: var(--shadow);
+}
+details.toc summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--link);
+  padding: 4px 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+details.toc summary::-webkit-details-marker { display: none; }
+details.toc summary::before {
+  content: "";
+  width: 0; height: 0;
+  border-left: 6px solid currentColor;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  transition: transform .2s;
+}
+details.toc[open] summary::before { transform: rotate(90deg); }
+details.toc ol { margin: 10px 0 6px; padding-left: 22px; }
+details.toc li { margin: .3em 0; }
+details.toc a { font-size: 14px; color: var(--ink-soft); }
+details.toc a:hover { color: var(--link); }
+
+/* ── 页脚 ──────────────────────────────────────────────── */
+footer.doc {
+  margin-top: 56px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12.5px;
+  text-align: center;
+  line-height: 1.8;
+}
+
+/* ── 回到顶部 ──────────────────────────────────────────── */
+#totop {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  z-index: 40;
+  width: 46px; height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--bg-elev);
+  color: var(--ink-soft);
+  box-shadow: var(--shadow-lift);
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity .22s, transform .22s, visibility .22s;
+}
+#totop.show { opacity: 1; visibility: visible; transform: none; }
+#totop:active { transform: scale(.94); }
+
+/* ── 平板 ──────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .wrap { padding-top: 18px; }
+  body { font-size: 15.5px; line-height: 1.8; }
+  .codehilite { font-size: 13.2px; padding: 12px 13px; }
+  table { font-size: 13.2px; }
+  th, td { padding: 7px 9px; }
+}
+
+/* ── 手机 ──────────────────────────────────────────────── */
+@media (max-width: 560px) {
+  html { scroll-behavior: auto; }
+  .wrap { padding: 12px 13px 84px; }
+  body { font-size: 15px; line-height: 1.78; }
+
+  nav.docnav { top: 0; border-radius: 12px; padding: 8px 9px; margin-bottom: 18px; }
+  nav.docnav b { display: none; }
+  nav.docnav a { font-size: 12.5px; padding: 6px 10px; }
+
+  header.doc { padding-bottom: 12px; margin-bottom: 18px; }
+  header.doc .kicker { font-size: 10.5px; letter-spacing: .12em; }
+
+  h1 { font-size: 20px; }
+  h2 { font-size: 17.5px; padding-left: 9px; border-left-width: 3px; margin-top: 1.8em; }
+  h3 { font-size: 15.5px; }
+  h4 { font-size: 14.5px; }
+  p { margin: .8em 0; }
+
+  blockquote { padding: 10px 12px; border-radius: 0 10px 10px 0; }
+
+  .codehilite { font-size: 12.2px; padding: 11px 12px; border-radius: 10px; }
+  table { font-size: 12.6px; }
+  th, td { padding: 6px 8px; }
+  th { white-space: normal; }
+
+  details.toc { padding: 10px 14px; margin-bottom: 18px; }
+  details.toc ol { padding-left: 18px; }
+  details.toc a { font-size: 13px; }
+
+  /* 触控目标不小于 40px */
+  ul.task-list li { padding: 2px 0; }
+  ul.task-list input[type=checkbox] { width: 19px; height: 19px; }
+
+  footer.doc { margin-top: 40px; font-size: 11.5px; }
+  #totop { width: 42px; height: 42px; font-size: 16px; }
+}
+
+/* ── 打印 ──────────────────────────────────────────────── */
+@media print {
+  nav.docnav, #totop, details.toc { display: none !important; }
+  body { background: #fff; color: #000; font-size: 11pt; }
+  .wrap { max-width: none; padding: 0; }
+  .codehilite, table, blockquote { box-shadow: none; }
+  a { color: #000; }
+  h2, h3 { page-break-after: avoid; }
+  .codehilite, table { page-break-inside: avoid; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+</style>
+<style>
+.doc.ex-tasks header.doc .kicker { color: var(--accent); }
+.doc.ex-tasks h2 { border-left-color: var(--accent); }
+.doc.ex-answers header.doc .kicker { color: #1a7f5a; }
+.doc.ex-answers h2 { border-left-color: #1a7f5a; }
+@media (prefers-color-scheme: dark) {
+  .doc.ex-answers header.doc .kicker { color: #4fd39a; }
+  .doc.ex-answers h2 { border-left-color: #4fd39a; }
+}
+.ex-tag {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  vertical-align: 3px;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
+}
+.doc.ex-answers .ex-tag {
+  color: #1a7f5a;
+  background: rgba(26, 127, 90, .12);
+  border-color: rgba(26, 127, 90, .32);
+}
+@media (prefers-color-scheme: dark) {
+  .doc.ex-answers .ex-tag { color: #4fd39a; background: rgba(79,211,154,.13); border-color: rgba(79,211,154,.34); }
+}
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+pre { line-height: 125%; }
+td.linenos .normal { color: #aaaaaa; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #aaaaaa; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #404040 }
+.codehilite { background: #202020; color: #D0D0D0 }
+.codehilite .c { color: #ABABAB; font-style: italic } /* Comment */
+.codehilite .err { color: #A61717; background-color: #E3D2D2 } /* Error */
+.codehilite .esc { color: #D0D0D0 } /* Escape */
+.codehilite .g { color: #D0D0D0 } /* Generic */
+.codehilite .k { color: #6EBF26; font-weight: bold } /* Keyword */
+.codehilite .l { color: #D0D0D0 } /* Literal */
+.codehilite .n { color: #D0D0D0 } /* Name */
+.codehilite .o { color: #D0D0D0 } /* Operator */
+.codehilite .x { color: #D0D0D0 } /* Other */
+.codehilite .p { color: #D0D0D0 } /* Punctuation */
+.codehilite .ch { color: #ABABAB; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #ABABAB; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #FF3A3A; font-weight: bold } /* Comment.Preproc */
+.codehilite .cpf { color: #ABABAB; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #ABABAB; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #E50808; font-weight: bold; background-color: #520000 } /* Comment.Special */
+.codehilite .gd { color: #FF3A3A } /* Generic.Deleted */
+.codehilite .ge { color: #D0D0D0; font-style: italic } /* Generic.Emph */
+.codehilite .ges { color: #D0D0D0; font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #FF3A3A } /* Generic.Error */
+.codehilite .gh { color: #FFF; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #589819 } /* Generic.Inserted */
+.codehilite .go { color: #CCC } /* Generic.Output */
+.codehilite .gp { color: #AAA } /* Generic.Prompt */
+.codehilite .gs { color: #D0D0D0; font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #FFF; text-decoration: underline } /* Generic.Subheading */
+.codehilite .gt { color: #FF3A3A } /* Generic.Traceback */
+.codehilite .kc { color: #6EBF26; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #6EBF26; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #6EBF26; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #6EBF26 } /* Keyword.Pseudo */
+.codehilite .kr { color: #6EBF26; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #6EBF26; font-weight: bold } /* Keyword.Type */
+.codehilite .ld { color: #D0D0D0 } /* Literal.Date */
+.codehilite .m { color: #51B2FD } /* Literal.Number */
+.codehilite .s { color: #ED9D13 } /* Literal.String */
+.codehilite .na { color: #BBB } /* Name.Attribute */
+.codehilite .nb { color: #2FBCCD } /* Name.Builtin */
+.codehilite .nc { color: #71ADFF; text-decoration: underline } /* Name.Class */
+.codehilite .no { color: #40FFFF } /* Name.Constant */
+.codehilite .nd { color: #FFA500 } /* Name.Decorator */
+.codehilite .ni { color: #D0D0D0 } /* Name.Entity */
+.codehilite .ne { color: #BBB } /* Name.Exception */
+.codehilite .nf { color: #71ADFF } /* Name.Function */
+.codehilite .nl { color: #D0D0D0 } /* Name.Label */
+.codehilite .nn { color: #71ADFF; text-decoration: underline } /* Name.Namespace */
+.codehilite .nx { color: #D0D0D0 } /* Name.Other */
+.codehilite .py { color: #D0D0D0 } /* Name.Property */
+.codehilite .nt { color: #6EBF26; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #40FFFF } /* Name.Variable */
+.codehilite .ow { color: #6EBF26; font-weight: bold } /* Operator.Word */
+.codehilite .pm { color: #D0D0D0 } /* Punctuation.Marker */
+.codehilite .w { color: #666 } /* Text.Whitespace */
+.codehilite .mb { color: #51B2FD } /* Literal.Number.Bin */
+.codehilite .mf { color: #51B2FD } /* Literal.Number.Float */
+.codehilite .mh { color: #51B2FD } /* Literal.Number.Hex */
+.codehilite .mi { color: #51B2FD } /* Literal.Number.Integer */
+.codehilite .mo { color: #51B2FD } /* Literal.Number.Oct */
+.codehilite .sa { color: #ED9D13 } /* Literal.String.Affix */
+.codehilite .sb { color: #ED9D13 } /* Literal.String.Backtick */
+.codehilite .sc { color: #ED9D13 } /* Literal.String.Char */
+.codehilite .dl { color: #ED9D13 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #ED9D13 } /* Literal.String.Doc */
+.codehilite .s2 { color: #ED9D13 } /* Literal.String.Double */
+.codehilite .se { color: #ED9D13 } /* Literal.String.Escape */
+.codehilite .sh { color: #ED9D13 } /* Literal.String.Heredoc */
+.codehilite .si { color: #ED9D13 } /* Literal.String.Interpol */
+.codehilite .sx { color: #FFA500 } /* Literal.String.Other */
+.codehilite .sr { color: #ED9D13 } /* Literal.String.Regex */
+.codehilite .s1 { color: #ED9D13 } /* Literal.String.Single */
+.codehilite .ss { color: #ED9D13 } /* Literal.String.Symbol */
+.codehilite .bp { color: #2FBCCD } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #71ADFF } /* Name.Function.Magic */
+.codehilite .vc { color: #40FFFF } /* Name.Variable.Class */
+.codehilite .vg { color: #40FFFF } /* Name.Variable.Global */
+.codehilite .vi { color: #40FFFF } /* Name.Variable.Instance */
+.codehilite .vm { color: #40FFFF } /* Name.Variable.Magic */
+.codehilite .il { color: #51B2FD } /* Literal.Number.Integer.Long */
+}
+</style>
+<style>
+.scroll-hint { position: relative; }
+.scroll-hint::after {
+  content: "";
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 30px;
+  border-radius: 0 12px 12px 0;
+  pointer-events: none;
+  background: linear-gradient(270deg, var(--scroll-shadow), transparent);
+  opacity: 0;
+  transition: opacity .18s;
+}
+.scroll-hint.has-more::after { opacity: 1; }
+.scroll-hint.at-end::after { opacity: 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="docnav" id="docnav"><b>EXERCISES</b><a class="home" href="../../index.html">教程目录</a><a href="../../13_51实战二_定时器串口与I2C.html">← 51实战二_定时器串口与I2C</a><a href="./练习_题目.html">📋 题目</a><a href="./答案_参考_文字题.html" class="cur">📖 答案_参考_文字题</a></nav>
+<header class="doc ex-answers"><span class="kicker">C 语言学习计划 · 参考答案 · 51实战二</span><h1>51 实战二 参考答案（练习 3 · 纸上作业）<span class="ex-tag">参考答案</span></h1></header>
+<blockquote>
+<p>先自己做，再对答案。三部分都要过：TMOD/TCON 位、定时器流水、I2C 时序图。
+约定：12MHz → 1 个机器周期 = 1us；定时器 0 方式 1；AT24C02 写地址 0xA0、读地址 0xA1。</p>
+</blockquote>
+<h2 id="h3595742c">A 部分 TMOD / TCON 位含义</h2>
+<h3 id="h47422177">TMOD（地址 0x89，不能位寻址，只能整字节写）</h3>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>位</th>
+<th>7</th>
+<th>6</th>
+<th>5</th>
+<th>4</th>
+<th>3</th>
+<th>2</th>
+<th>1</th>
+<th>0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>名称</td>
+<td>GATE1</td>
+<td>C/T1</td>
+<td>M1_1</td>
+<td>M0_1</td>
+<td>GATE0</td>
+<td>C/T0</td>
+<td>M1_0</td>
+<td>M0_0</td>
+</tr>
+<tr>
+<td>作用</td>
+<td>定时器 1 门控</td>
+<td>定时器 1 定时/计数</td>
+<td>方式高位</td>
+<td>方式低位</td>
+<td>定时器 0 门控</td>
+<td>定时器 0 定时/计数</td>
+<td>方式高位</td>
+<td>方式低位</td>
+</tr>
+</tbody>
+</table></div></div>
+<ul>
+<li><strong>GATE = 0</strong>：只由 <code>TRx</code> 软件位启动/停止（最常用）；</li>
+<li><strong>GATE = 1</strong>：还要 <code>INTx</code> 引脚为高电平才放行，用于测外部脉冲宽度；</li>
+<li><strong>C/T = 0</strong>：定时器，数内部机器周期；<strong>C/T = 1</strong>：计数器，数 T0/T1 引脚上的下降沿；</li>
+<li><strong>M1 M0</strong>：</li>
+</ul>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>M1 M0</th>
+<th>方式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 0</td>
+<td>方式 0</td>
+<td>13 位定时器（TLx 低 5 位 + THx 8 位），老 8048 兼容</td>
+</tr>
+<tr>
+<td>0 1</td>
+<td>方式 1</td>
+<td>16 位定时器，范围 1~65536 个机器周期，最常用</td>
+</tr>
+<tr>
+<td>1 0</td>
+<td>方式 2</td>
+<td>8 位自动重装：TLx 溢出后硬件把 THx 装回 TLx</td>
+</tr>
+<tr>
+<td>1 1</td>
+<td>方式 3</td>
+<td>定时器 0 拆成两个 8 位；定时器 1 停止（一般不用）</td>
+</tr>
+</tbody>
+</table></div></div>
+<h3 id="h44166399">TCON（地址 0x88，可位寻址）</h3>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>位</th>
+<th>7</th>
+<th>6</th>
+<th>5</th>
+<th>4</th>
+<th>3</th>
+<th>2</th>
+<th>1</th>
+<th>0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>名称</td>
+<td>TF1</td>
+<td>TR1</td>
+<td>TF0</td>
+<td>TR0</td>
+<td>IE1</td>
+<td>IT1</td>
+<td>IE0</td>
+<td>IT0</td>
+</tr>
+<tr>
+<td>作用</td>
+<td>T1 溢出标志</td>
+<td>T1 运行控制</td>
+<td>T0 溢出标志</td>
+<td>T0 运行控制</td>
+<td>外部中断 1 标志</td>
+<td>外部中断 1 触发方式</td>
+<td>外部中断 0 标志</td>
+<td>外部中断 0 触发方式</td>
+</tr>
+</tbody>
+</table></div></div>
+<ul>
+<li><strong>TF0/TF1</strong>：硬件在溢出时置 1；进中断后必须<strong>软件清 0</strong>（<code>TF0 = 0;</code>），否则会反复进中断；</li>
+<li><strong>TR0/TR1</strong>：软件置 1 启动、清 0 停止；</li>
+<li><strong>IE0/IE1</strong>：外部中断标志，硬件置位、进 ISR 后清；</li>
+<li><strong>IT0/IT1</strong>：0 = 低电平触发，1 = 下降沿触发。</li>
+</ul>
+<h3 id="ha608ade0">几个 TMOD 值的含义</h3>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>TMOD</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x01</code></td>
+<td>定时器 0，方式 1（16 位定时），GATE0 = 0，软件 TR0 启动</td>
+</tr>
+<tr>
+<td><code>0x10</code></td>
+<td>定时器 1，方式 1（16 位定时）</td>
+</tr>
+<tr>
+<td><code>0x21</code></td>
+<td>定时器 1 方式 2（0x20）+ 定时器 0 方式 1（0x01）：T0 做 1ms 节拍，T1 做波特率</td>
+</tr>
+<tr>
+<td><code>0x02</code></td>
+<td>定时器 0，方式 2（8 位自动重装）</td>
+</tr>
+<tr>
+<td><code>0x20</code></td>
+<td>定时器 1，方式 2（8 位自动重装，常做波特率发生器）</td>
+</tr>
+</tbody>
+</table></div></div>
+<h3 id="h892a37ef">定时器 0 方式 1 启动步骤</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="n">TMOD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x01</span><span class="p">;</span><span class="w">        </span><span class="cm">/* ① 选方式：16 位定时，不门控 */</span>
+<span class="n">TH0</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mh">0xFC</span><span class="p">;</span><span class="w">        </span><span class="cm">/* ② 装初值高字节 */</span>
+<span class="n">TL0</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mh">0x18</span><span class="p">;</span><span class="w">        </span><span class="cm">/*    装初值低字节 */</span>
+<span class="n">ET0</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">           </span><span class="cm">/* ③ 允许定时器 0 中断 */</span>
+<span class="n">EA</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">           </span><span class="cm">/*    开总中断 */</span>
+<span class="n">TR0</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">           </span><span class="cm">/* ④ 启动计数 */</span>
+</code></pre></div></div>
+
+<p>每一步都不能省：</p>
+<ul>
+<li>不写 TMOD：复位值是 0x00，方式 0 只有 13 位，初值全错；</li>
+<li>不装 TH0/TL0：从 0 开始数，第一次要等 65536 个周期；</li>
+<li>不开 ET0/EA：溢出只置 TF0，不进中断，<code>tick</code> 永远不涨；</li>
+<li>不置 TR0：计数器根本不走。</li>
+</ul>
+<h2 id="h493d79da">B 部分 定时器流水推演</h2>
+<p>初值 <code>TH0 = 0xFC</code>、<code>TL0 = 0x18</code>：</p>
+<ul>
+<li>重装值 = <code>0xFC18</code> = <strong>64536</strong>；</li>
+<li>机器周期数 = 65536 − 64536 = <strong>1000</strong>；</li>
+<li>12MHz 下 1 个机器周期 1us → 定时 <strong>1000us = 1ms</strong>。</li>
+</ul>
+<h3 id="hfa95315b">250ms 要溢出多少次</h3>
+<p>250ms ÷ 1ms = <strong>250 次</strong>。前 5 次溢出：</p>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>溢出次数</th>
+<th>重装值</th>
+<th>重装后 TH0/TL0</th>
+<th>TF0</th>
+<th>节拍 tick</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>64536</td>
+<td>0xFC / 0x18</td>
+<td>硬件置 1 → 中断里清 0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>64536</td>
+<td>0xFC / 0x18</td>
+<td>同上</td>
+<td>2</td>
+</tr>
+<tr>
+<td>3</td>
+<td>64536</td>
+<td>0xFC / 0x18</td>
+<td>同上</td>
+<td>3</td>
+</tr>
+<tr>
+<td>4</td>
+<td>64536</td>
+<td>0xFC / 0x18</td>
+<td>同上</td>
+<td>4</td>
+</tr>
+<tr>
+<td>5</td>
+<td>64536</td>
+<td>0xFC / 0x18</td>
+<td>同上</td>
+<td>5</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>到第 250 次溢出时 tick = 250，正好 250ms。</p>
+<h3 id="h1bd7f7e7">忘了重装会怎样</h3>
+<p>方式 1 溢出后计数器归 0，不重装就从 0 数到 65536：</p>
+<ul>
+<li>下一次溢出要 <strong>65536 个机器周期 = 65.536ms</strong>；</li>
+<li>1 秒只能进约 1000 / 65.536 ≈ <strong>15 次</strong>中断，而不是 1000 次；</li>
+<li>现象：灯闪得极慢、秒表走得极慢，而且第一次 1ms 之后就“变慢”了。</li>
+</ul>
+<h3 id="h503c6612">查询等标志 vs 中断 tick</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">flag</span><span class="p">);</span><span class="w">          </span><span class="cm">/* 查询：CPU 死等，按键、串口全错过 */</span>
+</code></pre></div></div>
+
+<ul>
+<li>查询方式：这 250ms 里主循环什么都干不了；flag 还必须 <code>volatile</code>，否则可能被优化成死循环；</li>
+<li>中断方式：ISR 只 <code>tick++</code>，主循环看到 tick 变化再干活，串口/按键都能及时响应；</li>
+<li>注意：主循环读 <code>tick</code> 也要 <code>volatile</code>，并且 16 位变量在 8 位机上的读写不是原子的，必要时先关中断再读。</li>
+</ul>
+<h3 id="hc06ae01b">1 小时累计误差</h3>
+<ul>
+<li>3,600,000 次中断 × 5 个机器周期 = <strong>18,000,000 个机器周期</strong>；</li>
+<li>12MHz 下 = 18,000,000us = <strong>18,000ms = 18 秒</strong>；</li>
+<li>补偿：中断多花了 5 个周期，等于每次定时变长，应把计数改短 5 个周期（重装值 +5）；</li>
+<li>更稳的办法：方式 2 自动重装减少软件开销，或用外部 RTC。</li>
+</ul>
+<h2 id="h68b83eb3">C 部分 I2C 时序图推演</h2>
+<h3 id="he6bc5675">字节写：0x5A 写到 0x23</h3>
+<p>事务：<code>START → 0xA0 + ACK → 0x23 + ACK → 0x5A + ACK → STOP</code></p>
+<p><code>0xA0 = 1010 0000</code>，<code>0x23 = 0010 0011</code>，<code>0x5A = 0101 1010</code>，全部<strong>高位先发</strong>。</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>        START   A6 A5 A4 A3 A2 A1 A0 RW  ACK   7  6  5  4  3  2  1  0  ACK ...
+SCL  ‾‾‾\___/‾‾‾\_/‾‾‾\_/‾‾‾\_/‾‾‾\_/‾‾‾\_/‾‾‾\_/‾‾‾\_/‾‾‾\_/‾‾‾\___ ...
+SDA  ‾‾‾‾\___/‾‾‾‾‾‾‾\___/‾‾‾\_____/‾‾‾\_________/‾‾‾\___/‾‾‾\_______ ...
+       SDA 高→低    1    0    1   0  0  0  0  0   0(ACK)
+</code></pre></div></div>
+
+<p>逐位表（省略 SCL 的 9 个脉冲，只列 SDA 在第 1~8 个高电平期间的电平）：</p>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>字节</th>
+<th>b7</th>
+<th>b6</th>
+<th>b5</th>
+<th>b4</th>
+<th>b3</th>
+<th>b2</th>
+<th>b1</th>
+<th>b0</th>
+<th>第 9 位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0xA0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>从机拉低 = ACK</td>
+</tr>
+<tr>
+<td>0x23</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>从机拉低 = ACK</td>
+</tr>
+<tr>
+<td>0x5A</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>从机拉低 = ACK</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>STOP：SCL 高时 SDA 由 0 变 1。</p>
+<h3 id="h78b13be4">随机读：0x23 读回 0x5A</h3>
+<p>事务：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>START → 0xA0 + ACK → 0x23 + ACK → Sr → 0xA1 + ACK → 读 0x5A（8 位）→ 主机 NACK → STOP
+</code></pre></div></div>
+
+<p>读出的 0x5A = <code>0101 1010</code>，从机在 SCL 低时改 SDA，主机在 SCL 高时采样。</p>
+<p><strong>为什么要重复起始 Sr</strong>：</p>
+<ul>
+<li>先“假写”一次，把内部地址指针设到 0x23；</li>
+<li>不能发 STOP，否则器件释放总线、地址指针状态可能丢；</li>
+<li>Sr 重新开始一个事务，但<strong>不释放总线</strong>，紧接着发读地址 0xA1。</li>
+</ul>
+<p><strong>为什么读完回 NACK</strong>：</p>
+<ul>
+<li>ACK 的意思是“还要下一个字节”；</li>
+<li>主机只要 1 个字节，第 9 个时钟放开 SDA（NACK），从机就知道该释放 SDA；</li>
+<li>主机随后才能发 STOP（STOP 要求 SCL 高时 SDA 由低变高，若从机还拉着 SDA 就发不出来）。</li>
+</ul>
+<h3 id="hde2b2d43">问答</h3>
+<ol>
+<li><strong>采样沿</strong>：数据在 SCL <strong>上升沿</strong>被采样（更准确说高电平期间有效）；SDA 只允许在 SCL <strong>低电平</strong>期间变化。SCL 高时改 SDA 会被当成 START（下降）或 STOP（上升）。</li>
+<li><strong>开漏 + 上拉</strong>：总线上有多个主机/从机，推挽输出会出现“一个输出高、一个输出低”直接短路；开漏只能拉低、释放由上拉拉高，天然实现“线与”，谁拉低都有效。</li>
+<li><strong>第 9 个时钟不拉低</strong>：NACK。含义：地址不匹配 / 器件忙（写周期未完成）/ 主机读完了。主机应停止或重试。</li>
+<li><strong>5ms 写周期</strong>：AT24C02 收到 STOP 后把数据写进浮栅，期间不响应任何命令。不等就发下一条，器件回 NACK；正确做法是延时 5ms 或“ACK 轮询”（反复发起始 + 设备地址，直到 ACK）。</li>
+<li><strong>页边界</strong>：AT24C02 一页 8 字节，页内地址低 3 位循环。从 0x23 连续写 8 个字节，地址依次是
+   <code>0x23, 0x24, 0x25, 0x26, 0x27, 0x20, 0x21, 0x22</code>（后 3 个回绕到页首），<strong>不会</strong>进入 0x28。
+   所以跨页写必须拆成两次事务；写 0x27 再连续写 8 个字节也会回绕到 0x20。</li>
+</ol>
+<h2 id="h3e6cbfea">常见错误（自查）</h2>
+<ul>
+<li>❌ 把 TMOD 的 GATE 位当成“启动位”——启动是 TCON 的 TR0；</li>
+<li>❌ 忘了清 TF0——中断会反复进，tick 飞涨；</li>
+<li>❌ 方式 1 忘了重装——周期从 1ms 变成 65.536ms；</li>
+<li>❌ 把 I2C 的 ACK 当成“从机发 0”——ACK 是从机把 SDA <strong>拉低</strong>，第 9 个时钟为 0；</li>
+<li>❌ 读最后一个字节回 ACK——从机继续输出，主机发不出 STOP；</li>
+<li>❌ 写 EEPROM 不等 5ms——下一条命令 NACK，数据可能没写进去。</li>
+</ul>
+<footer class="doc">
+  51实战二 的配套材料 · 代码答案（.c）在本地仓库 exercises\51实战二\ 目录<br>
+  <a href="../../index.html">返回教程目录</a>
+</footer>
+</div>
+<button id="totop" type="button" aria-label="回到顶部" title="回到顶部">↑</button>
+<script>
+(function () {
+  var nav = document.getElementById('docnav');
+  var cur = nav && nav.querySelector('a.cur');
+  if (cur && nav.scrollWidth > nav.clientWidth) {
+    nav.scrollLeft = cur.offsetLeft - nav.clientWidth / 2 + cur.offsetWidth / 2;
+  }
+  var btn = document.getElementById('totop');
+  if (!btn) return;
+  var onScroll = function () {
+    btn.classList.toggle('show', window.scrollY > 480);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  btn.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+(function () {
+  var boxes = document.querySelectorAll('.scroll-hint');
+  Array.prototype.forEach.call(boxes, function (box) {
+    var sc = box.firstElementChild;
+    if (!sc) return;
+    function upd() {
+      var more = sc.scrollWidth - sc.clientWidth > 4;
+      box.classList.toggle('has-more', more);
+      box.classList.toggle('at-end', more && sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 4);
+    }
+    upd();
+    sc.addEventListener('scroll', upd, { passive: true });
+    window.addEventListener('resize', upd);
+  });
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0d1017">
+<meta name="format-detection" content="telephone=no">
+<title>学习站 · 教程目录</title>
+<style>  *, *::before, *::after { box-sizing: border-box; }
+
+  :root {
+    --bg-0: #0d1017;
+    --bg-1: #141926;
+    --ink: #e9edf5;
+    --ink-2: #aab3c6;
+    --muted: #7b859c;
+    --line: rgba(255,255,255,.085);
+    --line-2: rgba(255,255,255,.14);
+    --card: rgba(255,255,255,.042);
+    --card-hover: rgba(255,255,255,.085);
+    --accent: #6d8dff;
+    --accent-2: #a06bff;
+    --ok: #4fd39a;
+    --ok-bg: rgba(79,211,154,.12);
+    --ok-bd: rgba(79,211,154,.34);
+    --doing: #ffb066;
+    --doing-bg: rgba(255,157,79,.13);
+    --doing-bd: rgba(255,157,79,.36);
+    --radius: 16px;
+    --maxw: 54rem;
+  }
+
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    min-height: 100svh;
+    padding:
+      calc(28px + env(safe-area-inset-top))
+      calc(16px + env(safe-area-inset-right))
+      calc(72px + env(safe-area-inset-bottom))
+      calc(16px + env(safe-area-inset-left));
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    background:
+      radial-gradient(900px 480px at 12% -8%, rgba(109,141,255,.16), transparent 62%),
+      radial-gradient(760px 420px at 92% 4%, rgba(160,107,255,.12), transparent 60%),
+      linear-gradient(170deg, var(--bg-0) 0%, var(--bg-1) 52%, #10141e 100%);
+    background-attachment: fixed;
+  }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; }
+
+  /* ── 页头 ─────────────────────────────────────────────── */
+  header.top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .brand { flex: 1 1 0; min-width: 0; }
+  .brand h1 {
+    margin: 0;
+    font-size: clamp(21px, 5vw, 27px);
+    font-weight: 700;
+    letter-spacing: .01em;
+    background: linear-gradient(92deg, #fff 12%, #b9c6ff 78%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .brand p {
+    margin: 7px 0 0;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  /* ── 进度条概览 ───────────────────────────────────────── */
+  .progress {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 14px;
+    margin: 0 0 22px;
+    padding: 12px 15px;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    background: var(--card);
+    font-size: 12px;
+    color: var(--ink-2);
+  }
+  .progress .bar {
+    flex: 1 1 160px;
+    height: 7px;
+    min-width: 120px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.08);
+    overflow: hidden;
+  }
+  .progress .bar i {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--ok), #7fd8ff);
+  }
+  .progress b { color: var(--ink); font-weight: 650; }
+  .progress .k { display: inline-flex; align-items: center; gap: 6px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .dot.done { background: var(--ok); }
+  .dot.doing { background: var(--doing); }
+  .dot.todo { background: #4a5468; }
+
+  /* ── 分区标题 ─────────────────────────────────────────── */
+  .section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 30px 0 12px;
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    color: #c3cde3;
+  }
+  .section:first-of-type { margin-top: 4px; }
+  .section .tick {
+    width: 3px;
+    height: 15px;
+    border-radius: 2px;
+    flex: none;
+    background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  }
+  .section .cnt {
+    margin-left: auto;
+    flex: none;
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: #7b8699;
+  }
+  .section::after {
+    content: "";
+    flex: none;
+    width: 22px;
+    height: 1px;
+    background: var(--line-2);
+  }
+
+  /* ── 卡片列表 ─────────────────────────────────────────── */
+  .grid { display: grid; gap: 10px; }
+
+  a.card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 15px 17px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: inherit;
+    background: var(--card);
+    border: 1px solid var(--line);
+    transition: background .2s, border-color .2s, transform .16s, box-shadow .2s;
+  }
+  a.card:active { transform: scale(.988); }
+
+  .no {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    box-shadow: 0 6px 18px rgba(109,141,255,.28);
+    letter-spacing: .02em;
+  }
+
+  .meta { min-width: 0; flex: 1 1 auto; }
+  .meta h2 {
+    margin: 0;
+    font-size: 15.5px;
+    font-weight: 650;
+    line-height: 1.45;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .meta p {
+    margin: 4px 0 0;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: #9aa6bd;
+  }
+
+  /* ── 状态标记 ─────────────────────────────────────────── */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex: none;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    border: 1px solid var(--line-2);
+    color: #93a0b8;
+    background: rgba(255,255,255,.045);
+    border-color: rgba(255,255,255,.13);
+  }
+  .tag.done { color: #7fe6ba; background: var(--ok-bg); border-color: var(--ok-bd); }
+  .tag.doing { color: #ffc48a; background: var(--doing-bg); border-color: var(--doing-bd); }
+  .tag i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  .arrow {
+    margin-left: auto;
+    flex: none;
+    color: #4d586e;
+    font-size: 16px;
+    transition: color .2s, transform .2s;
+  }
+
+  /* ── 练习区：与教程卡同构的卡片 ───────────────────────── */
+  .ex-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 17px;
+    border-radius: 13px;
+    text-decoration: none;
+    color: inherit;
+    background: var(--card);
+    border: 1px solid var(--line);
+    transition: background .2s, border-color .2s;
+  }
+  .ex-card .no {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    font-size: 14px;
+    background: rgba(120,150,255,.14);
+    border: 1px solid rgba(120,150,255,.28);
+    color: #b9c6ff;
+    box-shadow: none;
+  }
+  .ex-card .meta h2 { font-size: 14.5px; }
+  .ex-card .meta p { font-size: 12px; }
+  .ex-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-left: auto;
+    flex: none;
+  }
+  .ex-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 32px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #cdd8ee;
+    background: rgba(255,255,255,.06);
+    border: 1px solid var(--line-2);
+    transition: background .18s, border-color .18s, color .18s, transform .14s;
+  }
+  .ex-links a.ans {
+    color: #7fe0b4;
+    background: rgba(79,211,154,.09);
+    border-color: rgba(79,211,154,.26);
+  }
+  .ex-links a.code {
+    color: #c4b0ff;
+    background: rgba(150,120,255,.1);
+    border-color: rgba(150,120,255,.3);
+  }
+  .ex-links a:active { transform: scale(.96); }
+
+  /* ── 底部说明 ─────────────────────────────────────────── */
+  .note {
+    margin-top: 28px;
+    padding: 15px 17px;
+    border-radius: var(--radius);
+    border: 1px dashed var(--line-2);
+    color: #7d879d;
+    font-size: 12.5px;
+    line-height: 1.85;
+  }
+  .note code {
+    font-family: "JetBrains Mono", Consolas, monospace;
+    font-size: 11.8px;
+    color: #a9b6d4;
+    background: rgba(255,255,255,.055);
+    padding: 1px 6px;
+    border-radius: 5px;
+    word-break: break-all;
+  }
+
+  /* ── 只在支持悬停的设备上给 hover 效果 ───────────────── */
+  @media (hover: hover) and (pointer: fine) {
+    #logout:hover {
+      background: rgba(255,120,120,.14);
+      border-color: rgba(255,120,120,.4);
+      color: #ffc9c9;
+    }
+    a.card:hover {
+      background: var(--card-hover);
+      border-color: rgba(120,150,255,.38);
+      transform: translateX(4px);
+      box-shadow: 0 10px 30px rgba(0,0,0,.28);
+    }
+    a.card:hover .arrow { color: var(--accent); transform: translateX(3px); }
+    .ex-card:hover { background: var(--card-hover); border-color: rgba(120,150,255,.3); }
+    .ex-links a:hover {
+      background: rgba(120,150,255,.18);
+      border-color: rgba(120,150,255,.42);
+      color: #fff;
+    }
+    .ex-links a.ans:hover { background: rgba(79,211,154,.2); border-color: rgba(79,211,154,.5); }
+    .ex-links a.code:hover { background: rgba(150,120,255,.22); border-color: rgba(150,120,255,.55); }
+  }
+
+  #logout {
+    flex: none;
+    min-height: 40px;
+    padding: 9px 18px;
+    border: 1px solid var(--line-2);
+    border-radius: 999px;
+    background: rgba(255,255,255,.05);
+    color: #cdd6ea;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background .2s, border-color .2s, color .2s, transform .12s;
+  }
+  #logout:active { transform: scale(.96); }
+
+  /* ── 平板 / 手机 ──────────────────────────────────────── */
+  @media (max-width: 700px) {
+    body { padding-top: calc(20px + env(safe-area-inset-top)); }
+    header.top { margin-bottom: 18px; }
+    .section { margin: 24px 0 10px; font-size: 12.5px; }
+    a.card { padding: 13px 14px; gap: 12px; border-radius: 14px; }
+    .no { width: 40px; height: 40px; border-radius: 11px; font-size: 13.5px; }
+    .meta h2 { font-size: 14.5px; }
+    .meta p { font-size: 12px; }
+    .arrow { display: none; }
+    #logout { padding: 8px 15px; font-size: 12.5px; }
+    .note { padding: 13px 14px; font-size: 12px; }
+    .ex-card { padding: 12px 13px; gap: 11px; }
+    .ex-card .no { width: 36px; height: 36px; border-radius: 10px; font-size: 13px; }
+    .ex-card .meta h2 { font-size: 14px; }
+    .ex-links { margin-left: 0; width: 100%; }
+    .ex-links a { flex: 1 1 auto; justify-content: center; padding: 8px 12px; min-height: 40px; }
+    .progress { font-size: 11.5px; padding: 11px 13px; }
+  }
+
+  @media (max-width: 380px) {
+    a.card { padding: 12px 12px; gap: 10px; }
+    .no { width: 36px; height: 36px; font-size: 12.5px; border-radius: 10px; }
+    .meta h2 { font-size: 14px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: .01ms !important; }
+  }</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>学习站</h1>
+      <p>三周期 · 15 篇教程 · 25 套练习 · 138 个示例</p>
+    </div>
+    <button id="logout" type="button">退出登录</button>
+  </header>
+
+  <div class="progress">
+    <span class="k"><b>学习进度</b></span>
+    <span class="bar"><i style="width:20%"></i></span>
+    <span class="k"><b>2 / 15</b> 篇教程</span>
+    <span class="k"><span class="dot done"></span><b>2</b> 篇已学</span>
+    <span class="k"><span class="dot doing"></span><b>1</b> 篇在学</span>
+    <span class="k"><span class="dot todo"></span><b>12</b> 篇未学</span>
+  </div>
+
+  <div class="section"><span class="tick"></span>路线与分析<span class="cnt">先看这两篇</span></div>
+  <div class="grid">
+    <a class="card" href="./00_任务与进度分析.html">
+      <div class="no">00</div>
+      <div class="meta"><h2>任务与进度分析<span class="tag todo"><i></i>未学</span></h2><p>实验室任务拆解 → 知识点映射 → 当前进度定位</p></div>
+      <div class="arrow">&#8594;</div>
+    </a>
+    <a class="card" href="./01_学习路线总览.html">
+      <div class="no">01</div>
+      <div class="meta"><h2>学习路线总览<span class="tag todo"><i></i>未学</span></h2><p>三周期路线图、周节奏与 M1~M11 里程碑</p></div>
+      <div class="arrow">&#8594;</div>
+    </a>
+  </div>
+
+  <div class="section"><span class="tick"></span>第一周期 · C 语言主线<span class="cnt">阶段一 ~ 七</span></div>
+  <div class="grid">
+    <a class="card" href="./02_阶段一_环境搭建与调试.html">
+      <div class="no">A</div>
+      <div class="meta"><h2>阶段一 · 环境搭建与调试<span class="tag done"><i></i>已学</span></h2><p>MinGW / VS Code / 编译四步流水线 / 断点调试</p></div>
+      <div class="arrow">&#8594;</div>
+    </a>
+    <a class="card" href="./03_阶段二_基础语法与控制流.html">
+      <div class="no">B</div>
+      <div class="meta"><h2>阶段二 · 基础语法与控制流<span class="tag done"><i></i>已学</span></h2><p>变量 / 输入输出 / 分支与循环 / 排雷三颗</p></div>
+      <div class="arrow">&#8594;</div>
+    </a>
+    <a class="card" href="./04_阶段三_函数.html">
+      <div class="no">C</div>
+      <div class="meta"><h2>阶段三 · 函数<span class="tag doing"><i></i>在学</span></h2><p>传值调用 / 原型与定义 / 数组作参数</p></div>
+      <div class="arrow">&#8594;</div>
+    </a>
+    <a class="card" href="./05_阶段四_数组与字符串.html">
+      <div class="no">D</div>
+      <div class="meta"><h2>阶段四 · 数组与字符串<span class="tag todo"><i></i>未学</span></h2><p>数组算法 / '\0' 约定 / 手写字符串库</p></div>
+      <div class="arrow">&#8594;</div>
+    </a>
+    <a class="card" href="./06_阶段五_指针.html">
+      <div class="no">E</div>
+      <div class="meta"><h2>阶段五 · 指针<span class="tag todo"><i></i>未学</span></h2><p>取地址与解引用 / 指针与数组 / 野指针防范</p></div>
+      <div class="arrow">&#8594;</div>
+    </a>
+    <a class="card" href="./07_阶段六_结构体联合与枚举.html">
+      <div class="no">F</div>
+      <div class="meta"><h2>阶段六 · 结构体、联合与枚举<span class="tag todo"><i></i>未学</span></h2><p>复合数据组织 / 内存对齐 / 状态枚举</p></div>
+      <div class="arrow">&#8594;</div>
+    </a>
+    <a class="card" href="./08_阶段七_类型深入与位运算.html">
+      <div class="no">G</div>
+      <div class="meta"><h2>阶段七 · 类型深入与位运算<span class="tag todo"><i></i>未学</span></h2><p>stdint 定宽类型 / 位运算 / 大小端</p></div>
+      <div class="arrow">&#8594;</div>
+    </a>
+  </div>
+
+  <div class="section"><span class="tick"></span>第二周期 · 考核冲刺与基础补全<span class="cnt">阶段八 ~ 十</span></div>
+  <div class="grid">
+    <a class="card" href="./09_阶段八_多文件工程与考核冲刺.html">
+      <div class="no">H</div>
+      <div class="meta"><h2>阶段八 · 多文件工程与考核冲刺<span class="tag todo"><i></i>未学</span></h2><p>声明与定义 / 头文件守卫 / extern 与 static / Makefile</p></div>
+      <div class="arrow">&#8594;</div>
+    </a>
+    <a class="card" href="./10_阶段九_动态内存与文件IO.html">
+      <div class="no">I</div>
+      <div class="meta"><h2>阶段九 · 动态内存与文件 IO<span class="tag todo"><i></i>未学</span></h2><p>malloc/free 配对纪律 / realloc / 记录持久化</p></div>
+      <div class="arrow">&#8594;</div>
+    </a>
+    <a class="card" href="./11_阶段十_51单片机C语言预备.html">
+      <div class="no">J</div>
+      <div class="meta"><h2>阶段十 · 51 单片机 C 语言预备<span class="tag todo"><i></i>未学</span></h2><p>SFR 与 sbit / volatile / 位运算点灯 / 段码查表</p></div>
+      <div class="arrow">&#8594;</div>
+    </a>
+  </div>
+
+  <div class="section"><span class="tick"></span>第三周期 · 51 单片机实战<span class="cnt">任务 2 ~ A</span></div>
+  <div class="grid">
+    <a class="card" href="./12_51实战一_数码管与按键.html">
+      <div class="no">K</div>
+      <div class="meta"><h2>实战一 · 数码管与按键<span class="tag todo"><i></i>未学</span></h2><p>动态扫描 / 消隐防重影 / 按键消抖 / 矩阵键盘 / 蜂鸣器</p></div>
+      <div class="arrow">&#8594;</div>
+    </a>
+    <a class="card" href="./13_51实战二_定时器串口与I2C.html">
+      <div class="no">L</div>
+      <div class="meta"><h2>实战二 · 定时器、串口与 I2C<span class="tag todo"><i></i>未学</span></h2><p>TH0/TL0 初值 / 中断纪律 / UART 命令解析 / EEPROM</p></div>
+      <div class="arrow">&#8594;</div>
+    </a>
+    <a class="card" href="./14_51实战三_时钟液晶AD与综合项目.html">
+      <div class="no">M</div>
+      <div class="meta"><h2>实战三 · 时钟、液晶、AD 与综合项目<span class="tag todo"><i></i>未学</span></h2><p>DS1302 / LCD1602 / AD 换算 / DS18B20 / 多文件架构</p></div>
+      <div class="arrow">&#8594;</div>
+    </a>
+  </div>
+
+  <div class="section"><span class="tick"></span>配套练习<span class="cnt">题目 / 文字答案 / 代码答案</span></div>
+  <div class="grid">
+    <a class="ex-card" href="./exercises/阶段一/练习_题目.html">
+      <div class="no">一</div>
+      <div class="meta"><h2>阶段一 练习<span class="tag done"><i></i>已学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="ex-links">
+      <a href="./exercises/阶段一/练习_题目.html">题目</a>
+      <a class="ans" href="./exercises/阶段一/答案_参考.html">文字答案</a>
+      <a class="code" href="./exercises/阶段一/代码答案.html">代码</a>
+      </div>
+    </a>
+    <a class="ex-card" href="./exercises/阶段二/练习_题目.html">
+      <div class="no">二</div>
+      <div class="meta"><h2>阶段二 练习<span class="tag done"><i></i>已学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="ex-links">
+      <a href="./exercises/阶段二/练习_题目.html">题目</a>
+      <a class="code" href="./exercises/阶段二/代码答案.html">代码</a>
+      </div>
+    </a>
+    <a class="ex-card" href="./exercises/阶段三/练习_题目.html">
+      <div class="no">三</div>
+      <div class="meta"><h2>阶段三 练习<span class="tag doing"><i></i>在学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="ex-links">
+      <a href="./exercises/阶段三/练习_题目.html">题目</a>
+      <a class="ans" href="./exercises/阶段三/答案_参考_文字题.html">文字答案</a>
+      <a class="code" href="./exercises/阶段三/代码答案.html">代码</a>
+      </div>
+    </a>
+    <a class="ex-card" href="./exercises/阶段四/练习_题目.html">
+      <div class="no">四</div>
+      <div class="meta"><h2>阶段四 练习<span class="tag todo"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="ex-links">
+      <a href="./exercises/阶段四/练习_题目.html">题目</a>
+      <a class="ans" href="./exercises/阶段四/答案_参考_文字题.html">文字答案</a>
+      <a class="code" href="./exercises/阶段四/代码答案.html">代码</a>
+      </div>
+    </a>
+    <a class="ex-card" href="./exercises/阶段五/练习_题目.html">
+      <div class="no">五</div>
+      <div class="meta"><h2>阶段五 练习<span class="tag todo"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="ex-links">
+      <a href="./exercises/阶段五/练习_题目.html">题目</a>
+      <a class="ans" href="./exercises/阶段五/答案_参考_文字题.html">文字答案</a>
+      <a class="code" href="./exercises/阶段五/代码答案.html">代码</a>
+      </div>
+    </a>
+    <a class="ex-card" href="./exercises/阶段六/练习_题目.html">
+      <div class="no">六</div>
+      <div class="meta"><h2>阶段六 练习<span class="tag todo"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="ex-links">
+      <a href="./exercises/阶段六/练习_题目.html">题目</a>
+      <a class="ans" href="./exercises/阶段六/答案_参考_文字题.html">文字答案</a>
+      <a class="code" href="./exercises/阶段六/代码答案.html">代码</a>
+      </div>
+    </a>
+    <a class="ex-card" href="./exercises/阶段七/练习_题目.html">
+      <div class="no">七</div>
+      <div class="meta"><h2>阶段七 练习<span class="tag todo"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="ex-links">
+      <a href="./exercises/阶段七/练习_题目.html">题目</a>
+      <a class="ans" href="./exercises/阶段七/答案_参考_文字题.html">文字答案</a>
+      <a class="code" href="./exercises/阶段七/代码答案.html">代码</a>
+      </div>
+    </a>
+    <a class="ex-card" href="./exercises/阶段八/练习_题目.html">
+      <div class="no">八</div>
+      <div class="meta"><h2>阶段八 练习<span class="tag todo"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="ex-links">
+      <a href="./exercises/阶段八/练习_题目.html">题目</a>
+      <a class="ans" href="./exercises/阶段八/答案_参考_文字题.html">文字答案</a>
+      <a class="code" href="./exercises/阶段八/代码答案.html">代码</a>
+      </div>
+    </a>
+    <a class="ex-card" href="./exercises/阶段九/练习_题目.html">
+      <div class="no">九</div>
+      <div class="meta"><h2>阶段九 练习<span class="tag todo"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="ex-links">
+      <a href="./exercises/阶段九/练习_题目.html">题目</a>
+      <a class="ans" href="./exercises/阶段九/答案_参考_文字题.html">文字答案</a>
+      <a class="code" href="./exercises/阶段九/代码答案.html">代码</a>
+      </div>
+    </a>
+    <a class="ex-card" href="./exercises/阶段十/练习_题目.html">
+      <div class="no">十</div>
+      <div class="meta"><h2>阶段十 练习<span class="tag todo"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="ex-links">
+      <a href="./exercises/阶段十/练习_题目.html">题目</a>
+      <a class="ans" href="./exercises/阶段十/答案_参考_文字题.html">文字答案</a>
+      <a class="code" href="./exercises/阶段十/代码答案.html">代码</a>
+      </div>
+    </a>
+    <a class="ex-card" href="./exercises/51实战一/练习_题目.html">
+      <div class="no">A</div>
+      <div class="meta"><h2>51实战一 练习<span class="tag todo"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="ex-links">
+      <a href="./exercises/51实战一/练习_题目.html">题目</a>
+      <a class="ans" href="./exercises/51实战一/答案_参考_文字题.html">文字答案</a>
+      <a class="code" href="./exercises/51实战一/代码答案.html">代码</a>
+      </div>
+    </a>
+    <a class="ex-card" href="./exercises/51实战二/练习_题目.html">
+      <div class="no">B</div>
+      <div class="meta"><h2>51实战二 练习<span class="tag todo"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="ex-links">
+      <a href="./exercises/51实战二/练习_题目.html">题目</a>
+      <a class="ans" href="./exercises/51实战二/答案_参考_文字题.html">文字答案</a>
+      <a class="code" href="./exercises/51实战二/代码答案.html">代码</a>
+      </div>
+    </a>
+    <a class="ex-card" href="./exercises/51实战三/练习_题目.html">
+      <div class="no">C</div>
+      <div class="meta"><h2>51实战三 练习<span class="tag todo"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="ex-links">
+      <a href="./exercises/51实战三/练习_题目.html">题目</a>
+      <a class="ans" href="./exercises/51实战三/答案_参考_文字题.html">文字答案</a>
+      <a class="code" href="./exercises/51实战三/代码答案.html">代码</a>
+      </div>
+    </a>
+  </div>
+
+  <div class="note">
+    覆盖实验室 C 语言任务一~七、入队考核，以及 51 单片机任务 1~A 的全部知识面。<br>
+    每个阶段提供 <b>题目</b>、<b>文字答案</b>（思路解析）与 <b>代码答案</b>（可直接编译运行的 .c 源码）三类页面；练习 3 一律为纸上作业，所以代码答案页通常含 6 个文件而非 7 个。<br>
+    全部示例通过 <code>gcc -Wall -Wextra -std=c99</code> 零警告编译，并实跑核对过预期输出。
+  </div>
+</div>
+
+<script>
+document.getElementById("logout").addEventListener("click", async (e) => {
+  e.currentTarget.disabled = true;
+  try { await fetch("/api/logout", { method: "POST" }); } catch (err) { /* 忽略网络错误 */ }
+  location.href = "/";
+});
+</script>
+</body>
+</html>

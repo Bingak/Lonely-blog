@@ -1,0 +1,1994 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1117" media="(prefers-color-scheme: dark)">
+<meta name="format-detection" content="telephone=no">
+<title>10 阶段九：动态内存与文件 IO（让数据活过下一次运行）</title>
+<style>pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #ffffcc }
+.codehilite { background: #f8f8f8; }
+.codehilite .c { color: #3D7B7B; font-style: italic } /* Comment */
+.codehilite .err { border: 1px solid #F00 } /* Error */
+.codehilite .k { color: #008000; font-weight: bold } /* Keyword */
+.codehilite .o { color: #666 } /* Operator */
+.codehilite .ch { color: #3D7B7B; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #3D7B7B; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #9C6500 } /* Comment.Preproc */
+.codehilite .cpf { color: #3D7B7B; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #3D7B7B; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
+.codehilite .gd { color: #A00000 } /* Generic.Deleted */
+.codehilite .ge { font-style: italic } /* Generic.Emph */
+.codehilite .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #E40000 } /* Generic.Error */
+.codehilite .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #008400 } /* Generic.Inserted */
+.codehilite .go { color: #717171 } /* Generic.Output */
+.codehilite .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.codehilite .gt { color: #04D } /* Generic.Traceback */
+.codehilite .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #008000 } /* Keyword.Pseudo */
+.codehilite .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #B00040 } /* Keyword.Type */
+.codehilite .m { color: #666 } /* Literal.Number */
+.codehilite .s { color: #BA2121 } /* Literal.String */
+.codehilite .na { color: #687822 } /* Name.Attribute */
+.codehilite .nb { color: #008000 } /* Name.Builtin */
+.codehilite .nc { color: #00F; font-weight: bold } /* Name.Class */
+.codehilite .no { color: #800 } /* Name.Constant */
+.codehilite .nd { color: #A2F } /* Name.Decorator */
+.codehilite .ni { color: #717171; font-weight: bold } /* Name.Entity */
+.codehilite .ne { color: #CB3F38; font-weight: bold } /* Name.Exception */
+.codehilite .nf { color: #00F } /* Name.Function */
+.codehilite .nl { color: #767600 } /* Name.Label */
+.codehilite .nn { color: #00F; font-weight: bold } /* Name.Namespace */
+.codehilite .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #19177C } /* Name.Variable */
+.codehilite .ow { color: #A2F; font-weight: bold } /* Operator.Word */
+.codehilite .w { color: #BBB } /* Text.Whitespace */
+.codehilite .mb { color: #666 } /* Literal.Number.Bin */
+.codehilite .mf { color: #666 } /* Literal.Number.Float */
+.codehilite .mh { color: #666 } /* Literal.Number.Hex */
+.codehilite .mi { color: #666 } /* Literal.Number.Integer */
+.codehilite .mo { color: #666 } /* Literal.Number.Oct */
+.codehilite .sa { color: #BA2121 } /* Literal.String.Affix */
+.codehilite .sb { color: #BA2121 } /* Literal.String.Backtick */
+.codehilite .sc { color: #BA2121 } /* Literal.String.Char */
+.codehilite .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.codehilite .s2 { color: #BA2121 } /* Literal.String.Double */
+.codehilite .se { color: #AA5D1F; font-weight: bold } /* Literal.String.Escape */
+.codehilite .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.codehilite .si { color: #A45A77; font-weight: bold } /* Literal.String.Interpol */
+.codehilite .sx { color: #008000 } /* Literal.String.Other */
+.codehilite .sr { color: #A45A77 } /* Literal.String.Regex */
+.codehilite .s1 { color: #BA2121 } /* Literal.String.Single */
+.codehilite .ss { color: #19177C } /* Literal.String.Symbol */
+.codehilite .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #00F } /* Name.Function.Magic */
+.codehilite .vc { color: #19177C } /* Name.Variable.Class */
+.codehilite .vg { color: #19177C } /* Name.Variable.Global */
+.codehilite .vi { color: #19177C } /* Name.Variable.Instance */
+.codehilite .vm { color: #19177C } /* Name.Variable.Magic */
+.codehilite .il { color: #666 } /* Literal.Number.Integer.Long */</style>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --bg: #f7f8fa;
+  --bg-elev: #ffffff;
+  --ink: #1f2328;
+  --ink-soft: #4c5560;
+  --muted: #8a9199;
+  --accent: #b03a2e;
+  --link: #1a6fb5;
+  --line: #e4e7ea;
+  --line-soft: #eef0f2;
+  --code-bg: #f6f7f9;
+  --code-ink: #c0214a;
+  --quote-bg: #fff8e8;
+  --quote-line: #e6a23c;
+  --quote-ink: #6b5900;
+  --th-bg: #f2f4f6;
+  --tr-alt: #fafbfc;
+  --shadow: 0 1px 2px rgba(16,24,40,.04), 0 8px 24px rgba(16,24,40,.05);
+  --shadow-lift: 0 2px 6px rgba(16,24,40,.06), 0 16px 40px rgba(16,24,40,.09);
+  --radius: 14px;
+  --maxw: 50rem;
+  --scroll-shadow: rgba(15, 23, 42, .16);
+  --mono: "JetBrains Mono", "Cascadia Mono", Consolas, "SF Mono", Menlo, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Microsoft YaHei", "Noto Sans SC", "Source Han Sans SC", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1117;
+    --bg-elev: #161b23;
+    --ink: #e7eaf0;
+    --ink-soft: #b8c0cd;
+    --muted: #8b93a3;
+    --accent: #ff8f7e;
+    --link: #82b6ff;
+    --line: #262d38;
+    --line-soft: #1c232c;
+    --code-bg: #1b212b;
+    --code-ink: #ff9db0;
+    --quote-bg: #241f13;
+    --quote-line: #b98a2e;
+    --quote-ink: #e8d3a0;
+    --th-bg: #1d232c;
+    --tr-alt: #171d25;
+    --shadow: 0 1px 2px rgba(0,0,0,.45), 0 10px 30px rgba(0,0,0,.35);
+    --shadow-lift: 0 2px 8px rgba(0,0,0,.5), 0 20px 50px rgba(0,0,0,.45);
+    --scroll-shadow: rgba(255, 255, 255, .16);
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-wrap: break-word;
+}
+
+::selection { background: rgba(26,111,181,.22); }
+
+.wrap {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 28px clamp(14px, 4vw, 28px) 96px;
+}
+
+/* ── 顶部文档导航：吸顶 + 横向滑动 ───────────────────────── */
+nav.docnav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  padding: 10px 12px;
+  margin: 0 0 26px;
+  background: var(--bg-elev);
+  background: color-mix(in srgb, var(--bg-elev) 88%, transparent);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+nav.docnav::-webkit-scrollbar { display: none; }
+nav.docnav b {
+  flex: none;
+  color: var(--accent);
+  font-size: 12.5px;
+  letter-spacing: .06em;
+  padding-right: 4px;
+}
+nav.docnav a {
+  flex: none;
+  display: inline-block;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: background .18s, color .18s;
+}
+nav.docnav a:hover { background: var(--line-soft); color: var(--ink); }
+nav.docnav a.cur {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 650;
+}
+@media (prefers-color-scheme: dark) {
+  nav.docnav a.cur { color: #1a0f0d; }
+}
+nav.docnav a.home { color: var(--link); }
+
+/* 桌面端：导航平铺换行，全部可见，不吸顶（避免遮挡正文） */
+@media (min-width: 861px) {
+  nav.docnav {
+    position: static;
+    flex-wrap: wrap;
+    overflow: visible;
+    white-space: normal;
+    row-gap: 4px;
+  }
+}
+
+/* ── 页眉 ──────────────────────────────────────────────── */
+header.doc {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+  margin-bottom: 26px;
+}
+header.doc .kicker {
+  display: inline-block;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: .16em;
+  font-size: 11.5px;
+  text-transform: uppercase;
+}
+h1 {
+  font-size: clamp(21px, 4.4vw, 30px);
+  line-height: 1.38;
+  margin: 8px 0 0;
+  letter-spacing: -.01em;
+}
+
+/* ── 正文排版 ──────────────────────────────────────────── */
+h2 {
+  font-size: clamp(18px, 3vw, 23px);
+  line-height: 1.42;
+  margin: 2.1em 0 .9em;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  scroll-margin-top: 72px;
+}
+h3 {
+  font-size: clamp(16px, 2.3vw, 19px);
+  margin: 1.7em 0 .6em;
+  color: var(--ink);
+  scroll-margin-top: 72px;
+}
+h4 { font-size: 16px; margin: 1.4em 0 .5em; color: var(--ink-soft); }
+p { margin: .85em 0; }
+p, li { text-align: left; }
+
+a { color: var(--link); text-decoration: none; border-bottom: 1px solid transparent; }
+a:hover { border-bottom-color: currentColor; }
+
+strong { color: var(--accent); font-weight: 700; }
+em { color: var(--ink-soft); }
+
+blockquote {
+  margin: 1.2em 0;
+  padding: 12px 16px;
+  background: var(--quote-bg);
+  border-left: 4px solid var(--quote-line);
+  border-radius: 0 12px 12px 0;
+  color: var(--quote-ink);
+}
+blockquote p { margin: .35em 0; }
+blockquote strong { color: inherit; }
+
+hr {
+  border: none;
+  border-top: 1px dashed var(--line);
+  margin: 2.2em 0;
+}
+
+/* ── 行内代码 ──────────────────────────────────────────── */
+code {
+  font-family: var(--mono);
+  font-size: .885em;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  padding: .12em .42em;
+  border-radius: 6px;
+  border: 1px solid var(--line-soft);
+  word-break: break-word;
+}
+
+/* ── 代码块：横向滚动，不撑破屏幕 ───────────────────────── */
+.codehilite {
+  position: relative;
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 1.1em 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  font-size: 14px;
+  line-height: 1.62;
+}
+.codehilite pre {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: inherit;
+  line-height: inherit;
+  tab-size: 4;
+}
+.codehilite code {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+  white-space: pre;
+}
+
+/* 细滚动条（代码块 / 表格横向滚动时更轻盈） */
+.codehilite, .table-wrap {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.codehilite::-webkit-scrollbar,
+.table-wrap::-webkit-scrollbar { height: 7px; }
+.codehilite::-webkit-scrollbar-track,
+.table-wrap::-webkit-scrollbar-track { background: transparent; }
+.codehilite::-webkit-scrollbar-thumb,
+.table-wrap::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 99px;
+}
+.codehilite::-webkit-scrollbar-thumb:hover,
+.table-wrap::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ── 表格：外层可横向滚动 ──────────────────────────────── */
+.table-wrap {
+  margin: 1.1em 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  border-radius: 12px;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+th, td {
+  border: 1px solid var(--line);
+  padding: 8px 11px;
+  text-align: left;
+  vertical-align: top;
+}
+th { background: var(--th-bg); font-weight: 650; white-space: nowrap; }
+tbody tr:nth-child(even) td { background: var(--tr-alt); }
+table code { white-space: nowrap; }
+
+/* ── 任务清单复选框 ────────────────────────────────────── */
+ul.task-list, ul.contains-task-list { list-style: none; padding-left: 2px; }
+ul.task-list li, ul.contains-task-list li { margin: .4em 0; }
+ul.task-list input[type=checkbox] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 17px; height: 17px;
+  border: 1.5px solid var(--muted);
+  border-radius: 5px;
+  margin-right: 9px;
+  vertical-align: -3px;
+  background: var(--bg-elev);
+  flex: none;
+}
+ul.task-list input[type=checkbox]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'><path d='M6.4 11.2 3.2 8l-1.1 1.1 4.3 4.3 8-8-1.1-1.1z'/></svg>");
+  background-size: 12px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ── 目录折叠块 ────────────────────────────────────────── */
+details.toc {
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 18px;
+  margin-bottom: 26px;
+  box-shadow: var(--shadow);
+}
+details.toc summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--link);
+  padding: 4px 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+details.toc summary::-webkit-details-marker { display: none; }
+details.toc summary::before {
+  content: "";
+  width: 0; height: 0;
+  border-left: 6px solid currentColor;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  transition: transform .2s;
+}
+details.toc[open] summary::before { transform: rotate(90deg); }
+details.toc ol { margin: 10px 0 6px; padding-left: 22px; }
+details.toc li { margin: .3em 0; }
+details.toc a { font-size: 14px; color: var(--ink-soft); }
+details.toc a:hover { color: var(--link); }
+
+/* ── 页脚 ──────────────────────────────────────────────── */
+footer.doc {
+  margin-top: 56px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12.5px;
+  text-align: center;
+  line-height: 1.8;
+}
+
+/* ── 回到顶部 ──────────────────────────────────────────── */
+#totop {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  z-index: 40;
+  width: 46px; height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--bg-elev);
+  color: var(--ink-soft);
+  box-shadow: var(--shadow-lift);
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity .22s, transform .22s, visibility .22s;
+}
+#totop.show { opacity: 1; visibility: visible; transform: none; }
+#totop:active { transform: scale(.94); }
+
+/* ── 平板 ──────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .wrap { padding-top: 18px; }
+  body { font-size: 15.5px; line-height: 1.8; }
+  .codehilite { font-size: 13.2px; padding: 12px 13px; }
+  table { font-size: 13.2px; }
+  th, td { padding: 7px 9px; }
+}
+
+/* ── 手机 ──────────────────────────────────────────────── */
+@media (max-width: 560px) {
+  html { scroll-behavior: auto; }
+  .wrap { padding: 12px 13px 84px; }
+  body { font-size: 15px; line-height: 1.78; }
+
+  nav.docnav { top: 0; border-radius: 12px; padding: 8px 9px; margin-bottom: 18px; }
+  nav.docnav b { display: none; }
+  nav.docnav a { font-size: 12.5px; padding: 6px 10px; }
+
+  header.doc { padding-bottom: 12px; margin-bottom: 18px; }
+  header.doc .kicker { font-size: 10.5px; letter-spacing: .12em; }
+
+  h1 { font-size: 20px; }
+  h2 { font-size: 17.5px; padding-left: 9px; border-left-width: 3px; margin-top: 1.8em; }
+  h3 { font-size: 15.5px; }
+  h4 { font-size: 14.5px; }
+  p { margin: .8em 0; }
+
+  blockquote { padding: 10px 12px; border-radius: 0 10px 10px 0; }
+
+  .codehilite { font-size: 12.2px; padding: 11px 12px; border-radius: 10px; }
+  table { font-size: 12.6px; }
+  th, td { padding: 6px 8px; }
+  th { white-space: normal; }
+
+  details.toc { padding: 10px 14px; margin-bottom: 18px; }
+  details.toc ol { padding-left: 18px; }
+  details.toc a { font-size: 13px; }
+
+  /* 触控目标不小于 40px */
+  ul.task-list li { padding: 2px 0; }
+  ul.task-list input[type=checkbox] { width: 19px; height: 19px; }
+
+  footer.doc { margin-top: 40px; font-size: 11.5px; }
+  #totop { width: 42px; height: 42px; font-size: 16px; }
+}
+
+/* ── 打印 ──────────────────────────────────────────────── */
+@media print {
+  nav.docnav, #totop, details.toc { display: none !important; }
+  body { background: #fff; color: #000; font-size: 11pt; }
+  .wrap { max-width: none; padding: 0; }
+  .codehilite, table, blockquote { box-shadow: none; }
+  a { color: #000; }
+  h2, h3 { page-break-after: avoid; }
+  .codehilite, table { page-break-inside: avoid; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+pre { line-height: 125%; }
+td.linenos .normal { color: #aaaaaa; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #aaaaaa; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #404040 }
+.codehilite { background: #202020; color: #D0D0D0 }
+.codehilite .c { color: #ABABAB; font-style: italic } /* Comment */
+.codehilite .err { color: #A61717; background-color: #E3D2D2 } /* Error */
+.codehilite .esc { color: #D0D0D0 } /* Escape */
+.codehilite .g { color: #D0D0D0 } /* Generic */
+.codehilite .k { color: #6EBF26; font-weight: bold } /* Keyword */
+.codehilite .l { color: #D0D0D0 } /* Literal */
+.codehilite .n { color: #D0D0D0 } /* Name */
+.codehilite .o { color: #D0D0D0 } /* Operator */
+.codehilite .x { color: #D0D0D0 } /* Other */
+.codehilite .p { color: #D0D0D0 } /* Punctuation */
+.codehilite .ch { color: #ABABAB; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #ABABAB; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #FF3A3A; font-weight: bold } /* Comment.Preproc */
+.codehilite .cpf { color: #ABABAB; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #ABABAB; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #E50808; font-weight: bold; background-color: #520000 } /* Comment.Special */
+.codehilite .gd { color: #FF3A3A } /* Generic.Deleted */
+.codehilite .ge { color: #D0D0D0; font-style: italic } /* Generic.Emph */
+.codehilite .ges { color: #D0D0D0; font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #FF3A3A } /* Generic.Error */
+.codehilite .gh { color: #FFF; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #589819 } /* Generic.Inserted */
+.codehilite .go { color: #CCC } /* Generic.Output */
+.codehilite .gp { color: #AAA } /* Generic.Prompt */
+.codehilite .gs { color: #D0D0D0; font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #FFF; text-decoration: underline } /* Generic.Subheading */
+.codehilite .gt { color: #FF3A3A } /* Generic.Traceback */
+.codehilite .kc { color: #6EBF26; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #6EBF26; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #6EBF26; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #6EBF26 } /* Keyword.Pseudo */
+.codehilite .kr { color: #6EBF26; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #6EBF26; font-weight: bold } /* Keyword.Type */
+.codehilite .ld { color: #D0D0D0 } /* Literal.Date */
+.codehilite .m { color: #51B2FD } /* Literal.Number */
+.codehilite .s { color: #ED9D13 } /* Literal.String */
+.codehilite .na { color: #BBB } /* Name.Attribute */
+.codehilite .nb { color: #2FBCCD } /* Name.Builtin */
+.codehilite .nc { color: #71ADFF; text-decoration: underline } /* Name.Class */
+.codehilite .no { color: #40FFFF } /* Name.Constant */
+.codehilite .nd { color: #FFA500 } /* Name.Decorator */
+.codehilite .ni { color: #D0D0D0 } /* Name.Entity */
+.codehilite .ne { color: #BBB } /* Name.Exception */
+.codehilite .nf { color: #71ADFF } /* Name.Function */
+.codehilite .nl { color: #D0D0D0 } /* Name.Label */
+.codehilite .nn { color: #71ADFF; text-decoration: underline } /* Name.Namespace */
+.codehilite .nx { color: #D0D0D0 } /* Name.Other */
+.codehilite .py { color: #D0D0D0 } /* Name.Property */
+.codehilite .nt { color: #6EBF26; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #40FFFF } /* Name.Variable */
+.codehilite .ow { color: #6EBF26; font-weight: bold } /* Operator.Word */
+.codehilite .pm { color: #D0D0D0 } /* Punctuation.Marker */
+.codehilite .w { color: #666 } /* Text.Whitespace */
+.codehilite .mb { color: #51B2FD } /* Literal.Number.Bin */
+.codehilite .mf { color: #51B2FD } /* Literal.Number.Float */
+.codehilite .mh { color: #51B2FD } /* Literal.Number.Hex */
+.codehilite .mi { color: #51B2FD } /* Literal.Number.Integer */
+.codehilite .mo { color: #51B2FD } /* Literal.Number.Oct */
+.codehilite .sa { color: #ED9D13 } /* Literal.String.Affix */
+.codehilite .sb { color: #ED9D13 } /* Literal.String.Backtick */
+.codehilite .sc { color: #ED9D13 } /* Literal.String.Char */
+.codehilite .dl { color: #ED9D13 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #ED9D13 } /* Literal.String.Doc */
+.codehilite .s2 { color: #ED9D13 } /* Literal.String.Double */
+.codehilite .se { color: #ED9D13 } /* Literal.String.Escape */
+.codehilite .sh { color: #ED9D13 } /* Literal.String.Heredoc */
+.codehilite .si { color: #ED9D13 } /* Literal.String.Interpol */
+.codehilite .sx { color: #FFA500 } /* Literal.String.Other */
+.codehilite .sr { color: #ED9D13 } /* Literal.String.Regex */
+.codehilite .s1 { color: #ED9D13 } /* Literal.String.Single */
+.codehilite .ss { color: #ED9D13 } /* Literal.String.Symbol */
+.codehilite .bp { color: #2FBCCD } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #71ADFF } /* Name.Function.Magic */
+.codehilite .vc { color: #40FFFF } /* Name.Variable.Class */
+.codehilite .vg { color: #40FFFF } /* Name.Variable.Global */
+.codehilite .vi { color: #40FFFF } /* Name.Variable.Instance */
+.codehilite .vm { color: #40FFFF } /* Name.Variable.Magic */
+.codehilite .il { color: #51B2FD } /* Literal.Number.Integer.Long */
+}
+</style>
+<style>
+.scroll-hint { position: relative; }
+.scroll-hint::after {
+  content: "";
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 30px;
+  border-radius: 0 12px 12px 0;
+  pointer-events: none;
+  background: linear-gradient(270deg, var(--scroll-shadow), transparent);
+  opacity: 0;
+  transition: opacity .18s;
+}
+.scroll-hint.has-more::after { opacity: 1; }
+.scroll-hint.at-end::after { opacity: 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="docnav" id="docnav"><b>DOCS</b><a class="home" href="./index.html">目录页</a><a href="00_任务与进度分析.html">00_任务与进度分析</a><a href="01_学习路线总览.html">01_学习路线总览</a><a href="02_阶段一_环境搭建与调试.html">02_阶段一_环境搭建与调试</a><a href="03_阶段二_基础语法与控制流.html">03_阶段二_基础语法与控制流</a><a href="04_阶段三_函数.html">04_阶段三_函数</a><a href="05_阶段四_数组与字符串.html">05_阶段四_数组与字符串</a><a href="06_阶段五_指针.html">06_阶段五_指针</a><a href="07_阶段六_结构体联合与枚举.html">07_阶段六_结构体联合与枚举</a><a href="08_阶段七_类型深入与位运算.html">08_阶段七_类型深入与位运算</a><a href="09_阶段八_多文件工程与考核冲刺.html">09_阶段八_多文件工程与考核冲刺</a><a href="10_阶段九_动态内存与文件IO.html" class="cur">10_阶段九_动态内存与文件IO</a><a href="11_阶段十_51单片机C语言预备.html">11_阶段十_51单片机C语言预备</a><a href="12_51实战一_数码管与按键.html">12_51实战一_数码管与按键</a><a href="13_51实战二_定时器串口与I2C.html">13_51实战二_定时器串口与I2C</a><a href="14_51实战三_时钟液晶AD与综合项目.html">14_51实战三_时钟液晶AD与综合项目</a></nav>
+<header class="doc"><span class="kicker">C 语言学习计划 · AI 生成教程</span><h1>10 阶段九：动态内存与文件 IO（让数据活过下一次运行）</h1></header>
+<details class="toc" id="toc"><summary>本文目录</summary><div class="toc">
+<ul>
+<li><a href="#h4994a1a2">1. 本节目标与前置知识</a></li>
+<li><a href="#hb63538fa">2. 场景引入：50 人的成绩表，和一次“关机归零”</a></li>
+<li><a href="#h979be34b">3. 核心概念一：栈与堆——两种“活着”的方式</a><ul>
+<li><a href="#h5514be08">3.1 栈：函数借你用的折叠桌</a></li>
+<li><a href="#h09a68188">3.2 堆：去仓库签字借一张桌子</a></li>
+<li><a href="#hf7043b19">3.3 一张对照表（请贴在错题本第一页）</a></li>
+<li><a href="#h9b0c10dd">3.4 生命周期对比：函数走后，谁还活着</a></li>
+</ul>
+</li>
+<li><a href="#h29be134e">4. 核心概念二：malloc——向堆借地，先查 NULL</a><ul>
+<li><a href="#h8fe263dd">4.1 它只认字节，不认类型</a></li>
+<li><a href="#hcc48718e">4.2 为什么必须检查 NULL</a></li>
+<li><a href="#hd3a9d5e2">4.3 sizeof 陷阱：sizeof p 不是 sizeof *p</a></li>
+</ul>
+</li>
+<li><a href="#h3ab4cd1a">5. 核心概念三：free 与“谁分配谁释放”</a><ul>
+<li><a href="#h0181d255">5.1 free 做三件事，但不做第四件</a></li>
+<li><a href="#h73e82442">5.2 “谁分配谁释放”不是口号，是接口契约</a></li>
+<li><a href="#h8e381114">5.3 有多个出口时，别漏掉 free</a></li>
+</ul>
+</li>
+<li><a href="#h1e23f12a">6. 核心概念四：calloc——带零初始化的租约</a></li>
+<li><a href="#h2cddabca">7. 核心概念五：realloc——扩容的三种结局</a></li>
+<li><a href="#h10bff7c5">8. 核心概念六：悬垂指针与 double free</a><ul>
+<li><a href="#hdba8abea">8.1 悬垂指针：钥匙还在，房子已经退了</a></li>
+<li><a href="#hac952a03">8.2 double free：同一把钥匙还两次</a></li>
+<li><a href="#h1dacebe0">8.3 越界写：破坏发生在“隔壁”</a></li>
+<li><a href="#h1b5aef13">8.4 配套示例为什么只“讲”不“引爆”</a></li>
+</ul>
+</li>
+<li><a href="#h078297da">9. 核心概念七：内存泄漏的三种典型形态</a><ul>
+<li><a href="#h6afade67">9.1 丢了唯一地址</a></li>
+<li><a href="#hfa0559b1">9.2 提前返回，跳过清理</a></li>
+<li><a href="#h641071ba">9.3 只释放外壳，没释放内容</a></li>
+</ul>
+</li>
+<li><a href="#hf0098a80">10. 核心概念八：检查内存——Valgrind 思路与 Windows 的替代手段</a><ul>
+<li><a href="#h5be0adcb">10.1 Valgrind 到底在做什么</a></li>
+<li><a href="#h0d3b4522">10.2 Windows 没有 Valgrind，先试 AddressSanitizer</a></li>
+<li><a href="#hc4d384e3">10.3 手工审计：没有工具也能对账</a></li>
+<li><a href="#h6d43744c">10.4 工具不是免死金牌</a></li>
+</ul>
+</li>
+<li><a href="#hc0c66a7f">11. 核心概念九：动态数组——长度、容量与扩容</a><ul>
+<li><a href="#h3eca35f9">11.1 两个数字，别混</a></li>
+<li><a href="#h56e1a69b">11.2 完整可运行示例</a></li>
+<li><a href="#h1506a511">11.3 动态数组的三条纪律</a></li>
+</ul>
+</li>
+<li><a href="#h27e25c73">12. 核心概念十：文件 IO 全套——把内存写成字节</a><ul>
+<li><a href="#hd6c1d98b">12.1 FILE 是什么</a></li>
+<li><a href="#h21a34164">12.2 fopen 的六种文本模式</a></li>
+<li><a href="#h4f477765">12.3 打开必须检查</a></li>
+<li><a href="#h1b8a0ca1">12.4 fprintf / fscanf 的返回值</a></li>
+<li><a href="#hd8704e23">12.5 fgets 逐行读：文件版的“安全输入”</a></li>
+<li><a href="#hb324518d">12.6 把写、关、开、读串起来</a></li>
+<li><a href="#h2bd80805">12.7 fclose：不是礼貌，是数据落盘的一部分</a></li>
+<li><a href="#h9e45c892">12.8 文本模式 vs 二进制模式：Windows 的 \r\n 坑</a></li>
+<li><a href="#h39115195">12.9 fwrite / fread：整块字节的搬运</a></li>
+</ul>
+</li>
+<li><a href="#hca614872">13. 核心概念十一：结构体记录持久化——CSV 与二进制</a><ul>
+<li><a href="#h9f97e601">13.1 先把“一条记录”定下来</a></li>
+<li><a href="#hc06c2277">13.2 CSV 方案：一行一条，人也能读</a></li>
+<li><a href="#h498e4f65">13.3 二进制方案：把结构体原样写进去</a></li>
+<li><a href="#h3ade5603">13.4 两种方案的正面对比</a></li>
+<li><a href="#hde33794d">13.5 版本兼容：字段一改，旧文件就可能读不了</a></li>
+</ul>
+</li>
+<li><a href="#h50f08358">14. 编译与运行（阶段九全部代码）</a></li>
+<li><a href="#h7d6110e8">15. 本阶段练习（题目在 exercises\阶段九\练习_题目.md，答案同目录）</a></li>
+<li><a href="#hab46f84f">16. 常见错误与调试速查</a></li>
+<li><a href="#hb235b68c">17. 安全与规范：本阶段三条铁律</a></li>
+<li><a href="#he6fb25af">18. 任务/项目作战指南：给已有记录程序加持久化</a><ul>
+<li><a href="#h9e43804a">18.1 从“内存版”到“持久化版”的知识映射</a></li>
+<li><a href="#h84323147">18.2 提交前自查清单</a></li>
+</ul>
+</li>
+<li><a href="#hbd196fa3">19. 验收清单（全部打勾才进入阶段十）</a></li>
+<li><a href="#haf9e8755">20. 本阶段复盘与下一阶段衔接</a></li>
+</ul>
+</div>
+</details>
+<script>if(window.matchMedia('(min-width:861px)').matches){var t=document.getElementById('toc');if(t)t.open=true;}</script>
+<blockquote>
+<p>预计学时：8~10 天（每天 1.5~2 小时）
+本阶段定位：<strong>弹性阶段 · 完整 C 基础补全 · 嵌入式进阶（RTOS/驱动）的门槛</strong>
+配套代码：<code>code\阶段九_动态内存与文件IO\</code>（5 个）；练习：<code>exercises\阶段九\</code>
+前置：阶段四（<code>fgets</code>、<code>'\0'</code>、缓冲区）、阶段五（指针、地址、NULL）、阶段六（结构体）、阶段八（多文件工程与考核）
+边界声明：本阶段没有新的实验室任务。教程里的程序都是通用示例，<strong>不包含考核登录菜单系统的解答，也不提供它的菜单流程或伪代码</strong>。你的考核版本已经交付，不要拿这里的示例去“拼答案”。</p>
+</blockquote>
+<hr />
+<h2 id="h4994a1a2">1. 本节目标与前置知识</h2>
+<p><strong>目标：</strong>
+1. 从地址、生命周期、管理方式三个角度，说清<strong>栈与堆</strong>的物理区别，理解为什么局部数组不能“带出函数”。
+2. 掌握 <code>malloc</code> 的字节语义、返回 <code>NULL</code> 的检查，以及 <code>sizeof *p</code> 这个防错写法。
+3. 掌握 <code>free</code> 的规则与<strong>“谁分配谁释放”</strong>的所有权纪律，能写带所有权注释的接口。
+4. 掌握 <code>calloc</code> 的零初始化，分清它与 <code>malloc</code> 的适用场景。
+5. 掌握 <code>realloc</code> 的<strong>三种结局</strong>，并把“先接住返回值，再覆盖原指针”变成肌肉记忆。
+6. 识别悬垂指针、double free、内存泄漏的典型形态；知道“程序没崩”不等于“内存没问题”。
+7. 学会 Valgrind 的核对思路，以及在没有 Valgrind 的 Windows 上如何用 <code>-fsanitize=address</code> 探测、如何手工审计。
+8. 写出“长度与容量分离”的动态数组，理解按倍数扩容为什么比每次加一格好。
+9. 掌握文件 IO 全套：<code>fopen</code> 模式、失败检查、<code>fprintf</code>/<code>fscanf</code> 返回值、<code>fgets</code> 逐行读、<code>fclose</code>、文本模式与二进制模式、Windows 的 <code>\r\n</code> 坑。
+10. 把结构体记录持久化为 CSV 或二进制文件，并能说出两种方案各自的代价，完成“重启后数据还在”的记录程序。
+11. 理解为什么嵌入式里要慎用 <code>malloc</code>，为阶段十的 51 单片机预备课埋下判断力。</p>
+<p><strong>前置：</strong> 阶段四的 <code>fgets</code> 会连回车一起读进来，阶段五的指针能保存地址、NULL 可以当“没有指向”，阶段六的结构体可以把一条记录打包，阶段八的多文件工程能把“存储”拆成独立模块。这些旧知识在本阶段会重新排队，组成一个完整的数据生命周期。</p>
+<p>本阶段没有新的“任务答案”要你抄。你真正要带走的是两句话：<strong>堆让数据活过函数返回，文件让数据活过进程结束。</strong> 但活得久要有代价——前者要你还，后者要你关。</p>
+<hr />
+<h2 id="hb63538fa">2. 场景引入：50 人的成绩表，和一次“关机归零”</h2>
+<p>阶段四你写过成绩统计。那时数组多半是这样开的：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cp">#define MAX_STUDENTS 50</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">Student</span><span class="w"> </span><span class="n">scores</span><span class="p">[</span><span class="n">MAX_STUDENTS</span><span class="p">];</span>
+</code></pre></div></div>
+
+<p>50 个人时它工作得很好。直到实验室招新，老师轻描淡写地说：“这届人多，按 200 人准备。”你回去把 <code>50</code> 改成 <code>200</code>，重新编译，发现栈空间开始吃紧；如果明年变成 2000 人，这个办法就彻底不体面了。更尴尬的是：程序运行时你才知道实际人数，而数组长度在编译前就定死了。<strong>“运行时才知道要多少”，是数组天生的盲区。</strong></p>
+<p>第二个故事更常见。你写的菜单程序跑得好好的，输入数据、查询、统计，一切正确。你关掉窗口，再打开，屏幕干干净净——刚才那些人、那些成绩，像没来过一样。程序的内存随进程结束一起消失，这不是 bug，是内存的本分。你要让数据跨过“关机”这道门，就得把它写到磁盘上。</p>
+<p>于是本阶段要补上两种能力：</p>
+<ul>
+<li><strong>动态内存</strong>：程序跑起来以后，按实际人数向系统借一块地，函数返回了地还在，直到你亲手还。</li>
+<li><strong>文件 IO</strong>：把内存里的记录变成字节写到磁盘，下一次启动再读回来，重新变成结构体。</li>
+</ul>
+<p>但这两样东西都不是免费的。借地不还会<strong>泄漏</strong>，还了以后还拿旧钥匙开门是<strong>悬垂指针</strong>，同一把钥匙还两次是 <strong>double free</strong>；文件打开了不关，缓冲区里的数据可能还在路上。你之前学的指针、结构体、字符串，在这两章里会第一次真正“合体”。</p>
+<hr />
+<h2 id="h979be34b">3. 核心概念一：栈与堆——两种“活着”的方式</h2>
+<h3 id="h5514be08">3.1 栈：函数借你用的折叠桌</h3>
+<p>你到目前为止用的局部变量、局部数组，几乎都住在<strong>栈（stack）</strong>上。函数被调用时，系统给它划出一小块栈帧，参数、局部变量、返回地址都放在里面；函数一返回，这块栈帧就被收回。</p>
+<p>这解释了两件旧事：</p>
+<ol>
+<li>阶段三说的“形参是实参的复印件”，复印件就放在栈帧里；</li>
+<li>阶段五说的“不要返回局部变量的地址”，因为函数一返回，那张折叠桌就被收走了，你拿到的门牌号指向一块已经失效的区域。</li>
+</ol>
+<p>栈的优点非常突出：分配和回收只是挪一下栈指针，快得几乎没有成本；缺点是<strong>小</strong>，而且<strong>生命周期被函数调用绑死</strong>。在 Windows 桌面上栈通常有几 MB，看上去很多，但递归一深、局部数组一大，照样会栈溢出。到了 51 单片机，栈空间更是按字节抠着用。</p>
+<blockquote>
+<p>补充一句：C99 确实有变长数组（VLA），<code>int a[n];</code> 在某些编译器上能过。但它仍然住在栈上，大小受栈限制，函数一返回就没了，不能当“可长期保存、可增长”的容器。工程上真正的动态容器还是用堆。</p>
+</blockquote>
+<h3 id="h09a68188">3.2 堆：去仓库签字借一张桌子</h3>
+<p><strong>堆（heap）</strong>是进程运行时的一块内存池。你不直接给它起变量名，而是调用 <code>malloc</code> 向它“借”指定字节数，它返回这块地的首地址。你把这个地址存进指针，之后通过指针读写。</p>
+<p>堆的寿命和函数无关：只要没 <code>free</code>，函数返回了它还在，别的函数也能用；反过来，只要你不还，它会一直占着，直到进程结束。它通常比栈大，但也不是无限的；分配和释放需要管理元数据，速度比栈慢，而且长时间反复借还不同大小的块，会产生<strong>碎片</strong>。</p>
+<h3 id="hf7043b19">3.3 一张对照表（请贴在错题本第一页）</h3>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>栈</th>
+<th>堆</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>谁管理</td>
+<td>编译器/运行时自动管理</td>
+<td>程序员手动 <code>malloc</code>/<code>free</code></td>
+</tr>
+<tr>
+<td>什么时候生</td>
+<td>进入函数、执行到定义</td>
+<td>调用 <code>malloc</code> 成功时</td>
+</tr>
+<tr>
+<td>什么时候死</td>
+<td>离开作用域、函数返回</td>
+<td>调用 <code>free</code> 时（或进程结束）</td>
+</tr>
+<tr>
+<td>大小</td>
+<td>通常较小，受栈上限约束</td>
+<td>通常较大，受进程地址空间和物理内存约束</td>
+</tr>
+<tr>
+<td>速度</td>
+<td>极快，挪指针即可</td>
+<td>较慢，需要分配器找块、记账</td>
+</tr>
+<tr>
+<td>典型错误</td>
+<td>返回局部变量地址、栈溢出</td>
+<td>泄漏、越界、悬垂、double free</td>
+</tr>
+<tr>
+<td>名字来源</td>
+<td>像叠盘子，后进先出</td>
+<td>像仓库，按块借还，不保证顺序</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>配套 <code>01_malloc_basics.c</code> 会把一个栈变量和一个堆变量的地址同时打印出来。你会看到它们落在不同的区域，数值量级也可能差很远。<strong>但请记住：地址大小不是判断“谁更安全”的依据，真正的区别是生命周期和释放责任。</strong> 地址每次运行都可能变，不要背数字，观察“不同区域、不同寿命”即可。</p>
+<h3 id="h9b0c10dd">3.4 生命周期对比：函数走后，谁还活着</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="nf">make_numbers</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">local</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">};</span>
+<span class="w">    </span><span class="cm">/* return local; 错误：函数返回后 local 的栈帧就没了 */</span>
+
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">heap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc</span><span class="p">((</span><span class="kt">size_t</span><span class="p">)</span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="o">*</span><span class="n">heap</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">heap</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">heap</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">heap</span><span class="p">;</span><span class="w">       </span><span class="cm">/* 合法：堆块还活着，所有权交给调用者 */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code>local</code> 是栈上的折叠桌，函数一走就收；<code>heap</code> 是仓库里签了字的桌子，函数走了还在，但签字的人（调用者）现在有责任去还。阶段五那道“不能返回局部变量地址”的警告，和这里“可以返回堆指针”的区别，不在于指针类型，而在于<strong>它指向的东西还活不活</strong>。</p>
+<hr />
+<h2 id="h29be134e">4. 核心概念二：malloc——向堆借地，先查 NULL</h2>
+<h3 id="h8fe263dd">4.1 它只认字节，不认类型</h3>
+<p><code>malloc</code> 的原型在 <code>&lt;stdlib.h&gt;</code>：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="nf">malloc</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>参数是<strong>字节数</strong>，返回值是那块地的首地址；失败返回 <code>NULL</code>。它不知道你要装 <code>int</code> 还是 <code>Student</code>，所以返回 <code>void *</code>。在 C 里，<code>void *</code> 可以隐式转换成任何对象指针，<strong>不需要强转</strong>：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc</span><span class="p">((</span><span class="kt">size_t</span><span class="p">)</span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">);</span><span class="w">   </span><span class="cm">/* 借 n 个 int 的空间 */</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">                          </span><span class="cm">/* 借不到就必须处理 */</span>
+<span class="w">    </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">"内存分配失败</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"a[4] = %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">4</span><span class="p">]);</span>
+<span class="n">free</span><span class="p">(</span><span class="n">a</span><span class="p">);</span><span class="w">                                  </span><span class="cm">/* 用完归还 */</span>
+<span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w">                                 </span><span class="cm">/* 旧钥匙作废 */</span>
+</code></pre></div></div>
+
+<p><code>sizeof *a</code> 读作“a 指向的那个东西的大小”。它的好处是：<strong>类型改了，这行不用改</strong>。如果写成 <code>sizeof(int)</code>，将来把 <code>int</code> 换成 <code>double</code> 或结构体，很容易漏改。</p>
+<h3 id="hcc48718e">4.2 为什么必须检查 NULL</h3>
+<p>桌面电脑内存大，<code>malloc</code> 失败不常见，所以很多人养成“不检查”的坏习惯。但失败一旦发生，后面就是拿空指针去解引用：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc</span><span class="p">(</span><span class="mi">10</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">);</span>
+<span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">        </span><span class="cm">/* 如果 a == NULL，这里通常直接崩 */</span>
+</code></pre></div></div>
+
+<p>在单片机和长时间运行的程序里，内存不足是真实会发生的事件，不是理论概率。正确姿势是：<strong>每次分配后立刻检查，失败就停在那条错误路径上，不要继续写。</strong> 这不是“多写一行”，而是把崩溃点从不可预测的远处，提前到你能解释的当下。</p>
+<h3 id="hd3a9d5e2">4.3 sizeof 陷阱：<code>sizeof p</code> 不是 <code>sizeof *p</code></h3>
+<p>配套 <code>01_malloc_basics.c</code> 会打印：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="n">printf</span><span class="p">(</span><span class="s">"sizeof(a)=%zu, sizeof(*a)=%zu</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>在 64 位 MinGW 上，指针是 8 字节，<code>int</code> 是 4 字节，所以你会看到 <code>8</code> 和 <code>4</code>。两个经典错误由此而来：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">p</span><span class="p">);</span><span class="w">   </span><span class="cm">/* 借了 n 个“指针大小”，不是 n 个 int */</span>
+<span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="w"> </span><span class="n">q</span><span class="p">);</span><span class="w">       </span><span class="cm">/* 只借了 8 字节，却想当 n 个 int 用 */</span>
+</code></pre></div></div>
+
+<p>第一行可能只是浪费空间；第二行则是<strong>严重不足</strong>，写几个元素就踩到堆的边界。统一写成 <code>malloc((size_t)n * sizeof *p)</code>，让“元素个数 × 每个元素大小”这句话直接落在代码里。</p>
+<p>还有两个细节：</p>
+<ul>
+<li><strong>字符串要多留一格</strong>：<code>char *s = malloc(len + 1);</code>，最后放 <code>'\0'</code>。这是阶段四的旧账，在堆上同样要还。</li>
+<li><strong><code>malloc(0)</code> 的行为由实现决定</strong>：可能返回 <code>NULL</code>，也可能返回一个不能解引用的唯一地址。不要依赖它，需要零长度就单独处理。</li>
+</ul>
+<p><code>malloc</code> 还有一个必须记住的性格：<strong>它不清零</strong>。新借来的地里面是上一次使用留下的垃圾，读到什么都合法，但都不是你要的。需要零初始化，下一节的 <code>calloc</code> 就是干这个的。</p>
+<hr />
+<h2 id="h3ab4cd1a">5. 核心概念三：free 与“谁分配谁释放”</h2>
+<h3 id="h0181d255">5.1 free 做三件事，但不做第四件</h3>
+<p><code>free(void *p)</code> 把 <code>p</code> 指向的堆块还给分配器。它做的是：</p>
+<ol>
+<li>把这块地标记为空闲，之后可能被再次借出；</li>
+<li>更新分配器的记账信息；</li>
+<li>接受 <code>NULL</code>（<code>free(NULL)</code> 是合法的空操作）。</li>
+</ol>
+<p>它<strong>不做</strong>的是：把你手里的指针自动改成 <code>NULL</code>。调用 <code>free(p)</code> 之后，<code>p</code> 里仍然保存着那个旧地址，这就是下一节悬垂指针的入口。所以纪律是：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="n">free</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+<span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w">        </span><span class="cm">/* 自己把纸条擦干净 */</span>
+</code></pre></div></div>
+
+<p>还要记住三个“不能 free”：</p>
+<ul>
+<li>不能 <code>free</code> 栈上的数组：<code>int a[10]; free(a);</code> 是灾难；</li>
+<li>不能 <code>free</code> 字符串字面量：<code>char *s = "UPRE"; free(s);</code> 也是灾难；</li>
+<li>不能 <code>free</code> 堆块内部的地址：<code>free(p + 1)</code> 不是“还一半”，而是非法。</li>
+</ul>
+<p><code>free</code> 只认<strong>分配器当初返回的那个地址</strong>（或 <code>NULL</code>）。</p>
+<h3 id="h73e82442">5.2 “谁分配谁释放”不是口号，是接口契约</h3>
+<p>一块堆内存从生到死，必须有一个明确的负责人。最稳妥的默认规则是：<strong>谁调用 malloc/calloc/realloc 申请，谁负责在合适的时机 free。</strong> 但函数之间可以转移所有权，转移时必须写清楚。</p>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>谁负责释放</th>
+<th>接口注释应该怎么写</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>函数内部临时申请、函数内用完</td>
+<td>函数自己</td>
+<td><code>/* 内部临时缓冲，返回前释放 */</code></td>
+</tr>
+<tr>
+<td>函数申请并返回给调用者</td>
+<td>调用者</td>
+<td><code>/* 返回新数组；成功由调用者 free，失败返回 NULL */</code></td>
+</tr>
+<tr>
+<td>函数只借用调用者的指针</td>
+<td>调用者</td>
+<td><code>/* 借用，不取得所有权，不 free */</code></td>
+</tr>
+<tr>
+<td>容器负责释放内部元素</td>
+<td>容器的销毁函数</td>
+<td><code>/* destroy 会释放容器及其中的每个元素 */</code></td>
+</tr>
+</tbody>
+</table></div></div>
+<p>看一个所有权转移的例子：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="nf">make_numbers</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc</span><span class="p">((</span><span class="kt">size_t</span><span class="p">)</span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w">                    </span><span class="cm">/* 失败：没有东西需要释放 */</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">;</span><span class="w">                           </span><span class="cm">/* 所有权交给调用者 */</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">nums</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">make_numbers</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nums</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">nums</span><span class="p">[</span><span class="mi">3</span><span class="p">]);</span>
+<span class="w">        </span><span class="n">free</span><span class="p">(</span><span class="n">nums</span><span class="p">);</span><span class="w">                     </span><span class="cm">/* 谁接过了所有权，谁负责还 */</span>
+<span class="w">        </span><span class="n">nums</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这段代码能编译运行。它最重要的不是语法，而是那条注释：<strong>读函数的人不用猜这块内存该由谁还。</strong> 你以后写多文件工程，头文件里的函数声明旁边就该有这类说明。</p>
+<h3 id="h8e381114">5.3 有多个出口时，别漏掉 free</h3>
+<p>函数里一旦出现提前 <code>return</code>，最容易漏掉清理。比如一个函数先申请 <code>buf</code>，随后某一步校验失败就直接 <code>return 0</code>，那条分支上的 <code>free(buf)</code> 很容易被忘记。每一条提前返回的路，都要先还再走。</p>
+<p>当资源变多（内存、文件、锁），可以考虑“单一清理出口”的写法：用 <code>goto cleanup</code> 统一收尾，或者在每个失败分支显式释放。对现在的你，先守住一条：<strong>画一遍函数所有 return 路径，逐条问“这块地还了吗”。</strong></p>
+<hr />
+<h2 id="h1e23f12a">6. 核心概念四：calloc——带零初始化的租约</h2>
+<p><code>calloc</code> 也声明在 <code>&lt;stdlib.h&gt;</code>：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="nf">calloc</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>它申请 <code>count * size</code> 字节，并把每个字节初始化为 0；失败返回 <code>NULL</code>。和 <code>malloc</code> 比，它多了“清零”这一步，参数也拆成了“几个”和“每个多大”。</p>
+<p>最适合它的场景是<strong>计数器、标志数组、需要从 0 开始累加的表</strong>。比如统计 0~9 每个数字出现了几次：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calloc</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="o">*</span><span class="n">count</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">count</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">"calloc 失败</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="n">samples</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">};</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">samples</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">count</span><span class="p">[</span><span class="n">samples</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"7 出现了 %d 次，0 出现了 %d 次</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span><span class="w"> </span><span class="n">count</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+
+<span class="n">free</span><span class="p">(</span><span class="n">count</span><span class="p">);</span>
+<span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>如果这里换成 <code>malloc</code>，你必须自己写循环清零；忘了清，<code>count[7]++</code> 就是在垃圾值上加一，结果完全不可信。<code>calloc</code> 把“清零”变成分配契约的一部分，读代码的人一眼就知道初始状态。</p>
+<p>两点提醒：</p>
+<ul>
+<li><code>calloc</code> 不是“更高级的 malloc”，它只是多做了清零；不需要初值且数据马上会被覆盖时，<code>malloc</code> 就够了。</li>
+<li>对常见的整数、字符、结构体，全字节 0 通常就得到你要的 0；但不要把它当成所有类型在所有平台上“必然表示零值”的绝对保证。当前阶段用它来管整数计数和普通记录，足够稳妥。</li>
+</ul>
+<hr />
+<h2 id="h2cddabca">7. 核心概念五：realloc——扩容的三种结局</h2>
+<p>数组一旦借定大小，就不能原地变长。需要更多格子时，用 <code>realloc</code> 申请一块新的、更大的空间：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="nf">realloc</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">ptr</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">new_size</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>它有三种结局，必须全背下来：</p>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>结局</th>
+<th>返回值</th>
+<th>原内存块</th>
+<th>你要做什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原地扩展</td>
+<td>原地址（可能相同）</td>
+<td>仍然有效，扩大</td>
+<td>直接使用新大小</td>
+</tr>
+<tr>
+<td>搬到新家</td>
+<td>新地址</td>
+<td>旧块已被释放，内容已复制</td>
+<td>用新指针替换旧指针</td>
+</tr>
+<tr>
+<td>失败</td>
+<td><code>NULL</code></td>
+<td><strong>仍然有效，内容未动</strong></td>
+<td>保留旧指针，处理错误</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>第三种是最容易出人命的：<strong><code>realloc</code> 失败时不会释放旧块。</strong> 如果你直接写：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">realloc</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">newcap</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">data</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cm">/* 旧块已经丢了地址，泄漏！ */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>失败的一瞬间，<code>realloc</code> 返回 <code>NULL</code>，你把它赋给了 <code>data</code>，原来那块地的唯一地址被覆盖，既不能再用也不能再 free。正确写法永远是“先接住，再赋值”：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">tmp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">realloc</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">newcap</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">tmp</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cm">/* 失败：data 和旧内容都还在，可以继续用或安全退出 */</span>
+<span class="w">    </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">"扩容失败</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tmp</span><span class="p">;</span><span class="w">          </span><span class="cm">/* 成功后才覆盖原指针 */</span>
+<span class="w">    </span><span class="n">cap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newcap</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>配套 <code>02_dynamic_array.c</code> 会把每次扩容前后的地址打印出来。你可能会看到地址一直不变（原地扩），也可能看到它搬家（复制到新地址）。两种都正常，取决于分配器后面有没有连续空位。<strong>扩容成功后，所有指向旧数组元素的指针都作废</strong>，不要再拿 <code>&amp;data[1]</code> 这类旧地址去用。</p>
+<p>另外：</p>
+<ul>
+<li><code>realloc(NULL, n)</code> 等价于 <code>malloc(n)</code>；</li>
+<li><code>realloc(p, 0)</code> 的行为在标准里比较微妙，实践中不要用它来“释放”，要释放就 <code>free(p)</code>；</li>
+<li>新扩出来的部分<strong>不会自动清零</strong>，里面是未初始化的字节；需要零就自己写 0；</li>
+<li>计算 <code>newcap * sizeof *data</code> 前，最好确认乘法不会溢出。初学阶段容量很小，但把这个检查写进扩容函数，是工程习惯。</li>
+</ul>
+<hr />
+<h2 id="h10bff7c5">8. 核心概念六：悬垂指针与 double free</h2>
+<h3 id="hdba8abea">8.1 悬垂指针：钥匙还在，房子已经退了</h3>
+<p><code>free(p)</code> 只把堆块还给分配器，不会通知所有保存了同一地址的指针。看这段：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="o">*</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">;</span><span class="w">      </span><span class="cm">/* q 和 p 拿着同一张门牌号 */</span>
+<span class="n">free</span><span class="p">(</span><span class="n">p</span><span class="p">);</span><span class="w">         </span><span class="cm">/* 房子退了 */</span>
+<span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w">        </span><span class="cm">/* p 这张纸条擦干净了 */</span>
+<span class="cm">/* 但 q 仍保存旧地址，q 现在是悬垂指针；*q 是未定义行为，绝对不要读或写 */</span>
+</code></pre></div></div>
+
+<p>悬垂指针的可怕之处在于：它<strong>可能暂时还能读出旧值</strong>。堆块被回收后，内容不会立刻被擦掉，分配器也可能暂时没把这块地借给别人。于是你运行一次，打印出 42，以为没事；下一次同样的代码却崩溃，或者悄悄改坏了别人的数据。<strong>“这次跑对了”不是证据，未定义行为从来不保证结果。</strong></p>
+<p>典型来源：</p>
+<ul>
+<li><code>free</code> 之后继续用原指针；</li>
+<li>一个函数 <code>free</code> 了，另一个函数还保存着别名；</li>
+<li>返回一个指向已释放堆块的指针；</li>
+<li><code>realloc</code> 搬家后，还拿着旧地址。</li>
+</ul>
+<h3 id="hac952a03">8.2 double free：同一把钥匙还两次</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="n">free</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+<span class="n">free</span><span class="p">(</span><span class="n">p</span><span class="p">);</span><span class="w">      </span><span class="cm">/* 未定义行为，常见结果是堆损坏或崩溃 */</span>
+</code></pre></div></div>
+
+<p>如果 <code>free</code> 后立刻 <code>p = NULL</code>，第二次 <code>free(NULL)</code> 是安全的；但如果还有别名 <code>q</code>，<code>free(q)</code> 依然会造成 double free。所以“free 后置 NULL”只能保护当前这个指针，不能保护所有副本。真正可靠的办法是<strong>明确所有权</strong>：一块内存只有一个负责人，负责人释放后，其他人不再持有它。</p>
+<h3 id="h1dacebe0">8.3 越界写：破坏发生在“隔壁”</h3>
+<p>堆块本身不知道自己的长度。<code>malloc(5 * sizeof *a)</code> 只给你 5 个 <code>int</code> 的地盘，但 <code>a[5] = 1</code> 依然能编译、能运行——它写到了第 6 格，也就是分配器元数据或下一块别人的数据上。这种破坏最阴险的地方是<strong>现场不报错</strong>：可能过了半小时，在一次毫不相干的 <code>free</code> 或 <code>malloc</code> 时才崩溃，真正的肇事行早已过去。</p>
+<p>防御手段很朴素：循环边界永远用 <code>&lt; len</code>；用户输入的下标先检查 <code>0 &lt;= i &amp;&amp; i &lt; len</code>；动态数组先 <code>reserve</code> 再写。ASan 能报 <code>heap-buffer-overflow</code>，但没有 ASan 时，C 不会替你拦。</p>
+<h3 id="h1b5aef13">8.4 配套示例为什么只“讲”不“引爆”</h3>
+<p><code>03_leak_and_dangle.c</code> 是安全观察版：它演示泄漏、演示 <code>free</code> 后置 NULL 的纪律，也打印悬垂指针保存的旧地址，但<strong>不会真的解引用已释放的内存</strong>。这不是胆小，而是教学纪律：未定义行为不应作为课堂实验。你要在纸上推演“如果此时写 <code>*q</code> 会发生什么”，而不是让程序替你撞一次墙。</p>
+<hr />
+<h2 id="h078297da">9. 核心概念七：内存泄漏的三种典型形态</h2>
+<p>内存泄漏指：堆块已经不可能再被使用，但也没有被 <code>free</code>。程序占用的内存只会增长，不会回落。它不会立刻报错，所以比崩溃更阴险。</p>
+<h3 id="h6afade67">9.1 丢了唯一地址</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc</span><span class="p">(</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">);</span>
+<span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc</span><span class="p">(</span><span class="mi">200</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">);</span><span class="w">     </span><span class="cm">/* 第一块地的地址被覆盖，永远找不回来 */</span>
+</code></pre></div></div>
+
+<p>这不是“分配失败”，而是“主动失忆”。任何覆盖指针变量之前，都要先问：旧块还了吗？</p>
+<h3 id="hfa0559b1">9.2 提前返回，跳过清理</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">work</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">src</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">buf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc</span><span class="p">((</span><span class="kt">size_t</span><span class="p">)</span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="o">*</span><span class="n">buf</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">buf</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">src</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">                </span><span class="cm">/* 漏了 free(buf)，这条错误路径泄漏 */</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">buf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">src</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">free</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>错误路径往往是最少被测试的路径。函数每多一个 <code>return</code>，就多一条需要核对的释放路线。</p>
+<h3 id="h641071ba">9.3 只释放外壳，没释放内容</h3>
+<p>结构体数组或“指针的数组”里，容器本身释放了，元素指向的堆块却没释放：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">free</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">name</span><span class="p">);</span><span class="w">         </span><span class="cm">/* 先释放每个元素内部的内存 */</span>
+<span class="p">}</span>
+<span class="n">free</span><span class="p">(</span><span class="n">items</span><span class="p">);</span><span class="w">                     </span><span class="cm">/* 再释放装元素的容器 */</span>
+<span class="n">items</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>顺序不能反：先释放内层，再释放外层。反过来，外层一没，内层地址就丢了。</p>
+<p>还有一类变体：<code>realloc</code> 失败时直接用返回值覆盖原指针，导致旧块泄漏——这就是 §7 的“先接住再赋值”。</p>
+<p><strong>关于“程序退出操作系统会回收”</strong>：这句话在桌面短程序里成立，但在服务器、守护进程、单片机和 RTOS 里完全不成立。一个跑几个月的程序，每次泄漏几十字节，最后也会把内存吃光。学习阶段就要把“退出会回收”当成“这不是我的免责条款”。</p>
+<hr />
+<h2 id="hf0098a80">10. 核心概念八：检查内存——Valgrind 思路与 Windows 的替代手段</h2>
+<h3 id="h5be0adcb">10.1 Valgrind 到底在做什么</h3>
+<p>Valgrind 是 Linux 上常用的动态分析工具。它的核心思路并不神秘：<strong>拦截每一次分配和释放，记录地址、大小、调用栈；程序结束时，看哪些分配没有对应的释放。</strong></p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>gcc<span class="w"> </span>-g<span class="w"> </span>-Wall<span class="w"> </span>-Wextra<span class="w"> </span>-std<span class="o">=</span>c99<span class="w"> </span>leak.c<span class="w"> </span>-o<span class="w"> </span>leak
+valgrind<span class="w"> </span>--leak-check<span class="o">=</span>full<span class="w"> </span>--show-leak-kinds<span class="o">=</span>all<span class="w"> </span>./leak
+</code></pre></div></div>
+
+<p>它会报 <code>definitely lost</code>（确定丢失）、<code>indirectly lost</code>（间接丢失）等分类，并给出分配点的调用栈。它还能抓越界读写、使用未初始化值、释放后访问。<strong>关键不是背命令，而是理解它的账本：分配一条，释放一条，最后对账。</strong></p>
+<h3 id="h0d3b4522">10.2 Windows 没有 Valgrind，先试 AddressSanitizer</h3>
+<p>原生 Windows 上没有 Valgrind（除非你用 WSL 或 Linux 虚拟机）。GCC/Clang 提供 AddressSanitizer（ASan），编译时加：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="p">&amp;</span> <span class="s2">"C:\Program Files (x86)\mingw64\bin\gcc.exe"</span> <span class="n">-std</span><span class="p">=</span><span class="n">c99</span> <span class="n">-g</span> <span class="n">-fsanitize</span><span class="p">=</span><span class="n">address</span> <span class="n">01_malloc_basics</span><span class="p">.</span><span class="n">c</span> <span class="n">-o</span> <span class="n">asan_demo</span><span class="p">.</span><span class="n">exe</span>
+</code></pre></div></div>
+
+<p>但 <strong>MinGW 的支持情况必须现场确认，不能想当然</strong>。本资料所用的是 MinGW-Builds 的 GCC 16.2.0，实测链接阶段报：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>ld.exe: cannot find -lasan: No such file or directory
+</code></pre></div></div>
+
+<p>这说明这套 MinGW 没有附带 ASan 运行库，命令用不了。不同发行版、不同安装方式可能不一样：有的 MinGW-w64 带 <code>libasan</code>，有的没有；Visual Studio 也可以安装 AddressSanitizer 组件。<strong>先探测，再决定</strong>——如果链接报 <code>cannot find -lasan</code>，就接受现实，转入手工审计，不要为了一个工具重装整条工具链浪费两天。</p>
+<h3 id="hc4d384e3">10.3 手工审计：没有工具也能对账</h3>
+<p>Valgrind 的“拦截—记录—对账”思路，用纸和调试器也能做：</p>
+<ol>
+<li><strong>列出所有分配点</strong>：在工程里搜 <code>malloc</code>、<code>calloc</code>、<code>realloc</code>，每个都编号；</li>
+<li><strong>画分配/释放对照表</strong>：记下分配函数、地址变量、字节数、由谁释放、在哪些 return 路径上释放；</li>
+<li><strong>看所有权转移</strong>：函数返回的堆指针，调用者有没有接住并最终 free；容器销毁时有没有释放内部元素；</li>
+<li><strong>在每个 return 前检查</strong>：尤其是错误分支；</li>
+<li><strong>用调试器盯三个值</strong>：指针本身、<code>*p</code>、<code>p == NULL</code> 的状态；<code>free</code> 后立刻置 NULL，再单步确认没有别处使用；</li>
+<li><strong>重复运行测试</strong>：同一功能反复加载/退出几十次，观察内存占用是否持续上涨。</li>
+</ol>
+<p>一个实用的调试习惯是：在分配和释放处临时打印地址与位置，例如 <code>alloc p=000001F0... at load()</code>、<code>free  p=000001F0... at destroy()</code>。地址每次运行会变，但在<strong>同一次运行</strong>里可以一一配对；如果最后有 <code>alloc</code> 没有对应的 <code>free</code>，账就对不上。正式提交前把调试打印删掉即可。</p>
+<h3 id="h6d43744c">10.4 工具不是免死金牌</h3>
+<p>ASan 能抓很多越界和 use-after-free，但它不能证明“逻辑上该释放的都在正确时机释放了”；Valgrind 能报泄漏，但也不理解你的业务所有权。<strong>工具负责发现症状，你负责设计所有权。</strong> 本阶段真正要建立的是后者。</p>
+<hr />
+<h2 id="hc0c66a7f">11. 核心概念九：动态数组——长度、容量与扩容</h2>
+<h3 id="h3eca35f9">11.1 两个数字，别混</h3>
+<p>动态数组的核心不是“用了 malloc”，而是把两个概念分开：</p>
+<ul>
+<li><strong>长度 <code>len</code></strong>：现在真正存了多少个元素，用户能访问的范围是 <code>[0, len)</code>；</li>
+<li><strong>容量 <code>cap</code></strong>：这块地一共能装多少个元素，<code>cap &gt;= len</code>，多出来的格子暂时空着。</li>
+</ul>
+<p>数组满了（<code>len == cap</code>）才扩容。扩容不是每次加一格，而是<strong>按倍数增长</strong>（常见是翻倍）。这样从 0 加到 n，总复制量是 1+2+4+…+n，均摊到每次追加是常数级；如果每次只加一格，总复制量会变成平方级，数据一多就慢得明显。</p>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>追加第几个元素</th>
+<th>扩容前 cap</th>
+<th>扩容后 cap</th>
+<th>需要搬的元素数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>2</td>
+<td>0</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2</td>
+<td>4</td>
+<td>2</td>
+</tr>
+<tr>
+<td>5</td>
+<td>4</td>
+<td>8</td>
+<td>4</td>
+</tr>
+<tr>
+<td>9</td>
+<td>8</td>
+<td>16</td>
+<td>8</td>
+</tr>
+</tbody>
+</table></div></div>
+<h3 id="h56e1a69b">11.2 完整可运行示例</h3>
+<p>下面这段代码就是 <code>02_dynamic_array.c</code> 的核心形态。它会在每次扩容前后打印地址，让你亲眼看到 <code>realloc</code> 是原地扩还是搬家：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w">       </span><span class="cm">/* 动态数组的起点 */</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">         </span><span class="cm">/* 已经用了多少格 */</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">cap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">         </span><span class="cm">/* 一共借了多少格 */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">seed</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="mi">40</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="mi">60</span><span class="p">};</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">seed</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">seed</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">len</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cap</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">                       </span><span class="cm">/* 坐满了，申请更大的桌子 */</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cap</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="p">((</span><span class="kt">size_t</span><span class="p">)</span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">"capacity overflow</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">                </span><span class="n">free</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="kt">size_t</span><span class="w"> </span><span class="n">newcap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">cap</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">cap</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">newcap</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="p">((</span><span class="kt">size_t</span><span class="p">)</span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">"size overflow</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">                </span><span class="n">free</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="n">printf</span><span class="p">(</span><span class="s">"before grow: len=%zu cap=%zu data=%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span>
+<span class="w">                   </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="n">cap</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">data</span><span class="p">);</span>
+<span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">tmp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">realloc</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">newcap</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">);</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">tmp</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">"realloc failed; old block is still valid</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">                </span><span class="n">free</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tmp</span><span class="p">;</span><span class="w">                         </span><span class="cm">/* 先接住，再改原指针 */</span>
+<span class="w">            </span><span class="n">cap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newcap</span><span class="p">;</span>
+<span class="w">            </span><span class="n">printf</span><span class="p">(</span><span class="s">"after  grow: len=%zu cap=%zu data=%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span>
+<span class="w">                   </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="n">cap</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">data</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">data</span><span class="p">[</span><span class="n">len</span><span class="o">++</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seed</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"len=%zu cap=%zu -&gt;"</span><span class="p">,</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="n">cap</span><span class="p">);</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">len</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">" %d"</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">free</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+<span class="w">    </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>运行后你会看到容量从 0 到 2、4、8，而长度逐次增加。打印地址只是观察，不要用地址是否变化来写逻辑；真正的逻辑永远是 <code>len == cap</code> 时扩容。</p>
+<h3 id="h1506a511">11.3 动态数组的三条纪律</h3>
+<ol>
+<li><strong>先用 <code>len</code> 保证不越界，再写 <code>data[len++]</code></strong>；不要把 <code>cap</code> 当长度遍历，空着的格子是未初始化内容；</li>
+<li><strong>扩容成功后重新获取元素地址</strong>；<code>realloc</code> 可能搬家，旧的 <code>int *p = &amp;data[1]</code> 已经失效；</li>
+<li><strong>数组销毁时只 free 一次外层</strong>；如果元素内部还有指针，要先逐个释放内层，再释放外层。</li>
+</ol>
+<hr />
+<h2 id="h27e25c73">12. 核心概念十：文件 IO 全套——把内存写成字节</h2>
+<h3 id="hd6c1d98b">12.1 FILE 是什么</h3>
+<p>C 标准库用 <code>FILE *</code> 表示一个<strong>流</strong>。它可能是磁盘文件、键盘（<code>stdin</code>）、屏幕（<code>stdout</code>）或错误输出（<code>stderr</code>）。你不需要知道 <code>FILE</code> 内部长什么样，只需要通过 <code>fopen</code> 打开、用读写函数操作、用 <code>fclose</code> 关闭。</p>
+<p>流有<strong>位置</strong>：读或写会推进位置；流有<strong>缓冲区</strong>：标准库可能先在内存里攒一批数据，再一次性写盘。理解这两点，后面的 <code>fclose</code> 和 <code>\r\n</code> 才有落脚点。</p>
+<h3 id="h21a34164">12.2 fopen 的六种文本模式</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="nf">fopen</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">mode</span><span class="p">);</span>
+</code></pre></div></div>
+
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>模式</th>
+<th>读/写</th>
+<th>文件不存在</th>
+<th>已有内容</th>
+<th>初始位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>"r"</code></td>
+<td>只读</td>
+<td>失败，返回 NULL</td>
+<td>保留</td>
+<td>开头</td>
+</tr>
+<tr>
+<td><code>"w"</code></td>
+<td>只写</td>
+<td>创建</td>
+<td><strong>清空</strong></td>
+<td>开头</td>
+</tr>
+<tr>
+<td><code>"a"</code></td>
+<td>只写（追加）</td>
+<td>创建</td>
+<td>保留</td>
+<td>末尾</td>
+</tr>
+<tr>
+<td><code>"r+"</code></td>
+<td>读/写</td>
+<td>失败，返回 NULL</td>
+<td>保留</td>
+<td>开头</td>
+</tr>
+<tr>
+<td><code>"w+"</code></td>
+<td>读/写</td>
+<td>创建</td>
+<td><strong>清空</strong></td>
+<td>开头</td>
+</tr>
+<tr>
+<td><code>"a+"</code></td>
+<td>读/写</td>
+<td>创建</td>
+<td>保留</td>
+<td>写总在末尾；读起点由实现决定</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>几个容易踩的点：</p>
+<ul>
+<li><code>"w"</code> 只要打开成功就<strong>立即截断</strong>文件，哪怕你一个字都没写。拿它做“先读后写”会先把自己的数据清空。</li>
+<li><code>"a"</code> 的写入永远追加到末尾，不能覆盖前面的内容。</li>
+<li><code>"r+"</code> 不会创建文件，路径打错就返回 NULL。</li>
+<li>更新模式（带 <code>+</code>）在读写之间切换时，位置规则较细；初学阶段最稳的做法是<strong>写完 <code>fclose</code>，再重新 <code>fopen</code> 读</strong>，或者用 <code>fflush</code>/<code>fseek</code> 明确调整位置。不要在同一条流上随意又读又写。</li>
+</ul>
+<h3 id="h4f477765">12.3 打开必须检查</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">fp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fopen</span><span class="p">(</span><span class="s">"students.csv"</span><span class="p">,</span><span class="w"> </span><span class="s">"r"</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fp</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">perror</span><span class="p">(</span><span class="s">"students.csv"</span><span class="p">);</span><span class="w">      </span><span class="cm">/* 打印失败原因，便于定位 */</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code>fopen</code> 失败的原因很多：路径不对、权限不够、文件被占用、父目录不存在。<strong>不检查就 <code>fgets</code>，等于拿空指针去读。</strong> 另外注意相对路径是相对于<strong>程序当前工作目录</strong>，不是相对于 <code>.c</code> 文件所在目录。VSCode 运行、终端运行、双击 exe 的当前目录可能不同，文件“明明在”却打不开时，先打印当前路径或用绝对路径验证。</p>
+<h3 id="h1b8a0ca1">12.4 fprintf / fscanf 的返回值</h3>
+<p><code>fprintf</code> 成功返回写入的字符数，失败返回负数：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fprintf</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span><span class="w"> </span><span class="s">"%d,%s,%.2f</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">score</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">"写入失败</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code>fscanf</code> 返回<strong>成功赋值的项数</strong>；如果还没读到任何项就遇到输入结束或错误，返回 <code>EOF</code>。最常见的坑是这个循环：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">fscanf</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span><span class="w"> </span><span class="s">"%d"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">EOF</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">   </span><span class="cm">/* 错误示范：遇到字母可能死循环 */</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">);</span><span class="w">                  </span><span class="cm">/* 匹配失败时仍会进循环，x 还是旧值 */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>如果文件里出现字母，<code>%d</code> 匹配失败，<code>fscanf</code> 返回 0，文件位置没有前进；下一轮还是同一个字母，还是返回 0，永远等不到 EOF。正确写法是明确期望的项数：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">fscanf</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span><span class="w"> </span><span class="s">"%d"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">);</span><span class="w">                  </span><span class="cm">/* 读到一个整数才进入循环 */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>或者更稳妥地：<strong>用 <code>fgets</code> 读一整行，再用 <code>sscanf</code> 解析这一行</strong>。这样每轮一定消费掉一行，不会卡死，也更容易报出“第几行格式错”。</p>
+<h3 id="hd8704e23">12.5 fgets 逐行读：文件版的“安全输入”</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="nf">fgets</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">stream</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>它最多读 <code>size - 1</code> 个字符，自动补 <code>'\0'</code>；遇到换行就停下，并且<strong>把换行也存进去</strong>（如果装得下）。返回 <code>NULL</code> 表示读到文件末尾或发生错误。</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">char</span><span class="w"> </span><span class="n">line</span><span class="p">[</span><span class="mi">256</span><span class="p">];</span>
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">fgets</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">line</span><span class="p">,</span><span class="w"> </span><span class="n">fp</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strlen</span><span class="p">(</span><span class="n">line</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">line</span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">'\n'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">line</span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">'\0'</span><span class="p">;</span><span class="w">          </span><span class="cm">/* 去掉行尾换行 */</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="cm">/* 现在 line 是一整行（除非它比 255 字符还长） */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>三件事要记：</p>
+<ol>
+<li><code>fgets</code> 不会因为空格停下，所以能读带空格的姓名或整句话；</li>
+<li>换行会被保留，统计字符数或打印时要么去掉，要么把它算进去；</li>
+<li>如果一行比缓冲区长，<code>fgets</code> 会分多次读完这一行，你的“按行解析”会把它当成多行。缓冲区宁可开大一些，并在格式错误时报出行号。</li>
+</ol>
+<h3 id="hb324518d">12.6 把写、关、开、读串起来</h3>
+<p>下面这个完整程序先写两行文本、关闭，再重新打开逐行读回，统计行数和字符数：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"demo_io.txt"</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">fp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fopen</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="s">"w"</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fp</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fprintf</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span><span class="w"> </span><span class="s">"UPRE 2026</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span>
+<span class="w">        </span><span class="n">fprintf</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span><span class="w"> </span><span class="s">"dynamic memory &amp; file io</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">"write failed</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">        </span><span class="n">fclose</span><span class="p">(</span><span class="n">fp</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fclose</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">                     </span><span class="cm">/* 关文件才会把缓冲区刷出去 */</span>
+<span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="s">"fclose"</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">fp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fopen</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="s">"r"</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fp</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">line</span><span class="p">[</span><span class="mi">128</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">lines</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">chars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">fgets</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">line</span><span class="p">,</span><span class="w"> </span><span class="n">fp</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">size_t</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strlen</span><span class="p">(</span><span class="n">line</span><span class="p">);</span>
+<span class="w">        </span><span class="n">lines</span><span class="o">++</span><span class="p">;</span>
+<span class="w">        </span><span class="n">chars</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">n</span><span class="p">;</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">line</span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">'\n'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">line</span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">'\0'</span><span class="p">;</span><span class="w">                </span><span class="cm">/* 去掉读进来的换行 */</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">"line %zu: %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">lines</span><span class="p">,</span><span class="w"> </span><span class="n">line</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ferror</span><span class="p">(</span><span class="n">fp</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">"read error</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">        </span><span class="n">fclose</span><span class="p">(</span><span class="n">fp</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fclose</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">perror</span><span class="p">(</span><span class="s">"fclose"</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"lines=%zu chars=%zu</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">lines</span><span class="p">,</span><span class="w"> </span><span class="n">chars</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这段程序能编译运行，输出两行内容和 <code>lines=2 chars=35</code>。注意 35 是<strong>读进来的字符数（含两个 <code>\n</code>）</strong>，而磁盘上的文件是 37 字节——多出的 2 字节就是 Windows 文本模式悄悄写下的两个 <code>\r</code>。这就引出了下一节。</p>
+<h3 id="h2bd80805">12.7 fclose：不是礼貌，是数据落盘的一部分</h3>
+<p><code>fclose(fp)</code> 做两件事：把输出缓冲区里还没写的数据刷到文件，然后释放流。成功返回 0，失败返回 <code>EOF</code>。</p>
+<p>为什么必须关：</p>
+<ul>
+<li>缓冲区可能还握着最后一批数据，程序异常结束（崩溃、被杀）时可能丢；</li>
+<li>关闭失败可能意味着磁盘写满、U 盘拔出，必须报告；</li>
+<li>长期不关会耗尽文件句柄，后续 <code>fopen</code> 失败。</li>
+</ul>
+<p><strong>每一条 <code>return</code> 路径都要关文件</strong>，包括写失败、解析失败的分支。上面示例在每次失败时都先 <code>fclose</code> 再返回；写文件时还检查了 <code>fprintf</code> 的返回值。<code>fflush(fp)</code> 可以强制刷新输出缓冲区，但它<strong>不能代替 <code>fclose</code></strong>，也不要在输入流上随意调用。</p>
+<h3 id="h9e45c892">12.8 文本模式 vs 二进制模式：Windows 的 <code>\r\n</code> 坑</h3>
+<p>打开模式后面加 <code>b</code> 就是二进制模式：<code>"rb"</code>、<code>"wb"</code>、<code>"ab"</code>、<code>"r+b"</code> 等。</p>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>行为</th>
+<th>文本模式（如 <code>"w"</code>）</th>
+<th>二进制模式（如 <code>"wb"</code>）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>写 <code>'\n'</code></td>
+<td>Windows 上实际写成 <code>\r\n</code>（0D 0A）</td>
+<td>原样写 0A</td>
+</tr>
+<tr>
+<td>读 <code>\r\n</code></td>
+<td>自动翻译成 <code>'\n'</code></td>
+<td>原样读两个字节</td>
+</tr>
+<tr>
+<td><code>ftell</code> 的位置</td>
+<td>不保证是字节偏移</td>
+<td>通常是字节偏移</td>
+</tr>
+<tr>
+<td>适合</td>
+<td>CSV、日志、人可读文本</td>
+<td>结构体、图片、自定义二进制格式</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><strong>这就是为什么本程序写了两行文本，磁盘上是 37 字节，而 <code>chars</code> 统计到 35。</strong> 文本模式在帮你把 C 的 <code>\n</code> 翻译成 Windows 习惯的换行；读回来时再翻译回去。你在 C 源码里看不到 <code>\r</code>，但文件里确实有。</p>
+<p>两个坑：</p>
+<ol>
+<li><strong>二进制数据用文本模式打开</strong>：数据中的 <code>0A</code> 可能被当成换行翻译，<code>0D 0A</code> 可能被改写，字节数就对不上，结构体直接错位；</li>
+<li><strong>文本数据用二进制模式打开</strong>：<code>fgets</code> 读到的行尾会带着 <code>\r</code>，解析 CSV 的最后一个字段时可能多一个看不见的字符。要么用文本模式，要么在读入后手动去掉 <code>\r</code>。</li>
+</ol>
+<p>模式不是“随便选一个”，而是<strong>写和读必须成对一致</strong>。用 <code>"wb"</code> 写，就用 <code>"rb"</code> 读；用 <code>"w"</code> 写，就用 <code>"r"</code> 读。</p>
+<h3 id="h39115195">12.9 fwrite / fread：整块字节的搬运</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">size_t</span><span class="w"> </span><span class="nf">fwrite</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">ptr</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">nmemb</span><span class="p">,</span><span class="w"> </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">stream</span><span class="p">);</span>
+<span class="kt">size_t</span><span class="w"> </span><span class="nf">fread</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">ptr</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">nmemb</span><span class="p">,</span><span class="w"> </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">stream</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p><code>size</code> 是单个元素的字节数，<code>nmemb</code> 是元素个数，返回值是<strong>成功搬运的完整元素个数</strong>，不是字节数。写入结构体数组：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">size_t</span><span class="w"> </span><span class="n">written</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fwrite</span><span class="p">(</span><span class="n">students</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="o">*</span><span class="n">students</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="n">fp</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">written</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">count</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cm">/* 写少了：磁盘满、流错误，或参数算错 */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>读回：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="n">Student</span><span class="w"> </span><span class="n">buf</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span>
+<span class="kt">size_t</span><span class="w"> </span><span class="n">got</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fread</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="o">*</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="n">fp</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ferror</span><span class="p">(</span><span class="n">fp</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cm">/* 读错误 */</span>
+<span class="p">}</span>
+<span class="cm">/* got 是真正读到的完整记录数；可能因为文件尾而小于 100 */</span>
+</code></pre></div></div>
+
+<p><code>feof(fp)</code> 只有在<strong>尝试读越过文件末尾之后</strong>才为真，不能拿它当“下一项存在吗”的预判。循环读时看 <code>fread</code>/<code>fgets</code> 的返回值，循环结束后再检查 <code>ferror</code>。另外，<code>fread</code> 不会给字符数据补 <code>'\0'</code>，读完要自己补。</p>
+<hr />
+<h2 id="hca614872">13. 核心概念十一：结构体记录持久化——CSV 与二进制</h2>
+<h3 id="h9f97e601">13.1 先把“一条记录”定下来</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cp">#define NAME_MAX 32</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">name</span><span class="p">[</span><span class="n">NAME_MAX</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">score</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">Student</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>这个结构体里<strong>没有指针</strong>，所以可以安全地按值复制、按数组保存。注意 <code>name</code> 是定长字符数组，不是 <code>char *</code>：如果把 <code>char *</code> 直接 <code>fwrite</code> 到文件，写进去的是<strong>地址数值</strong>，下一次运行地址早就不成立了。持久化只能存数据本身，不能存进程内的指针。</p>
+<h3 id="hc06c2277">13.2 CSV 方案：一行一条，人也能读</h3>
+<p>CSV 的本质是“用分隔符把字段排成一行”。写：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="n">fprintf</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span><span class="w"> </span><span class="s">"id,name,score</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fprintf</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span><span class="w"> </span><span class="s">"%d,%s,%.2f</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span>
+<span class="w">                </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">score</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">fclose</span><span class="p">(</span><span class="n">fp</span><span class="p">);</span><span class="w">                  </span><span class="cm">/* 写失败也要关闭文件 */</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">                    </span><span class="cm">/* 由调用者知道保存失败 */</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>读的时候用 <code>fgets</code> 拿整行，再用 <code>sscanf</code> 按格式解析：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">fgets</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">line</span><span class="p">,</span><span class="w"> </span><span class="n">fp</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Student</span><span class="w"> </span><span class="n">s</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sscanf</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="w"> </span><span class="s">"%d,%31[^,],%lf"</span><span class="p">,</span>
+<span class="w">               </span><span class="o">&amp;</span><span class="n">s</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">s</span><span class="p">.</span><span class="n">score</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="cm">/* 这一行格式不对：报错、跳过，或停止 */</span>
+<span class="w">        </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="cm">/* 把 s 放进数组 */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code>%31[^,]</code> 的意思是“最多读 31 个非逗号字符”，31 来自 <code>NAME_MAX - 1</code>，必须给 <code>'\0'</code> 留一格。CSV 的优点是：记事本能打开、出问题能肉眼查、不同程序之间容易交换、字段顺序清楚。缺点是：姓名里有逗号就会把字段切错；浮点数有精度和格式差异；每次都要解析，数据量大时慢。姓名里可能出现逗号时，要么禁止，要么实现引号转义——这已经超出本阶段，先在设计时规避。</p>
+<h3 id="h498e4f65">13.3 二进制方案：把结构体原样写进去</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cm">/* 写：一条记录占 sizeof(Student) 字节 */</span>
+<span class="kt">size_t</span><span class="w"> </span><span class="n">written</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fwrite</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">fp</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">written</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cm">/* 处理写入失败 */</span>
+<span class="p">}</span>
+
+<span class="cm">/* 读：最多读 cap 条，got 是实际条数 */</span>
+<span class="kt">size_t</span><span class="w"> </span><span class="n">got</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fread</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="o">*</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="n">cap</span><span class="p">,</span><span class="w"> </span><span class="n">fp</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ferror</span><span class="p">(</span><span class="n">fp</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cm">/* 处理读错误 */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>二进制方案的优点是紧凑、快、读回来就是内存里的结构体，不需要解析。缺点是<strong>不透明</strong>：文本编辑器打开是乱码；而且它把当前编译器的结构体布局当成了文件格式。<code>Student</code> 在 64 位 MinGW 上很可能是 48 字节：<code>int</code> 4 字节、<code>name</code> 32 字节，为了对齐 <code>double</code> 中间还会插入填充字节，最后才是 8 字节的 <code>double</code>。你写的字段明明只有 44 字节，<code>sizeof</code> 却是 48，多出来的就是填充。</p>
+<h3 id="h3ade5603">13.4 两种方案的正面对比</h3>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>CSV 文本</th>
+<th>二进制 <code>fwrite/fread</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>可读性</td>
+<td>记事本可读，便于排错</td>
+<td>乱码，需要工具或程序</td>
+</tr>
+<tr>
+<td>体积</td>
+<td>有字段名、分隔符和换行开销；短记录反而可能更小</td>
+<td>没有字段名和分隔符，但结构体填充、定长字段可能抵消优势</td>
+</tr>
+<tr>
+<td>速度</td>
+<td>需要格式化和解析</td>
+<td>整块搬运，快</td>
+</tr>
+<tr>
+<td>跨平台</td>
+<td>较好，注意换行和编码</td>
+<td>差：端序、填充、类型宽度、ABI 都可能变</td>
+</tr>
+<tr>
+<td>字段变更</td>
+<td>加列/改顺序要改解析；旧文件可兼容</td>
+<td>极脆弱：结构体大小一变，后续记录全部错位</td>
+</tr>
+<tr>
+<td>名字含分隔符</td>
+<td>逗号会破坏格式</td>
+<td>无此问题（但长度固定）</td>
+</tr>
+<tr>
+<td>适合</td>
+<td>配置、少量记录、需要人看的数据</td>
+<td>本机缓存、性能敏感、格式完全受控的数据</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>本教程验证时用 3 条短记录做过对比：CSV 文件 65 字节，二进制文件 144 字节，<code>sizeof(Student)</code> 为 48。<strong>二进制不一定更小</strong>——短记录加上结构体填充，反而可能比文本更占地方。不要背“二进制一定省空间”的结论，要在自己的数据上打印文件大小和 <code>sizeof</code> 对比。配套 <code>05_struct_file_db.c</code> 就是干这件事的：CSV 和二进制各存一遍、各读一遍，比较文件大小与读回一致性。</p>
+<h3 id="hde33794d">13.5 版本兼容：字段一改，旧文件就可能读不了</h3>
+<p>这是持久化最容易被低估的问题。假设第一版 <code>Student</code> 是 <code>id + name + score</code>，第二版在中间加了一个 <code>int age</code>：</p>
+<ul>
+<li>CSV：旧文件的行少一个字段，<code>sscanf</code> 返回值变成 2 或 3，你可以选择“缺省补 0”，也可以报错；</li>
+<li>二进制：旧文件按旧 <code>sizeof</code> 排列，新程序按新 <code>sizeof</code> 读，从第二条记录开始全部错位，读出来的 <code>id</code> 可能是别人的名字片段。</li>
+</ul>
+<p>工程上的对策：</p>
+<ol>
+<li><strong>二进制文件写头部</strong>：魔数（如 <code>"STU1"</code>）、版本号、记录条数，读时先验证再决定怎么解析；</li>
+<li><strong>字段变更就升版本</strong>，并提供迁移逻辑，而不是假设旧文件“应该还能读”；</li>
+<li><strong>不要直接把含指针的结构体写进文件</strong>，写它指向的内容；</li>
+<li><strong>写结构体前先清零</strong>，避免把填充字节里的旧数据也写进文件；</li>
+<li>对需要跨机器交换的数据，优先 CSV，或者逐字段写定宽整数并约定字节序。</li>
+</ol>
+<p>这些不是“以后再说”的高级话题。你只要把程序交给别人一次，或者自己隔一周再打开旧数据，就会遇到。</p>
+<hr />
+<h2 id="h50f08358">14. 编译与运行（阶段九全部代码）</h2>
+<p>在资料根目录打开 PowerShell，先建 <code>build</code>，再逐个编译。注意 gcc 路径有空格，必须用 <code>&amp;</code> 调用：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="nv">$gcc</span> <span class="p">=</span> <span class="s2">"C:\Program Files (x86)\mingw64\bin\gcc.exe"</span>
+<span class="nv">$src</span> <span class="p">=</span> <span class="s2">"code\阶段九_动态内存与文件IO"</span>
+<span class="nb">New-Item</span> <span class="n">-ItemType</span> <span class="n">Directory</span> <span class="n">-Force</span> <span class="n">build</span> <span class="p">|</span> <span class="nb">Out-Null</span>
+
+<span class="p">&amp;</span> <span class="nv">$gcc</span> <span class="n">-Wall</span> <span class="n">-Wextra</span> <span class="n">-std</span><span class="p">=</span><span class="n">c99</span> <span class="n">-g</span> <span class="s2">"$src\01_malloc_basics.c"</span> <span class="n">-o</span> <span class="s2">"build\01_malloc_basics.exe"</span>
+<span class="p">&amp;</span> <span class="nv">$gcc</span> <span class="n">-Wall</span> <span class="n">-Wextra</span> <span class="n">-std</span><span class="p">=</span><span class="n">c99</span> <span class="n">-g</span> <span class="s2">"$src\02_dynamic_array.c"</span> <span class="n">-o</span> <span class="s2">"build\02_dynamic_array.exe"</span>
+<span class="p">&amp;</span> <span class="nv">$gcc</span> <span class="n">-Wall</span> <span class="n">-Wextra</span> <span class="n">-std</span><span class="p">=</span><span class="n">c99</span> <span class="n">-g</span> <span class="s2">"$src\03_leak_and_dangle.c"</span> <span class="n">-o</span> <span class="s2">"build\03_leak_and_dangle.exe"</span>
+<span class="p">&amp;</span> <span class="nv">$gcc</span> <span class="n">-Wall</span> <span class="n">-Wextra</span> <span class="n">-std</span><span class="p">=</span><span class="n">c99</span> <span class="n">-g</span> <span class="s2">"$src\04_file_write_read.c"</span> <span class="n">-o</span> <span class="s2">"build\04_file_write_read.exe"</span>
+<span class="p">&amp;</span> <span class="nv">$gcc</span> <span class="n">-Wall</span> <span class="n">-Wextra</span> <span class="n">-std</span><span class="p">=</span><span class="n">c99</span> <span class="n">-g</span> <span class="s2">"$src\05_struct_file_db.c"</span> <span class="n">-o</span> <span class="s2">"build\05_struct_file_db.exe"</span>
+</code></pre></div></div>
+
+<p>运行：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="nb">Push-Location</span> <span class="n">build</span>
+<span class="p">.\</span><span class="n">01_malloc_basics</span><span class="p">.</span><span class="n">exe</span>
+<span class="p">.\</span><span class="n">02_dynamic_array</span><span class="p">.</span><span class="n">exe</span>
+<span class="p">.\</span><span class="n">03_leak_and_dangle</span><span class="p">.</span><span class="n">exe</span>
+<span class="p">.\</span><span class="n">04_file_write_read</span><span class="p">.</span><span class="n">exe</span>
+<span class="p">.\</span><span class="n">05_struct_file_db</span><span class="p">.</span><span class="n">exe</span>
+<span class="nb">Pop-Location</span>
+</code></pre></div></div>
+
+<p>数据文件会落在<strong>当前工作目录</strong>，也就是 <code>build\</code> 里。想找 <code>students.csv</code>，去 <code>build</code> 下看，不要只在源码目录找。</p>
+<p>预期输出见每个 <code>.c</code> 底部的注释。老规矩：<strong>先预测，再运行</strong>。尤其 02 的地址变化、04 的行数与字符数、05 的 CSV 与二进制文件大小，先写下你的预测，再对答案。03 是安全观察版，只打印地址和状态，放心跑。</p>
+<hr />
+<h2 id="h7d6110e8">15. 本阶段练习（题目在 <code>exercises\阶段九\练习_题目.md</code>，答案同目录）</h2>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>级别</th>
+<th>内容</th>
+<th>训练点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>基础</td>
+<td><code>malloc/free</code> 动态数组入门：按输入人数分配、读入、打印、释放</td>
+<td>分配字节数、NULL 检查、配对释放</td>
+</tr>
+<tr>
+<td>2</td>
+<td>基础</td>
+<td><code>calloc</code> 与零初始化计数：统计一组数字的出现次数</td>
+<td>清零、下标边界、calloc 参数顺序</td>
+</tr>
+<tr>
+<td>3</td>
+<td>基础·纸上</td>
+<td>内存图 + 泄漏/悬垂推演：画出指针、堆块、free 后的状态</td>
+<td>生命周期、所有权、UB 的纸上判断</td>
+</tr>
+<tr>
+<td>4</td>
+<td>提高</td>
+<td><code>realloc</code> 动态栈扩容：实现 push/pop，观察容量与地址</td>
+<td>先接住再赋值、长度与容量</td>
+</tr>
+<tr>
+<td>5</td>
+<td>提高</td>
+<td>文件统计：行数、单词数、字符数</td>
+<td><code>fgets</code>、状态切换、换行与 EOF</td>
+</tr>
+<tr>
+<td>6</td>
+<td>提高</td>
+<td>结构体记录持久化：CSV 写入与读回</td>
+<td><code>fprintf</code>/<code>fscanf</code> 或 <code>fgets</code>+<code>sscanf</code>、字段校验</td>
+</tr>
+<tr>
+<td>7</td>
+<td>挑战</td>
+<td>迷你通讯录：动态数组 + 文件存储 + 菜单增删查改</td>
+<td>综合所有权、持久化、错误路径</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>练习 3 是纸上作业，<strong>必须做</strong>：不运行程序，只画图推演“这块内存什么时候生、什么时候死、谁还拿着它”。很多内存 bug 在纸上就能抓住，根本不用等它崩。</p>
+<p>参考答案文件都在同一目录：<code>答案_练习1_动态数组入门.c</code>、<code>答案_练习2_calloc计数.c</code>、<code>答案_参考_文字题.md</code>、<code>答案_练习4_realloc扩容.c</code>、<code>答案_练习5_文件统计.c</code>、<code>答案_练习6_记录持久化.c</code>、<code>答案_练习7_迷你通讯录.c</code>。先独立写，再对照；对答案时重点看所有权注释和错误路径，不要只看输出对不对。</p>
+<p><strong>与考核的边界照旧</strong>：以上 7 题都是通用能力训练，不包含登录菜单系统的实现，也不构成考核答案。你的考核程序已经交付，练习题是另一条线。</p>
+<hr />
+<h2 id="hab46f84f">16. 常见错误与调试速查</h2>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>症状</th>
+<th>真因</th>
+<th>一句话药方</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>跑久了内存越来越大，最后分配失败</td>
+<td>忘记 <code>free</code>，或错误路径漏释放</td>
+<td>每个分配点列出来，逐条 return 路径对账</td>
+</tr>
+<tr>
+<td><code>free</code> 后还能打印出旧值</td>
+<td>use-after-free；旧值只是还没被覆盖</td>
+<td>立即置 NULL，绝不再解引用，别把“碰巧”当正确</td>
+</tr>
+<tr>
+<td>程序在 free 时崩，提示 invalid pointer</td>
+<td>double free、free 了非堆地址，或更早的越界写坏了堆元数据</td>
+<td>一块地只还一次；只 free 分配器返回的原地址，并回查越界写</td>
+</tr>
+<tr>
+<td><code>realloc</code> 后旧数据全没了</td>
+<td>直接用返回值覆盖原指针，失败时旧块地址丢失</td>
+<td>先 <code>tmp = realloc(...)</code>，成功后才 <code>data = tmp</code></td>
+</tr>
+<tr>
+<td><code>malloc</code> 后第一次写就崩</td>
+<td>没检查 NULL，或只分配了 <code>sizeof(指针)</code></td>
+<td>分配后立刻检查，统一用 <code>sizeof *p</code></td>
+</tr>
+<tr>
+<td><code>fopen</code> 后 <code>fgets</code> 崩</td>
+<td>文件没打开成功，<code>fp</code> 是 NULL</td>
+<td>每个 <code>fopen</code> 后立刻 <code>if (fp == NULL)</code></td>
+</tr>
+<tr>
+<td>文件里有字母，<code>while (fscanf(...) != EOF)</code> 卡死</td>
+<td>匹配失败返回 0，文件位置不前进</td>
+<td>用 <code>== 期望项数</code>，或 <code>fgets</code> + <code>sscanf</code> 按行解析</td>
+</tr>
+<tr>
+<td><code>fgets</code> 读出的每行末尾多一个空行</td>
+<td>它把 <code>\n</code> 也存进了数组</td>
+<td>用 <code>strlen</code> 找末位，把 <code>\n</code> 改成 <code>'\0'</code></td>
+</tr>
+<tr>
+<td>二进制文件读出来字节数不对、结构错位</td>
+<td>用文本模式打开了二进制文件</td>
+<td>写 <code>"wb"</code>、读 <code>"rb"</code>，模式必须成对</td>
+</tr>
+<tr>
+<td>程序退出前最后几条数据没写进文件</td>
+<td>忘记 <code>fclose</code>，缓冲区没刷；或写失败未检查</td>
+<td>所有路径都 <code>fclose</code> 并检查返回值</td>
+</tr>
+<tr>
+<td><code>malloc</code> 的数组写几个元素就踩坏别的数据</td>
+<td><code>sizeof(p)</code> 当成元素大小，实际只有 8 字节</td>
+<td><code>malloc(n * sizeof *p)</code></td>
+</tr>
+<tr>
+<td>字符串打印乱码或越界</td>
+<td>分配时忘了给 <code>'\0'</code> 留一格</td>
+<td><code>malloc(len + 1)</code>，最后写 <code>'\0'</code></td>
+</tr>
+<tr>
+<td>一 free 就报错，但指针明明是数组</td>
+<td>free 了栈数组、字符串字面量或数组中间地址</td>
+<td>只 free 堆上分配的原地址</td>
+</tr>
+<tr>
+<td>CSV 读回时姓名/字段错位</td>
+<td>名字里有逗号，或行尾有 <code>\r</code></td>
+<td>约束输入格式，读后清 <code>\r</code>，并检查 <code>sscanf</code> 返回值</td>
+</tr>
+<tr>
+<td>最后一条记录总是读不到</td>
+<td>用 <code>feof</code> 预判，或在读之前就判断文件尾</td>
+<td>以 <code>fread</code>/<code>fgets</code> 返回值为准，读失败后再看 <code>feof</code></td>
+</tr>
+</tbody>
+</table></div></div>
+<p><strong>调试手段：</strong> 先用 <code>-Wall -Wextra</code> 把警告清零，再谈运行。内存问题在 VSCode 里打断点，盯住四个东西：指针的值、<code>*p</code>、<code>p == NULL</code>、<code>free</code> 之后有没有别的指针还指向它。文件问题先打印 <code>fopen</code> 的路径与返回值，再检查每一行解析的返回值，最后确认 <code>fclose</code> 是否成功。崩溃行不一定是肇事行——堆越界经常在很久以后才爆，要往回找第一次越界写。</p>
+<hr />
+<h2 id="hb235b68c">17. 安全与规范：本阶段三条铁律</h2>
+<ol>
+<li><strong>一块堆内存只有一个负责人，所有权必须在接口上写明。</strong> 谁申请谁释放是默认规则；要转移所有权，就在注释和函数命名里说清楚。容器销毁时，先释放内部元素，再释放容器。</li>
+<li><strong>借之前查 NULL，换之前先接住，还之后不再碰。</strong> <code>malloc/calloc/realloc</code> 每次检查失败；<code>realloc</code> 永远用临时指针接住；<code>free</code> 后立刻置 NULL，并且不再通过任何别名访问。一次分配对应一次释放，所有 return 路径都要对账。</li>
+<li><strong>文件操作必须闭环：开必查、读写必验、关必查，模式成对。</strong> <code>fopen</code> 检查 NULL；<code>fprintf</code> 看是否小于 0；<code>fscanf</code> 看赋值项数；<code>fgets</code>/<code>fread</code> 看返回值；每条路径都 <code>fclose</code> 并检查结果；文本文件用文本模式，二进制文件用二进制模式。</li>
+</ol>
+<p>把这三条写进你的代码模板。以后做驱动、RTOS 队列、协议缓冲，换的只是资源类型，纪律一模一样。</p>
+<hr />
+<h2 id="he6fb25af">18. 任务/项目作战指南：给已有记录程序加持久化</h2>
+<blockquote>
+<p>本节只给知识地图和自查清单，<strong>不给任何菜单实现、登录流程或考核答案代码</strong>。请拿你写过的“学生成绩管理/通讯录”这类通用记录程序来练，不要改已经交付的考核版本；想练就复制一份到新目录。</p>
+</blockquote>
+<h3 id="h9e43804a">18.1 从“内存版”到“持久化版”的知识映射</h3>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>你要做的事</th>
+<th>回看哪一节</th>
+<th>配套示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>决定存 CSV 还是二进制</td>
+<td>§13.4 对比表</td>
+<td>05_struct_file_db.c</td>
+</tr>
+<tr>
+<td>定义一条记录的结构体</td>
+<td>阶段六结构体；§13.1</td>
+<td>05_struct_file_db.c</td>
+</tr>
+<tr>
+<td>人数运行时才知道</td>
+<td>§11 动态数组</td>
+<td>02_dynamic_array.c</td>
+</tr>
+<tr>
+<td>启动时把文件读进内存</td>
+<td>§12.5 <code>fgets</code>、§13.2 CSV；或 §12.9 <code>fread</code></td>
+<td>04、05</td>
+</tr>
+<tr>
+<td>增删改查只改内存</td>
+<td>阶段四数组、阶段六结构体</td>
+<td>你自己的旧程序</td>
+</tr>
+<tr>
+<td>退出或修改后写回文件</td>
+<td>§12.4 <code>fprintf</code>、§12.9 <code>fwrite</code>、§12.7 <code>fclose</code></td>
+<td>04、05</td>
+</tr>
+<tr>
+<td>文件不存在/格式错误怎么办</td>
+<td>§12.3、§13.5</td>
+<td>05</td>
+</tr>
+<tr>
+<td>内存何时释放、谁负责</td>
+<td>§5、§9、§17</td>
+<td>02、03</td>
+</tr>
+<tr>
+<td>拆成独立存储模块</td>
+<td>阶段八头文件与多文件工程</td>
+<td>阶段八配套</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>推荐的实施顺序（仍然不写代码，只给步骤）：</p>
+<ol>
+<li><strong>先备份原程序</strong>，在新目录里升级；</li>
+<li>在纸上画出“一条记录”的字段，以及文件里的每一行/每个字段；</li>
+<li>先写一个最小的“存 3 条、读 3 条”测试，确认格式和返回值都对；</li>
+<li>再把 <code>load</code> 接到程序启动、<code>save</code> 接到正常退出和每次修改之后；</li>
+<li>最后补错误路径：文件不存在、空文件、坏行、写入失败、内存分配失败；</li>
+<li>做“重启测试”：录入，退出，重新打开，数据必须还在；再做“空文件启动”和“坏行启动”，程序不能崩。</li>
+</ol>
+<h3 id="h84323147">18.2 提交前自查清单</h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 记录结构体里的字符串是定长数组，文件里没有写入任何指针地址。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 启动时先 load 再显示/操作，退出或修改后 save，重启能恢复。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 动态数组的 <code>len</code> 与 <code>cap</code> 没有混用，扩容后没有保留旧元素地址。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 每个 <code>malloc/calloc/realloc</code> 都有 NULL 检查，每个成功分配都有对应的 <code>free</code>。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 所有 <code>fopen</code> 都检查了返回值；所有读写都检查了返回值；所有路径都 <code>fclose</code>。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 写和读使用同一种模式（文本对文本，二进制对二进制）。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> CSV 解析检查了字段数；坏行会报错或被跳过，不会把程序带崩。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 文件不存在时能给出空数据或明确提示，而不是直接崩溃。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 关键函数旁写了所有权注释，关键行有中文注释。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>-Wall -Wextra</code> 零警告；空文件、1 条、多条、坏行四组测试都跑过。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <strong>没有把考核登录菜单的解答代码抄进练习或本阶段示例。</strong></li>
+</ul>
+<hr />
+<h2 id="hbd196fa3">19. 验收清单（全部打勾才进入阶段十）</h2>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能画图说明栈与堆的地址区域、生命周期、管理方式，并解释为什么不能返回局部数组的地址。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能默写 <code>malloc</code> + NULL 检查 + <code>free</code> + 置 NULL 的最小模板，并说清 <code>sizeof *p</code> 与 <code>sizeof p</code> 的区别。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能解释 <code>calloc</code> 与 <code>malloc</code> 的差别，并各举一个适用场景。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能说出 <code>realloc</code> 的三种结局，能写出“先接住再赋值”的正确写法。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能识别悬垂指针、double free、三种典型泄漏，并各给一个修复办法。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能按 Valgrind 的“分配—释放—对账”思路手工审计一个程序；知道本机 MinGW 没有 <code>libasan</code>，不会把工具缺失当成代码正确。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能写出长度/容量分离的动态数组，解释翻倍扩容的均摊成本，并说明扩容后旧元素指针为何失效。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能列出 <code>fopen</code> 六种模式的行为，检查 NULL，正确使用 <code>fgets</code>、<code>fclose</code>，并说清文本/二进制模式下 <code>\r\n</code> 的差别。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能用 CSV 和 <code>fwrite/fread</code> 两种方案存取结构体记录，比较文件大小、可读性和字段变更风险。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 完成一个“重启后数据还在”的通用记录程序，并通过空文件、坏行、多条记录三组测试（不得使用考核答案）。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 练习 1~6 完成（挑战 7 强烈推荐），练习 3 纸上作业必做；本阶段代码 <code>-Wall -Wextra</code> 零警告，push Gitee（里程碑 M8）。</li>
+</ul>
+<hr />
+<h2 id="haf9e8755">20. 本阶段复盘与下一阶段衔接</h2>
+<p><strong>复盘三问：</strong></p>
+<ol>
+<li>栈上的数组和堆上的数组，代码看起来都叫 <code>a[i]</code>，但它们的“寿命合同”完全不同。你能用“函数返回”“进程结束”两个时间点，把栈、堆、文件三者的寿命排成一条线吗？</li>
+<li>“谁分配谁释放”听起来简单，为什么一到多函数、多错误路径就会漏？你画的分配/释放对照表里，哪一条最容易断？</li>
+<li>文件写完后，为什么不能只看 <code>printf</code> 输出正常就认为数据已经安全落盘？<code>fclose</code>、<code>fprintf</code> 返回值、文本/二进制模式这三件事，分别能帮你发现什么问题？</li>
+</ol>
+<p><strong>衔接预告（阶段十：51 单片机 C 语言预备）：</strong> 下一阶段你要面对一个没有宽裕内存、没有通用操作系统、没有 Valgrind 的世界——51 单片机的 RAM 常常只有几十到几百字节，栈和全局变量先占掉一大块，函数调用深一点都心疼。<strong>这就是为什么嵌入式里通常要慎用 <code>malloc</code>：</strong></p>
+<ul>
+<li>堆管理器本身要占 RAM，块头和对齐还会降低利用率；</li>
+<li>反复分配不同大小的块会产生碎片，设备连续跑几个月，碎片可能把内存切成许多无法使用的小洞；</li>
+<li>分配耗时不确定，可能破坏实时性；</li>
+<li>分配失败时，设备没有“弹个错误框”的余地，必须有确定的降级路径；</li>
+<li>很多 51 工程根本没有通用的文件系统，持久化靠 EEPROM/Flash，而不是 <code>fopen</code>。</li>
+</ul>
+<p>所以嵌入式的常用手段是<strong>静态分配、固定大小缓冲、内存池、环形队列</strong>：在编译期或启动时就把上限算清楚，运行期只借固定尺寸的块，不还来还去。阶段十的 <code>sbit</code>、特殊功能寄存器、<code>volatile</code>、位运算点灯和数码管段码，都会在这个“资源必须可预测”的前提下展开。</p>
+<p>但这不意味着本阶段白学。RTOS 的队列、驱动里的收发缓冲、协议栈里的包管理，仍然到处是“谁申请、谁释放、什么时候失效”的问题。你现在练的所有权、容量、生命周期和错误路径，正是从桌面 C 走向嵌入式 C 的桥。</p>
+<p>把 §19 的清单逐条勾完，再来回复“继续”。<strong>不要带着一个“反正程序没崩”的内存 bug 进入单片机阶段</strong>——在那里，崩溃可能不是弹一个窗口，而是一块板子安静地死掉。</p>
+<footer class="doc">
+  由 Markdown 教程自动转换生成 · 配套 .c 代码在 code\ 与 exercises\ 目录<br>
+  <a href="./index.html">返回教程目录</a>
+</footer>
+</div>
+<button id="totop" type="button" aria-label="回到顶部" title="回到顶部">↑</button>
+<script>
+(function () {
+  var nav = document.getElementById('docnav');
+  var cur = nav && nav.querySelector('a.cur');
+  if (cur && nav.scrollWidth > nav.clientWidth) {
+    nav.scrollLeft = cur.offsetLeft - nav.clientWidth / 2 + cur.offsetWidth / 2;
+  }
+  var btn = document.getElementById('totop');
+  if (!btn) return;
+  var onScroll = function () {
+    btn.classList.toggle('show', window.scrollY > 480);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  btn.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+(function () {
+  var boxes = document.querySelectorAll('.scroll-hint');
+  Array.prototype.forEach.call(boxes, function (box) {
+    var sc = box.firstElementChild;
+    if (!sc) return;
+    function upd() {
+      var more = sc.scrollWidth - sc.clientWidth > 4;
+      box.classList.toggle('has-more', more);
+      box.classList.toggle('at-end', more && sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 4);
+    }
+    upd();
+    sc.addEventListener('scroll', upd, { passive: true });
+    window.addEventListener('resize', upd);
+  });
+})();
+
+</script>
+</body>
+</html>

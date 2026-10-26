@@ -1,0 +1,2427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1117" media="(prefers-color-scheme: dark)">
+<meta name="format-detection" content="telephone=no">
+<title>09 阶段八：多文件工程与考核冲刺（从一间屋子到一栋楼）</title>
+<style>pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #ffffcc }
+.codehilite { background: #f8f8f8; }
+.codehilite .c { color: #3D7B7B; font-style: italic } /* Comment */
+.codehilite .err { border: 1px solid #F00 } /* Error */
+.codehilite .k { color: #008000; font-weight: bold } /* Keyword */
+.codehilite .o { color: #666 } /* Operator */
+.codehilite .ch { color: #3D7B7B; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #3D7B7B; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #9C6500 } /* Comment.Preproc */
+.codehilite .cpf { color: #3D7B7B; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #3D7B7B; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
+.codehilite .gd { color: #A00000 } /* Generic.Deleted */
+.codehilite .ge { font-style: italic } /* Generic.Emph */
+.codehilite .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #E40000 } /* Generic.Error */
+.codehilite .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #008400 } /* Generic.Inserted */
+.codehilite .go { color: #717171 } /* Generic.Output */
+.codehilite .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.codehilite .gt { color: #04D } /* Generic.Traceback */
+.codehilite .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #008000 } /* Keyword.Pseudo */
+.codehilite .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #B00040 } /* Keyword.Type */
+.codehilite .m { color: #666 } /* Literal.Number */
+.codehilite .s { color: #BA2121 } /* Literal.String */
+.codehilite .na { color: #687822 } /* Name.Attribute */
+.codehilite .nb { color: #008000 } /* Name.Builtin */
+.codehilite .nc { color: #00F; font-weight: bold } /* Name.Class */
+.codehilite .no { color: #800 } /* Name.Constant */
+.codehilite .nd { color: #A2F } /* Name.Decorator */
+.codehilite .ni { color: #717171; font-weight: bold } /* Name.Entity */
+.codehilite .ne { color: #CB3F38; font-weight: bold } /* Name.Exception */
+.codehilite .nf { color: #00F } /* Name.Function */
+.codehilite .nl { color: #767600 } /* Name.Label */
+.codehilite .nn { color: #00F; font-weight: bold } /* Name.Namespace */
+.codehilite .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #19177C } /* Name.Variable */
+.codehilite .ow { color: #A2F; font-weight: bold } /* Operator.Word */
+.codehilite .w { color: #BBB } /* Text.Whitespace */
+.codehilite .mb { color: #666 } /* Literal.Number.Bin */
+.codehilite .mf { color: #666 } /* Literal.Number.Float */
+.codehilite .mh { color: #666 } /* Literal.Number.Hex */
+.codehilite .mi { color: #666 } /* Literal.Number.Integer */
+.codehilite .mo { color: #666 } /* Literal.Number.Oct */
+.codehilite .sa { color: #BA2121 } /* Literal.String.Affix */
+.codehilite .sb { color: #BA2121 } /* Literal.String.Backtick */
+.codehilite .sc { color: #BA2121 } /* Literal.String.Char */
+.codehilite .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.codehilite .s2 { color: #BA2121 } /* Literal.String.Double */
+.codehilite .se { color: #AA5D1F; font-weight: bold } /* Literal.String.Escape */
+.codehilite .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.codehilite .si { color: #A45A77; font-weight: bold } /* Literal.String.Interpol */
+.codehilite .sx { color: #008000 } /* Literal.String.Other */
+.codehilite .sr { color: #A45A77 } /* Literal.String.Regex */
+.codehilite .s1 { color: #BA2121 } /* Literal.String.Single */
+.codehilite .ss { color: #19177C } /* Literal.String.Symbol */
+.codehilite .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #00F } /* Name.Function.Magic */
+.codehilite .vc { color: #19177C } /* Name.Variable.Class */
+.codehilite .vg { color: #19177C } /* Name.Variable.Global */
+.codehilite .vi { color: #19177C } /* Name.Variable.Instance */
+.codehilite .vm { color: #19177C } /* Name.Variable.Magic */
+.codehilite .il { color: #666 } /* Literal.Number.Integer.Long */</style>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --bg: #f7f8fa;
+  --bg-elev: #ffffff;
+  --ink: #1f2328;
+  --ink-soft: #4c5560;
+  --muted: #8a9199;
+  --accent: #b03a2e;
+  --link: #1a6fb5;
+  --line: #e4e7ea;
+  --line-soft: #eef0f2;
+  --code-bg: #f6f7f9;
+  --code-ink: #c0214a;
+  --quote-bg: #fff8e8;
+  --quote-line: #e6a23c;
+  --quote-ink: #6b5900;
+  --th-bg: #f2f4f6;
+  --tr-alt: #fafbfc;
+  --shadow: 0 1px 2px rgba(16,24,40,.04), 0 8px 24px rgba(16,24,40,.05);
+  --shadow-lift: 0 2px 6px rgba(16,24,40,.06), 0 16px 40px rgba(16,24,40,.09);
+  --radius: 14px;
+  --maxw: 50rem;
+  --scroll-shadow: rgba(15, 23, 42, .16);
+  --mono: "JetBrains Mono", "Cascadia Mono", Consolas, "SF Mono", Menlo, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Microsoft YaHei", "Noto Sans SC", "Source Han Sans SC", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1117;
+    --bg-elev: #161b23;
+    --ink: #e7eaf0;
+    --ink-soft: #b8c0cd;
+    --muted: #8b93a3;
+    --accent: #ff8f7e;
+    --link: #82b6ff;
+    --line: #262d38;
+    --line-soft: #1c232c;
+    --code-bg: #1b212b;
+    --code-ink: #ff9db0;
+    --quote-bg: #241f13;
+    --quote-line: #b98a2e;
+    --quote-ink: #e8d3a0;
+    --th-bg: #1d232c;
+    --tr-alt: #171d25;
+    --shadow: 0 1px 2px rgba(0,0,0,.45), 0 10px 30px rgba(0,0,0,.35);
+    --shadow-lift: 0 2px 8px rgba(0,0,0,.5), 0 20px 50px rgba(0,0,0,.45);
+    --scroll-shadow: rgba(255, 255, 255, .16);
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-wrap: break-word;
+}
+
+::selection { background: rgba(26,111,181,.22); }
+
+.wrap {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 28px clamp(14px, 4vw, 28px) 96px;
+}
+
+/* ── 顶部文档导航：吸顶 + 横向滑动 ───────────────────────── */
+nav.docnav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  padding: 10px 12px;
+  margin: 0 0 26px;
+  background: var(--bg-elev);
+  background: color-mix(in srgb, var(--bg-elev) 88%, transparent);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+nav.docnav::-webkit-scrollbar { display: none; }
+nav.docnav b {
+  flex: none;
+  color: var(--accent);
+  font-size: 12.5px;
+  letter-spacing: .06em;
+  padding-right: 4px;
+}
+nav.docnav a {
+  flex: none;
+  display: inline-block;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: background .18s, color .18s;
+}
+nav.docnav a:hover { background: var(--line-soft); color: var(--ink); }
+nav.docnav a.cur {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 650;
+}
+@media (prefers-color-scheme: dark) {
+  nav.docnav a.cur { color: #1a0f0d; }
+}
+nav.docnav a.home { color: var(--link); }
+
+/* 桌面端：导航平铺换行，全部可见，不吸顶（避免遮挡正文） */
+@media (min-width: 861px) {
+  nav.docnav {
+    position: static;
+    flex-wrap: wrap;
+    overflow: visible;
+    white-space: normal;
+    row-gap: 4px;
+  }
+}
+
+/* ── 页眉 ──────────────────────────────────────────────── */
+header.doc {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+  margin-bottom: 26px;
+}
+header.doc .kicker {
+  display: inline-block;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: .16em;
+  font-size: 11.5px;
+  text-transform: uppercase;
+}
+h1 {
+  font-size: clamp(21px, 4.4vw, 30px);
+  line-height: 1.38;
+  margin: 8px 0 0;
+  letter-spacing: -.01em;
+}
+
+/* ── 正文排版 ──────────────────────────────────────────── */
+h2 {
+  font-size: clamp(18px, 3vw, 23px);
+  line-height: 1.42;
+  margin: 2.1em 0 .9em;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  scroll-margin-top: 72px;
+}
+h3 {
+  font-size: clamp(16px, 2.3vw, 19px);
+  margin: 1.7em 0 .6em;
+  color: var(--ink);
+  scroll-margin-top: 72px;
+}
+h4 { font-size: 16px; margin: 1.4em 0 .5em; color: var(--ink-soft); }
+p { margin: .85em 0; }
+p, li { text-align: left; }
+
+a { color: var(--link); text-decoration: none; border-bottom: 1px solid transparent; }
+a:hover { border-bottom-color: currentColor; }
+
+strong { color: var(--accent); font-weight: 700; }
+em { color: var(--ink-soft); }
+
+blockquote {
+  margin: 1.2em 0;
+  padding: 12px 16px;
+  background: var(--quote-bg);
+  border-left: 4px solid var(--quote-line);
+  border-radius: 0 12px 12px 0;
+  color: var(--quote-ink);
+}
+blockquote p { margin: .35em 0; }
+blockquote strong { color: inherit; }
+
+hr {
+  border: none;
+  border-top: 1px dashed var(--line);
+  margin: 2.2em 0;
+}
+
+/* ── 行内代码 ──────────────────────────────────────────── */
+code {
+  font-family: var(--mono);
+  font-size: .885em;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  padding: .12em .42em;
+  border-radius: 6px;
+  border: 1px solid var(--line-soft);
+  word-break: break-word;
+}
+
+/* ── 代码块：横向滚动，不撑破屏幕 ───────────────────────── */
+.codehilite {
+  position: relative;
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 1.1em 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  font-size: 14px;
+  line-height: 1.62;
+}
+.codehilite pre {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: inherit;
+  line-height: inherit;
+  tab-size: 4;
+}
+.codehilite code {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+  white-space: pre;
+}
+
+/* 细滚动条（代码块 / 表格横向滚动时更轻盈） */
+.codehilite, .table-wrap {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.codehilite::-webkit-scrollbar,
+.table-wrap::-webkit-scrollbar { height: 7px; }
+.codehilite::-webkit-scrollbar-track,
+.table-wrap::-webkit-scrollbar-track { background: transparent; }
+.codehilite::-webkit-scrollbar-thumb,
+.table-wrap::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 99px;
+}
+.codehilite::-webkit-scrollbar-thumb:hover,
+.table-wrap::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ── 表格：外层可横向滚动 ──────────────────────────────── */
+.table-wrap {
+  margin: 1.1em 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  border-radius: 12px;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+th, td {
+  border: 1px solid var(--line);
+  padding: 8px 11px;
+  text-align: left;
+  vertical-align: top;
+}
+th { background: var(--th-bg); font-weight: 650; white-space: nowrap; }
+tbody tr:nth-child(even) td { background: var(--tr-alt); }
+table code { white-space: nowrap; }
+
+/* ── 任务清单复选框 ────────────────────────────────────── */
+ul.task-list, ul.contains-task-list { list-style: none; padding-left: 2px; }
+ul.task-list li, ul.contains-task-list li { margin: .4em 0; }
+ul.task-list input[type=checkbox] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 17px; height: 17px;
+  border: 1.5px solid var(--muted);
+  border-radius: 5px;
+  margin-right: 9px;
+  vertical-align: -3px;
+  background: var(--bg-elev);
+  flex: none;
+}
+ul.task-list input[type=checkbox]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'><path d='M6.4 11.2 3.2 8l-1.1 1.1 4.3 4.3 8-8-1.1-1.1z'/></svg>");
+  background-size: 12px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ── 目录折叠块 ────────────────────────────────────────── */
+details.toc {
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 18px;
+  margin-bottom: 26px;
+  box-shadow: var(--shadow);
+}
+details.toc summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--link);
+  padding: 4px 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+details.toc summary::-webkit-details-marker { display: none; }
+details.toc summary::before {
+  content: "";
+  width: 0; height: 0;
+  border-left: 6px solid currentColor;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  transition: transform .2s;
+}
+details.toc[open] summary::before { transform: rotate(90deg); }
+details.toc ol { margin: 10px 0 6px; padding-left: 22px; }
+details.toc li { margin: .3em 0; }
+details.toc a { font-size: 14px; color: var(--ink-soft); }
+details.toc a:hover { color: var(--link); }
+
+/* ── 页脚 ──────────────────────────────────────────────── */
+footer.doc {
+  margin-top: 56px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12.5px;
+  text-align: center;
+  line-height: 1.8;
+}
+
+/* ── 回到顶部 ──────────────────────────────────────────── */
+#totop {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  z-index: 40;
+  width: 46px; height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--bg-elev);
+  color: var(--ink-soft);
+  box-shadow: var(--shadow-lift);
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity .22s, transform .22s, visibility .22s;
+}
+#totop.show { opacity: 1; visibility: visible; transform: none; }
+#totop:active { transform: scale(.94); }
+
+/* ── 平板 ──────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .wrap { padding-top: 18px; }
+  body { font-size: 15.5px; line-height: 1.8; }
+  .codehilite { font-size: 13.2px; padding: 12px 13px; }
+  table { font-size: 13.2px; }
+  th, td { padding: 7px 9px; }
+}
+
+/* ── 手机 ──────────────────────────────────────────────── */
+@media (max-width: 560px) {
+  html { scroll-behavior: auto; }
+  .wrap { padding: 12px 13px 84px; }
+  body { font-size: 15px; line-height: 1.78; }
+
+  nav.docnav { top: 0; border-radius: 12px; padding: 8px 9px; margin-bottom: 18px; }
+  nav.docnav b { display: none; }
+  nav.docnav a { font-size: 12.5px; padding: 6px 10px; }
+
+  header.doc { padding-bottom: 12px; margin-bottom: 18px; }
+  header.doc .kicker { font-size: 10.5px; letter-spacing: .12em; }
+
+  h1 { font-size: 20px; }
+  h2 { font-size: 17.5px; padding-left: 9px; border-left-width: 3px; margin-top: 1.8em; }
+  h3 { font-size: 15.5px; }
+  h4 { font-size: 14.5px; }
+  p { margin: .8em 0; }
+
+  blockquote { padding: 10px 12px; border-radius: 0 10px 10px 0; }
+
+  .codehilite { font-size: 12.2px; padding: 11px 12px; border-radius: 10px; }
+  table { font-size: 12.6px; }
+  th, td { padding: 6px 8px; }
+  th { white-space: normal; }
+
+  details.toc { padding: 10px 14px; margin-bottom: 18px; }
+  details.toc ol { padding-left: 18px; }
+  details.toc a { font-size: 13px; }
+
+  /* 触控目标不小于 40px */
+  ul.task-list li { padding: 2px 0; }
+  ul.task-list input[type=checkbox] { width: 19px; height: 19px; }
+
+  footer.doc { margin-top: 40px; font-size: 11.5px; }
+  #totop { width: 42px; height: 42px; font-size: 16px; }
+}
+
+/* ── 打印 ──────────────────────────────────────────────── */
+@media print {
+  nav.docnav, #totop, details.toc { display: none !important; }
+  body { background: #fff; color: #000; font-size: 11pt; }
+  .wrap { max-width: none; padding: 0; }
+  .codehilite, table, blockquote { box-shadow: none; }
+  a { color: #000; }
+  h2, h3 { page-break-after: avoid; }
+  .codehilite, table { page-break-inside: avoid; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+pre { line-height: 125%; }
+td.linenos .normal { color: #aaaaaa; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #aaaaaa; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #404040 }
+.codehilite { background: #202020; color: #D0D0D0 }
+.codehilite .c { color: #ABABAB; font-style: italic } /* Comment */
+.codehilite .err { color: #A61717; background-color: #E3D2D2 } /* Error */
+.codehilite .esc { color: #D0D0D0 } /* Escape */
+.codehilite .g { color: #D0D0D0 } /* Generic */
+.codehilite .k { color: #6EBF26; font-weight: bold } /* Keyword */
+.codehilite .l { color: #D0D0D0 } /* Literal */
+.codehilite .n { color: #D0D0D0 } /* Name */
+.codehilite .o { color: #D0D0D0 } /* Operator */
+.codehilite .x { color: #D0D0D0 } /* Other */
+.codehilite .p { color: #D0D0D0 } /* Punctuation */
+.codehilite .ch { color: #ABABAB; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #ABABAB; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #FF3A3A; font-weight: bold } /* Comment.Preproc */
+.codehilite .cpf { color: #ABABAB; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #ABABAB; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #E50808; font-weight: bold; background-color: #520000 } /* Comment.Special */
+.codehilite .gd { color: #FF3A3A } /* Generic.Deleted */
+.codehilite .ge { color: #D0D0D0; font-style: italic } /* Generic.Emph */
+.codehilite .ges { color: #D0D0D0; font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #FF3A3A } /* Generic.Error */
+.codehilite .gh { color: #FFF; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #589819 } /* Generic.Inserted */
+.codehilite .go { color: #CCC } /* Generic.Output */
+.codehilite .gp { color: #AAA } /* Generic.Prompt */
+.codehilite .gs { color: #D0D0D0; font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #FFF; text-decoration: underline } /* Generic.Subheading */
+.codehilite .gt { color: #FF3A3A } /* Generic.Traceback */
+.codehilite .kc { color: #6EBF26; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #6EBF26; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #6EBF26; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #6EBF26 } /* Keyword.Pseudo */
+.codehilite .kr { color: #6EBF26; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #6EBF26; font-weight: bold } /* Keyword.Type */
+.codehilite .ld { color: #D0D0D0 } /* Literal.Date */
+.codehilite .m { color: #51B2FD } /* Literal.Number */
+.codehilite .s { color: #ED9D13 } /* Literal.String */
+.codehilite .na { color: #BBB } /* Name.Attribute */
+.codehilite .nb { color: #2FBCCD } /* Name.Builtin */
+.codehilite .nc { color: #71ADFF; text-decoration: underline } /* Name.Class */
+.codehilite .no { color: #40FFFF } /* Name.Constant */
+.codehilite .nd { color: #FFA500 } /* Name.Decorator */
+.codehilite .ni { color: #D0D0D0 } /* Name.Entity */
+.codehilite .ne { color: #BBB } /* Name.Exception */
+.codehilite .nf { color: #71ADFF } /* Name.Function */
+.codehilite .nl { color: #D0D0D0 } /* Name.Label */
+.codehilite .nn { color: #71ADFF; text-decoration: underline } /* Name.Namespace */
+.codehilite .nx { color: #D0D0D0 } /* Name.Other */
+.codehilite .py { color: #D0D0D0 } /* Name.Property */
+.codehilite .nt { color: #6EBF26; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #40FFFF } /* Name.Variable */
+.codehilite .ow { color: #6EBF26; font-weight: bold } /* Operator.Word */
+.codehilite .pm { color: #D0D0D0 } /* Punctuation.Marker */
+.codehilite .w { color: #666 } /* Text.Whitespace */
+.codehilite .mb { color: #51B2FD } /* Literal.Number.Bin */
+.codehilite .mf { color: #51B2FD } /* Literal.Number.Float */
+.codehilite .mh { color: #51B2FD } /* Literal.Number.Hex */
+.codehilite .mi { color: #51B2FD } /* Literal.Number.Integer */
+.codehilite .mo { color: #51B2FD } /* Literal.Number.Oct */
+.codehilite .sa { color: #ED9D13 } /* Literal.String.Affix */
+.codehilite .sb { color: #ED9D13 } /* Literal.String.Backtick */
+.codehilite .sc { color: #ED9D13 } /* Literal.String.Char */
+.codehilite .dl { color: #ED9D13 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #ED9D13 } /* Literal.String.Doc */
+.codehilite .s2 { color: #ED9D13 } /* Literal.String.Double */
+.codehilite .se { color: #ED9D13 } /* Literal.String.Escape */
+.codehilite .sh { color: #ED9D13 } /* Literal.String.Heredoc */
+.codehilite .si { color: #ED9D13 } /* Literal.String.Interpol */
+.codehilite .sx { color: #FFA500 } /* Literal.String.Other */
+.codehilite .sr { color: #ED9D13 } /* Literal.String.Regex */
+.codehilite .s1 { color: #ED9D13 } /* Literal.String.Single */
+.codehilite .ss { color: #ED9D13 } /* Literal.String.Symbol */
+.codehilite .bp { color: #2FBCCD } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #71ADFF } /* Name.Function.Magic */
+.codehilite .vc { color: #40FFFF } /* Name.Variable.Class */
+.codehilite .vg { color: #40FFFF } /* Name.Variable.Global */
+.codehilite .vi { color: #40FFFF } /* Name.Variable.Instance */
+.codehilite .vm { color: #40FFFF } /* Name.Variable.Magic */
+.codehilite .il { color: #51B2FD } /* Literal.Number.Integer.Long */
+}
+</style>
+<style>
+.scroll-hint { position: relative; }
+.scroll-hint::after {
+  content: "";
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 30px;
+  border-radius: 0 12px 12px 0;
+  pointer-events: none;
+  background: linear-gradient(270deg, var(--scroll-shadow), transparent);
+  opacity: 0;
+  transition: opacity .18s;
+}
+.scroll-hint.has-more::after { opacity: 1; }
+.scroll-hint.at-end::after { opacity: 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="docnav" id="docnav"><b>DOCS</b><a class="home" href="./index.html">目录页</a><a href="00_任务与进度分析.html">00_任务与进度分析</a><a href="01_学习路线总览.html">01_学习路线总览</a><a href="02_阶段一_环境搭建与调试.html">02_阶段一_环境搭建与调试</a><a href="03_阶段二_基础语法与控制流.html">03_阶段二_基础语法与控制流</a><a href="04_阶段三_函数.html">04_阶段三_函数</a><a href="05_阶段四_数组与字符串.html">05_阶段四_数组与字符串</a><a href="06_阶段五_指针.html">06_阶段五_指针</a><a href="07_阶段六_结构体联合与枚举.html">07_阶段六_结构体联合与枚举</a><a href="08_阶段七_类型深入与位运算.html">08_阶段七_类型深入与位运算</a><a href="09_阶段八_多文件工程与考核冲刺.html" class="cur">09_阶段八_多文件工程与考核冲刺</a><a href="10_阶段九_动态内存与文件IO.html">10_阶段九_动态内存与文件IO</a><a href="11_阶段十_51单片机C语言预备.html">11_阶段十_51单片机C语言预备</a><a href="12_51实战一_数码管与按键.html">12_51实战一_数码管与按键</a><a href="13_51实战二_定时器串口与I2C.html">13_51实战二_定时器串口与I2C</a><a href="14_51实战三_时钟液晶AD与综合项目.html">14_51实战三_时钟液晶AD与综合项目</a></nav>
+<header class="doc"><span class="kicker">C 语言学习计划 · AI 生成教程</span><h1>09 阶段八：多文件工程与考核冲刺（从一间屋子到一栋楼）</h1></header>
+<details class="toc" id="toc"><summary>本文目录</summary><div class="toc">
+<ul>
+<li><a href="#h4994a1a2">1. 本节目标与前置知识</a></li>
+<li><a href="#h3c3d8fa6">2. 场景引入：800 行之后，你撞上了一堵看不见的墙</a></li>
+<li><a href="#h4b3d4653">3. 核心概念一：声明与定义——阶段三那句老话，今天才真正落地</a><ul>
+<li><a href="#hf64b1cac">3.1 一句话版本</a></li>
+<li><a href="#h5039fc8b">3.2 函数原型：把「怎么调用」提前告诉编译器</a></li>
+<li><a href="#h06791fd5">3.3 变量：extern 是「借条」，定义才是「房子」</a></li>
+<li><a href="#h4f396261">3.4 看一遍 01_decl_vs_def.c</a></li>
+<li><a href="#h7a83154f">3.5 为什么声明可以重复，定义不行？</a></li>
+</ul>
+</li>
+<li><a href="#hc6ad1cd2">4. 核心概念二：头文件——只放「菜单」，不放「厨房」</a><ul>
+<li><a href="#hd8ab3a0e">4.1 头文件到底是什么</a></li>
+<li><a href="#h36c19869">4.2 该放什么，不该放什么</a></li>
+<li><a href="#h1e8f6191">4.3 头文件要「自给自足」</a></li>
+<li><a href="#hc159d147">4.4 .c 要包含自己的头文件</a></li>
+<li><a href="#h6103d9fa">4.5 永远不要 #include "calc.c"</a></li>
+</ul>
+</li>
+<li><a href="#h8bdbff64">5. 核心概念三：头文件守卫——给每个头文件上锁</a><ul>
+<li><a href="#ha516b6f9">5.1 为什么会被包含两次</a></li>
+<li><a href="#h1b07de24">5.2 三行锁：#ifndef / #define / #endif</a></li>
+<li><a href="#ha1bbcffd">5.3 看一遍 02_header_guard.h 与 02_header_guard.c</a></li>
+<li><a href="#hf32cb9f0">5.4 守卫的边界：它只管一个编译单元</a></li>
+<li><a href="#h3571b305">5.5 #pragma once 要不要用</a></li>
+</ul>
+</li>
+<li><a href="#hce45f535">6. 核心概念四：extern——「这个东西在别处」</a><ul>
+<li><a href="#h77a25876">6.1 外部链接：名字是全局的</a></li>
+<li><a href="#h68ac364a">6.2 正确的跨文件姿势</a></li>
+<li><a href="#h601796f0">6.3 为什么全局变量要少用</a></li>
+<li><a href="#h98ac8760">6.4 extern 数组的小尾巴</a></li>
+</ul>
+</li>
+<li><a href="#hcc97844d">7. 核心概念五：static——把名字关进文件里</a><ul>
+<li><a href="#hb36153fa">7.1 三种「链接属性」先分清</a></li>
+<li><a href="#hbfe22d09">7.2 看一遍 03_static_internal.c</a></li>
+<li><a href="#h959bd791">7.3 文件作用域 static 的三个好处</a></li>
+<li><a href="#he74a22fb">7.4 函数内的 static：另一件事</a></li>
+<li><a href="#hab816b35">7.5 static 和头文件：不要乱放</a></li>
+</ul>
+</li>
+<li><a href="#h1addfe5a">8. 核心概念六：编译单元与链接——编译器一次只看见一个 .c</a><ul>
+<li><a href="#h2a786f10">8.1 编译单元是什么</a></li>
+<li><a href="#h6bc36d9c">8.2 编译器与链接器的分工</a></li>
+<li><a href="#h98f79871">8.3 错误三兄弟：undefined、multiple、implicit</a></li>
+<li><a href="#h35fbd489">8.4 三兄弟的记忆法</a></li>
+</ul>
+</li>
+<li><a href="#hc69fc886">9. 核心概念七：模块化拆分——按职责切，不按行数切</a><ul>
+<li><a href="#h418064de">9.1 拆分的三条原则</a></li>
+<li><a href="#hc4c80e08">9.2 一个最小多文件工程：04_project_demo\</a></li>
+<li><a href="#hf6ff14a6">9.3 谁包含谁、谁链接谁</a></li>
+<li><a href="#h58f28430">9.4 拆到多细才合适</a></li>
+</ul>
+</li>
+<li><a href="#h4e6b1b93">10. 核心概念八：菜单驱动程序——状态机、分派与输入清洗</a><ul>
+<li><a href="#hb7b0e29a">10.1 菜单程序的五个部件</a></li>
+<li><a href="#h8449e085">10.2 状态机：把「现在在哪」画出来</a></li>
+<li><a href="#hd49001a2">10.3 函数分派：switch 是调度台，不是干活的地方</a></li>
+<li><a href="#h0d78d0d5">10.4 输入清洗：菜单程序的头号 bug 来源</a></li>
+<li><a href="#haf96d242">10.5 登录门禁应该怎么放</a></li>
+<li><a href="#h7e96360b">10.6 菜单程序的三个验收动作</a></li>
+</ul>
+</li>
+<li><a href="#hd33412ce">11. 核心概念九：Makefile 入门——让机器记住「谁依赖谁」</a><ul>
+<li><a href="#h278173f7">11.1 为什么需要 Makefile</a></li>
+<li><a href="#h337e3cef">11.2 最小可用 Makefile</a></li>
+<li><a href="#h100122ef">11.3 逐行拆解</a></li>
+<li><a href="#hfaab47b4">11.4 运行与观察增量编译</a></li>
+<li><a href="#h13f37d20">11.5 变量与自动变量</a></li>
+<li><a href="#hdecc9df0">11.6 .PHONY 为什么重要</a></li>
+<li><a href="#hb197d53e">11.7 CMake：概念级对照</a></li>
+<li><a href="#h1db9b672">11.8 Windows 上叫 mingw32-make</a></li>
+</ul>
+</li>
+<li><a href="#h23abf0a4">12. 编译与运行（阶段八全部代码）</a><ul>
+<li><a href="#hde856f51">12.1 单文件示例：01、02、03、05</a></li>
+<li><a href="#h89e8e072">12.2 多文件工程：先分别编译，再链接</a></li>
+<li><a href="#he45b8549">12.3 用 Makefile 构建</a></li>
+<li><a href="#h89a56f80">12.4 预期输出速查</a></li>
+</ul>
+</li>
+<li><a href="#h7b052a8a">13. 本阶段练习（题目在 exercises\阶段八\练习_题目.md，答案同目录）</a></li>
+<li><a href="#hf00cdf95">14. 常见错误与调试速查（本阶段相关）</a></li>
+<li><a href="#hf346de61">15. 安全与规范：本阶段三条铁律</a><ul>
+<li><a href="#h2f58ad61">15.1 三条铁律</a></li>
+<li><a href="#h65d9cfcd">15.2 命名规范</a></li>
+<li><a href="#hb493ebe2">15.3 注释规范</a></li>
+<li><a href="#h299e4135">15.4 格式与提交</a></li>
+</ul>
+</li>
+<li><a href="#h182cd9e7">16. 任务作战指南（考核：知识映射 + 结构设计 + 自查清单，零答案）</a><ul>
+<li><a href="#hf939b390">16.1 知识映射表</a></li>
+<li><a href="#h0fe7d64b">16.2 结构设计模式建议（只给形状，不给实现）</a></li>
+<li><a href="#haee405ab">16.3 提交前自查清单</a></li>
+</ul>
+</li>
+<li><a href="#h21d4d00d">17. 验收清单（全部打勾才进入阶段九）</a></li>
+<li><a href="#h24699665">18. 本阶段复盘与下一阶段衔接</a></li>
+</ul>
+</div>
+</details>
+<script>if(window.matchMedia('(min-width:861px)').matches){var t=document.getElementById('toc');if(t)t.open=true;}</script>
+<blockquote>
+<p>预计学时：7~9 天（每天 1.5~2 小时）
+本阶段解锁：<strong>✅ 考核任务（登录菜单系统）的全部工程能力</strong>——教程只给知识地图与自查清单，实现由你独立完成
+配套代码：<code>code\阶段八_多文件工程\</code>（01~05，含 <code>04_project_demo\</code>）；练习：<code>exercises\阶段八\</code>
+前置：阶段一（预处理→编译→汇编→链接）、阶段三（函数原型）、阶段四~五（字符串与指针）、阶段六（结构体）、阶段七（类型与位运算）</p>
+</blockquote>
+<hr />
+<h2 id="h4994a1a2">1. 本节目标与前置知识</h2>
+<p><strong>目标：</strong></p>
+<ol>
+<li>真正吃透<strong>声明与定义</strong>的区别：声明是「我保证有这个东西」，定义是「东西在这里，存储/代码由我出」。</li>
+<li>会把一个程序拆成 <code>.h</code> 与 <code>.c</code>：头文件只放公开接口，源文件负责实现，知道什么该放、什么绝对不能放。</li>
+<li>能默写<strong>头文件守卫</strong>（<code>#ifndef</code> / <code>#define</code> / <code>#endif</code>），并解释它为什么只能防「同一个编译单元内的重复包含」。</li>
+<li>掌握 <code>extern</code> 与 <code>static</code> 的跨文件用法，理解外部链接/内部链接：能用 <code>extern</code> 共享变量，用 <code>static</code> 把私有函数和私有状态关进当前 <code>.c</code>，不污染全局符号表。</li>
+<li>建立<strong>编译单元（translation unit）</strong>与<strong>链接器（linker）</strong>的心智模型，能独立诊断 <code>undefined reference</code>、<code>multiple definition</code>、<code>implicit declaration</code> 三兄弟。</li>
+<li>掌握模块化拆分方法：按职责切、依赖单向、接口最小；能画出「谁包含谁、谁链接谁」的结构图。</li>
+<li>掌握菜单-登录类程序的结构模式：状态机 + 函数分派 + 输入清洗；知道登录门禁应该放在哪一层。</li>
+<li>会写最小可用 <strong>Makefile</strong>，理解目标、依赖、命令、<code>.PHONY</code> 与增量编译；对 CMake 建立概念级认识。</li>
+<li>按规范独立完成考核任务，通过自查清单与 PDF 中的登录测试，提交 Gitee——本阶段只给地图，不给你答案。</li>
+</ol>
+<p><strong>前置：</strong> 阶段三你学过「原型声明」，当时只是一行 <code>int is_prime(int n);</code>；阶段一你学过「预处理→编译→汇编→链接」四步流水线，当时只处理一个 <code>.c</code>。本阶段就是把这两件事放到多文件场景里兑现：<strong>原型声明是文件之间的合同，链接器是合同的执行者。</strong> 如果这两处还有一点模糊，先回去看阶段三 §3 和阶段一 §3，再往下读。</p>
+<hr />
+<h2 id="h3c3d8fa6">2. 场景引入：800 行之后，你撞上了一堵看不见的墙</h2>
+<p>阶段七结束那天，你觉得自己已经「会 C 了」：分支、循环、函数、数组、字符串、指针、结构体、位运算，零件齐了。考核任务看起来也不复杂——一个结构体存个人信息，一个登录门禁，一个菜单循环，改改姓名、学号、性别、身高，最后退出。你打开 <code>main.c</code>，从第一行开始写。</p>
+<p>一开始很顺。结构体定义、几个字符串函数、登录校验、菜单打印、修改函数，全都塞进同一个文件。写到三百行，你开始用注释划分区域；写到六百行，找一个函数要滚三次滚轮；写到八百行，你改了一个菜单提示语，按下编译，然后等——<strong>整个文件从头再编译一遍</strong>。你安慰自己：「能跑就行。」</p>
+<p>直到某一天，你想把登录部分拆到另一个文件。灾难开始了：</p>
+<ul>
+<li>你把 <code>check_login</code> 搬到另一个源文件，编译 <code>main.c</code> 时它说 <code>implicit declaration of function 'check_login'</code>；</li>
+<li>你补上声明，链接时它说 <code>undefined reference to 'check_login'</code>——因为你只编译了 <code>main.c</code>，忘了把那个新文件加进命令；</li>
+<li>你把 <code>current_user</code> 定义在头文件里，两个 <code>.c</code> 都包含它，链接器冷冷地说 <code>multiple definition of 'current_user'</code>；</li>
+<li>你给头文件加上守卫，重复包含的错误消失了，但 <code>multiple definition</code> 依然在——你开始怀疑「守卫是不是假的」；</li>
+<li>你写了一个 Makefile，命令行明明对齐了，<code>mingw32-make</code> 却只回你一句 <code>missing separator. Stop.</code>；</li>
+<li>最气的是，有些错误<strong>不是代码写错了</strong>，而是文件没放对、头文件没包含、编译命令少了一个 <code>.c</code>、Makefile 少了一个依赖。你盯着代码看半小时，真正的问题在「工程」里。</li>
+</ul>
+<p><strong>这不是 C 突然变难了，而是你第一次遇到了工程问题。</strong> 单文件时，所有函数住在同一间屋子里，喊一嗓子就能听见；多文件时，每个 <code>.c</code> 是一个独立车间，<code>.h</code> 是接口说明书，链接器是总装线。车间之间不能靠喊，只能靠<strong>合同</strong>；总装线不认你的注释，只认<strong>符号</strong>。</p>
+<p>考核任务明确要求「模块化」，这不是装饰性的加分项，而是及格线。它考的不只是你会不会写 <code>struct</code>，而是：<strong>你能不能让五六个文件在一个工程里各司其职、还能一起编译出一个干净的可执行文件。</strong></p>
+<p>本阶段给你四件工具：<strong>合同（声明与头文件）、门锁（头文件守卫与 static）、总装图（编译单元与链接）、自动流水线（Makefile）</strong>。学会它们，你才算从「写程序的人」变成「搭工程的人」。</p>
+<hr />
+<h2 id="h4b3d4653">3. 核心概念一：声明与定义——阶段三那句老话，今天才真正落地</h2>
+<h3 id="hf64b1cac">3.1 一句话版本</h3>
+<p>阶段三我们说过：<strong>「声明说有，定义给实现。」</strong> 当时你只在同一个 <code>.c</code> 里用，感受不深。现在把这句话放大到多文件：</p>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>声明（declaration）</th>
+<th>定义（definition）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>函数</td>
+<td><code>int add(int a, int b);</code> 原型，分号结尾，没有函数体</td>
+<td><code>int add(int a, int b) { return a + b; }</code> 有函数体</td>
+</tr>
+<tr>
+<td>变量</td>
+<td><code>extern int g_total;</code> 告诉编译器「有这个变量」</td>
+<td><code>int g_total = 0;</code> 真正分配存储</td>
+</tr>
+<tr>
+<td>是否产生存储/代码</td>
+<td>不产生</td>
+<td>产生</td>
+</tr>
+<tr>
+<td>能否重复</td>
+<td>可以重复（只要类型一致）</td>
+<td>同一个外部符号只能有一份</td>
+</tr>
+<tr>
+<td>放在哪</td>
+<td>头文件、调用前的源文件</td>
+<td>且仅在一个 <code>.c</code> 里</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><strong>声明是承诺，定义是兑现。</strong> 头文件是承诺书，<code>.c</code> 是兑现处。承诺书可以复印很多份，兑现处只能有一个——这就是多文件工程最朴素的一条纪律。</p>
+<h3 id="h5039fc8b">3.2 函数原型：把「怎么调用」提前告诉编译器</h3>
+<p>编译器是<strong>一次只处理一个 <code>.c</code></strong> 的。它在 <code>main.c</code> 里看到 <code>add(3, 4)</code> 时，必须知道：<code>add</code> 是个函数、要几个参数、参数是什么类型、返回什么类型。否则它没法检查实参、没法生成正确的调用代码。</p>
+<p>原型就是干这个的：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">);</span><span class="w">   </span><span class="cm">/* 原型：分号结尾，没有函数体 */</span>
+</code></pre></div></div>
+
+<p>参数名 <code>a</code>、<code>b</code> 可以省略，写成 <code>int add(int, int);</code> 也合法；但建议保留，因为它是给读代码的人看的文档。<strong>没有参数就写 <code>(void)</code></strong>：<code>int get_count(void);</code>。不要写成 <code>int get_count();</code>——在 C99 里这表示「参数情况未指定」，不是一个严格的「无参数」原型，容易埋坑。</p>
+<p>函数定义则是：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>定义只能有一份。你可以把原型抄十遍，编译器不生气；但把函数体抄两遍，链接器就会生气。</p>
+<h3 id="h06791fd5">3.3 变量：<code>extern</code> 是「借条」，定义才是「房子」</h3>
+<p>变量比函数更容易出事。看这两行：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="k">extern</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">g_total</span><span class="p">;</span><span class="w">   </span><span class="cm">/* 声明：g_total 在别处，这里不分配存储 */</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">g_total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">      </span><span class="cm">/* 定义：这里真的有一块存储，初始值为 0 */</span>
+</code></pre></div></div>
+
+<p><code>extern</code> 的意思是「这个变量已经存在，只是不在当前文件里」。它不分配内存，只告诉编译器「这个名字可以用，类型是 int」。真正的存储由某一个 <code>.c</code> 里的定义提供。</p>
+<p>在文件作用域写 <code>int g_total;</code>（没有 <code>extern</code>）通常也会被当作定义，编译器会为它分配存储。<strong>所以千万不要把 <code>int g_total;</code> 放进头文件</strong>：头文件被几个 <code>.c</code> 包含，就会在几个编译单元里各定义一份，链接器看到多个同名强符号，直接报 <code>multiple definition</code>。</p>
+<p>还有一个容易忽略的细节：<code>extern int g_total = 0;</code> 虽然写了 <code>extern</code>，但带初始化，仍然是定义。<strong>头文件里不要出现任何带初始化的变量定义</strong>，这是最省心的判断法。</p>
+<blockquote>
+<p>严谨补一句：文件作用域的 <code>int g;</code> 在没有初始化时叫<strong>暂定定义</strong>（tentative definition），同一个编译单元里重复出现可能被编译器合并；但跨编译单元各写一份，仍然是多个外部定义，链接器会报错。初学阶段不要研究这个边缘规则，按「头文件 <code>extern</code>、一个 <code>.c</code> 定义」做就永远不会错。</p>
+</blockquote>
+<h3 id="h4f396261">3.4 看一遍 <code>01_decl_vs_def.c</code></h3>
+<p>配套文件把「原型可以重复」「<code>extern</code> 声明」「定义只有一份」放在同一个程序里，先跑一遍：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cm">/* 01_decl_vs_def.c —— 阶段八：声明、定义、原型与 extern 变量</span>
+<span class="cm"> * 编译：gcc -Wall -Wextra -std=c99 -g 01_decl_vs_def.c -o 01_decl_vs_def.exe</span>
+<span class="cm"> * 说明：演示“声明可以重复，定义只能一次”，底部保留 implicit declaration 对照实验。</span>
+<span class="cm"> */</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+
+<span class="cm">/* ① 函数原型：声明“有这样一个函数”，分号结尾，没有函数体 */</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">);</span><span class="w">   </span><span class="cm">/* 声明可以重复，编译器不报错 */</span>
+
+<span class="cm">/* ② 全局变量：extern 是声明，不分配存储；下面一行才是定义 */</span>
+<span class="k">extern</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">g_total</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">g_total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">         </span><span class="cm">/* 整个程序里这个定义只能有一处 */</span>
+
+<span class="cm">/* ③ 函数定义：真正生成代码的地方，只能有一处 */</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">bump_total</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">g_total</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">n</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"add(%d, %d) = %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">));</span>
+<span class="w">    </span><span class="n">bump_total</span><span class="p">(</span><span class="n">add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">));</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"g_total = %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">g_total</span><span class="p">);</span>
+
+<span class="w">    </span><span class="cm">/* 隐式声明对照实验（默认注释，取消注释后重新编译）：</span>
+<span class="cm">     * int z = undeclared_helper(5);</span>
+<span class="cm">     * printf("%d\n", z);</span>
+<span class="cm">     * 在较老的 GCC 上会看到：</span>
+<span class="cm">     * warning: implicit declaration of function 'undeclared_helper'</span>
+<span class="cm">     * 在本机 GCC 16.2 上会直接看到 error: implicit declaration...</span>
+<span class="cm">     * 两者本质相同：调用点没有可见的原型。</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>预期输出：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>add(3, 4) = 7
+g_total = 7
+</code></pre></div></div>
+
+<p>这份代码故意把 <code>extern int g_total;</code> 和 <code>int g_total = 0;</code> 放在同一个文件里，只为了让你看见两种写法的区别。真实工程里，<code>extern</code> 那行要搬进头文件，定义那行留在唯一的 <code>.c</code> 里——这就是跨文件版的同一件事。</p>
+<h3 id="h7a83154f">3.5 为什么声明可以重复，定义不行？</h3>
+<p>因为<strong>编译器一次只看见一个编译单元</strong>。<code>main.c</code> 需要知道 <code>add</code> 长什么样，所以它读一遍原型就够了；<code>calc.c</code> 也需要知道，所以它也读一遍原型。两份原型在各自的编译单元里独立存在，互不冲突。</p>
+<p>但定义会生成<strong>符号</strong>（函数代码或变量存储）。链接器把多个 <code>.o</code> 拼在一起时，同一个外部符号出现两份定义，它不知道该用哪一份，只能报错。<strong>声明是给编译器的，定义是给链接器的。</strong> 这句话请记到错题本第一页。</p>
+<hr />
+<h2 id="hc6ad1cd2">4. 核心概念二：头文件——只放「菜单」，不放「厨房」</h2>
+<h3 id="hd8ab3a0e">4.1 头文件到底是什么</h3>
+<p><code>#include "calc.h"</code> 不是「导入一个模块」，而是<strong>预处理阶段的文本复制粘贴</strong>。预处理器把 <code>calc.h</code> 的内容原样倒进 <code>calc.c</code>，然后编译器才开始看代码。所以头文件不是「另一个程序」，它只是<strong>一段被反复粘贴的公共文本</strong>。</p>
+<p>这段公共文本应该是什么？<strong>接口</strong>。也就是：「别人要使用我这个模块，必须知道的东西。」用餐厅打比方：头文件是菜单，<code>.c</code> 是厨房。客人只需要看菜单点菜，不需要进厨房看你怎么切菜。</p>
+<h3 id="h36c19869">4.2 该放什么，不该放什么</h3>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>放在头文件里</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>函数原型</td>
+<td>调用者需要知道参数和返回值</td>
+</tr>
+<tr>
+<td><code>extern</code> 变量声明</td>
+<td>调用者需要知道变量存在及类型</td>
+</tr>
+<tr>
+<td>结构体、枚举、<code>typedef</code> 定义</td>
+<td>调用者要按这个布局创建或访问数据</td>
+</tr>
+<tr>
+<td>宏、常量</td>
+<td>调用者和实现需要共享同一套约定</td>
+</tr>
+<tr>
+<td>该头文件自身需要的标准头</td>
+<td>让头文件「自给自足」，不依赖包含顺序</td>
+</tr>
+</tbody>
+</table></div></div>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>不要放在头文件里</th>
+<th>后果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>函数定义（函数体）</td>
+<td>每个包含它的 <code>.c</code> 都生成一份定义，链接时 <code>multiple definition</code></td>
+</tr>
+<tr>
+<td>变量定义（<code>int g;</code>、<code>int g = 0;</code>）</td>
+<td>同上，多个 <code>.o</code> 各有一份存储</td>
+</tr>
+<tr>
+<td><code>main</code> 函数</td>
+<td>一个程序只能有一个入口</td>
+</tr>
+<tr>
+<td>只在本模块内部使用的辅助函数</td>
+<td>暴露了实现细节；应放在 <code>.c</code> 里并加 <code>static</code></td>
+</tr>
+<tr>
+<td><code>#include "xxx.c"</code></td>
+<td>把实现文件当文本倒进来，几乎必然重复定义，还会破坏独立编译</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>一个常见的例外是 <code>static inline</code> 函数：C99 允许在头文件里定义 <code>static inline</code> 小函数，让每个编译单元各有一份内联副本。初学阶段先不碰它，<strong>记住默认纪律：头文件只放接口需要的东西（声明、类型、宏），函数体回 <code>.c</code>。</strong></p>
+<h3 id="h1e8f6191">4.3 头文件要「自给自足」</h3>
+<p>一个合格的头文件，应该能被单独包含而编译通过。比如：</p>
+<ul>
+<li>头文件里用了 <code>size_t</code>，就自己 <code>#include &lt;stddef.h&gt;</code>，不要赌调用者先包含了它；</li>
+<li>头文件里用了 <code>FILE *</code>，就自己 <code>#include &lt;stdio.h&gt;</code>；</li>
+<li>头文件里用了 <code>int32_t</code>，就自己 <code>#include &lt;stdint.h&gt;</code>。</li>
+</ul>
+<p>为什么？因为调用者的包含顺序你控制不了。今天 <code>main.c</code> 先包含 <code>&lt;stdio.h&gt;</code> 再包含你的头文件，编译通过；明天另一个 <code>.c</code> 只包含你的头文件，就报 <code>unknown type name 'size_t'</code>。<strong>头文件不能依赖「别人应该先包含什么」这种默契。</strong></p>
+<p>一个很实用的自检法：新建一个临时 <code>.c</code>，里面只写一行 <code>#include "calc.h"</code>，编译它。能过，说明头文件自足；过不了，就补它缺的包含。</p>
+<h3 id="hc159d147">4.4 <code>.c</code> 要包含自己的头文件</h3>
+<p>每个模块的 <code>.c</code> 第一件事，应该是包含自己的 <code>.h</code>：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">"calc.h"</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stddef.h&gt;</span>
+</code></pre></div></div>
+
+<p>这不是形式主义。它让编译器拿 <code>.h</code> 里的原型去核对 <code>.c</code> 里的定义：参数类型不一致、返回类型不一致、函数名拼错，编译阶段就能抓到。如果你不包含自己的头文件，声明和定义可能各说各话，编译器不报错，链接器也不报错（它只认名字），最后运行时才以「参数传错、返回值乱码」的方式爆炸。</p>
+<p><strong>头文件是合同，<code>.c</code> 是签字方。签字之前，先把自己的合同读一遍。</strong></p>
+<h3 id="h6103d9fa">4.5 永远不要 <code>#include "calc.c"</code></h3>
+<p>有些初学者为了「让 main 看见 calc 的函数」，会在 <code>main.c</code> 里写 <code>#include "calc.c"</code>。这在单文件思维里似乎很方便，实际是把两个实现文件硬拼成一个编译单元：</p>
+<ul>
+<li>如果 <code>main.c</code> 和别的文件都包含了 <code>calc.c</code>，<code>calc_add</code> 就会有重复定义；</li>
+<li><code>calc.c</code> 里的 <code>static</code> 变量会被复制进每个包含者，状态各自独立；</li>
+<li>你再也无法单独编译 <code>calc.c</code>，Makefile 的依赖关系也全乱了。</li>
+</ul>
+<p>正确做法永远是：<strong><code>.c</code> 编译成 <code>.o</code>，<code>.h</code> 提供声明，链接器把 <code>.o</code> 拼起来。</strong> 不要用 <code>#include</code> 走捷径。</p>
+<hr />
+<h2 id="h8bdbff64">5. 核心概念三：头文件守卫——给每个头文件上锁</h2>
+<h3 id="ha516b6f9">5.1 为什么会被包含两次</h3>
+<p>头文件被包含两次，比你想的更常见。假设 <code>main.c</code> 这样写：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>main.c
+  ├── #include "student.h"        → struct Student 第一次定义
+  └── #include "另一个头文件"
+        └── #include "student.h"  → struct Student 第二次定义 → 编译错误
+</code></pre></div></div>
+
+<p>你只写了一行 <code>#include "student.h"</code>，但另一个头文件内部也包含了它。预处理器不管重复，照样复制粘贴。于是同一个结构体在<strong>同一个编译单元</strong>里被定义了两次，编译器报 <code>redefinition of 'struct Student'</code> 或 <code>conflicting types</code>。</p>
+<p>函数原型重复没关系，结构体、枚举、<code>typedef</code> 重复定义不行——类型不能有两份不同的定义。这就是头文件守卫要解决的问题。</p>
+<h3 id="h1b07de24">5.2 三行锁：<code>#ifndef</code> / <code>#define</code> / <code>#endif</code></h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cp">#ifndef HEADER_GUARD_DEMO_H</span>
+<span class="cp">#define HEADER_GUARD_DEMO_H</span>
+
+<span class="cm">/* 这里放头文件的全部内容 */</span>
+
+<span class="cp">#endif </span><span class="cm">/* HEADER_GUARD_DEMO_H */</span>
+</code></pre></div></div>
+
+<p>逻辑非常朴素：</p>
+<ol>
+<li>第一次包含时，<code>HEADER_GUARD_DEMO_H</code> 还没定义，<code>#ifndef</code> 为真，进入内容区；</li>
+<li>进入后立刻 <code>#define HEADER_GUARD_DEMO_H</code>，给这次包含打上「已读」标记；</li>
+<li>第二次包含时，宏已经定义，<code>#ifndef</code> 为假，整段内容被跳过。</li>
+</ol>
+<p>宏名要<strong>唯一</strong>，通常用「项目/模块名 + <code>_H</code>」全大写。不要用 <code>_</code> 开头再加一个大写字母（比如 <code>_CALC_H</code>），这类名字在 C 标准里是保留给实现的，容易撞车。<code>#endif</code> 后面写注释是好习惯，长头文件里能一眼看出这行闭合的是哪个守卫。</p>
+<h3 id="ha1bbcffd">5.3 看一遍 <code>02_header_guard.h</code> 与 <code>02_header_guard.c</code></h3>
+<p><code>02_header_guard.h</code>：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cm">/* 02_header_guard.h —— 头文件守卫的最小完整例子 */</span>
+<span class="cp">#ifndef HEADER_GUARD_DEMO_H</span>
+<span class="cp">#define HEADER_GUARD_DEMO_H</span>
+
+<span class="cp">#define DEMO_NAME_MAX 16</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">name</span><span class="p">[</span><span class="n">DEMO_NAME_MAX</span><span class="p">];</span>
+<span class="p">}</span><span class="w"> </span><span class="n">DemoItem</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">demo_add</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">);</span>
+
+<span class="cp">#endif </span><span class="cm">/* HEADER_GUARD_DEMO_H */</span>
+</code></pre></div></div>
+
+<p><code>02_header_guard.c</code>：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cm">/* 02_header_guard.c —— 同一个头文件被包含两次，守卫保证不重复展开 */</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">"02_header_guard.h"</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">"02_header_guard.h"</span><span class="w">   </span><span class="cm">/* 第二次包含：守卫让这段内容不再展开 */</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">demo_add</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">DemoItem</span><span class="w"> </span><span class="n">item</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s">"guard"</span><span class="p">};</span>
+
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"item = %d/%s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">item</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">item</span><span class="p">.</span><span class="n">name</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"demo_add(2, 3) = %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">demo_add</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">));</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>预期输出：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>item = 1/guard
+demo_add(2, 3) = 5
+</code></pre></div></div>
+
+<p>把 <code>02_header_guard.h</code> 复制一份，注释掉三行守卫，再编译一次，你会亲眼看到 <code>redefinition</code>。<strong>先看它坏，再看它好</strong>，比背定义有效十倍。</p>
+<h3 id="hf32cb9f0">5.4 守卫的边界：它只管一个编译单元</h3>
+<p>这是本阶段最容易被误解的一点，请画重点：</p>
+<blockquote>
+<p><strong>头文件守卫只能防止「同一个编译单元内重复包含」，不能防止「多个编译单元各定义一份」。</strong></p>
+</blockquote>
+<p>为什么？因为每个 <code>.c</code> 被预处理时，都是<strong>从零开始</strong>的。<code>main.c</code> 的预处理器定义了 <code>CALC_H</code>，这只存在于 <code>main.c</code> 的预处理过程里；<code>calc.c</code> 的预处理器根本不知道 <code>main.c</code> 发生过什么，它也会重新定义一次。于是如果头文件里有 <code>int g_score = 0;</code>，两个 <code>.c</code> 各得到一份定义，守卫一点忙都帮不上。</p>
+<p>所以正确的组合拳是：</p>
+<ul>
+<li><strong>守卫</strong> → 解决同一编译单元内的重复包含；</li>
+<li><strong><code>extern</code> 声明 + 单个 <code>.c</code> 定义</strong> → 解决跨编译单元的重复定义；</li>
+<li><strong><code>static</code></strong> → 把不需要对外的东西藏进当前编译单元。</li>
+</ul>
+<p>守卫不是万能锁，它只是门上的「防重复进入」装置。真正的存储管理，要靠声明/定义和链接属性。</p>
+<h3 id="h3571b305">5.5 <code>#pragma once</code> 要不要用</h3>
+<p><code>#pragma once</code> 是编译器扩展，几乎所有主流编译器都支持，写起来短。但它不是 C 标准，遇到特殊构建环境可能失效。<strong>课程作业和考核统一用标准守卫</strong>；看到别人的代码用 <code>#pragma once</code>，知道它是什么意思即可，不必跟风。</p>
+<hr />
+<h2 id="hce45f535">6. 核心概念四：<code>extern</code>——「这个东西在别处」</h2>
+<h3 id="h77a25876">6.1 外部链接：名字是全局的</h3>
+<p>C 的普通全局变量和普通函数，默认具有<strong>外部链接（external linkage）</strong>：它们的名字会进入目标文件的符号表，链接器在其他 <code>.o</code> 里也能找到。<code>extern</code> 就是用来<strong>声明一个具有外部链接、但定义在别处的名字</strong>。</p>
+<p>对函数来说，<code>extern</code> 通常是可省的：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">calc_add</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">);</span><span class="w">          </span><span class="cm">/* 默认就是外部链接 */</span>
+<span class="k">extern</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">calc_add</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">);</span><span class="w">   </span><span class="cm">/* 等价，写不写 extern 都行 */</span>
+</code></pre></div></div>
+
+<p>对变量来说，<code>extern</code> 不能省：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="k">extern</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">g_total</span><span class="p">;</span><span class="w">   </span><span class="cm">/* 声明：别处有定义 */</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">g_total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">      </span><span class="cm">/* 定义：这里才是真身 */</span>
+</code></pre></div></div>
+
+<h3 id="h68ac364a">6.2 正确的跨文件姿势</h3>
+<p>把 <code>01_decl_vs_def.c</code> 里的那两行拆到工程里，就是下面这个模式（这里不新增配套文件，只描述动作）：</p>
+<ul>
+<li>在模块的 <code>.h</code> 里写 <code>extern int g_total;</code> 和 <code>void bump_total(int n);</code>；</li>
+<li>在模块的 <code>.c</code> 里写 <code>int g_total = 0;</code> 和 <code>void bump_total(int n) { g_total += n; }</code>；</li>
+<li>在 <code>main.c</code> 里包含对应的头文件，然后直接使用 <code>g_total</code> 和 <code>bump_total</code>。</li>
+</ul>
+<p>编译时，<code>main.c</code> 只看到 <code>extern</code> 声明，生成一个「未定义符号」的引用；该模块的 <code>.c</code> 生成真正的定义；链接器把引用和定义接上。<strong>头文件负责让编译器闭嘴，<code>.c</code> 负责让链接器闭嘴。</strong></p>
+<h3 id="h601796f0">6.3 为什么全局变量要少用</h3>
+<p><code>extern</code> 很好用，但它是「隐形的数据通道」。函数签名上看不出它依赖 <code>g_total</code>，测试时也很难把状态清干净。两个模块都改同一个全局变量，出了 bug 你都不知道是谁改的。</p>
+<p>考核里如果确实需要保存「当前登录用户」这类跨函数状态，可以用一个明确的模块状态，或者把结构体指针传进函数。<strong>能用参数和返回值说清的数据流，不要用全局变量走暗道。</strong> <code>extern</code> 是工具，不是设计目标。</p>
+<h3 id="h98ac8760">6.4 <code>extern</code> 数组的小尾巴</h3>
+<p>如果头文件要声明一个数组，可以写：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="k">extern</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">g_scores</span><span class="p">[];</span><span class="w">   </span><span class="cm">/* 声明：长度在定义处给出 */</span>
+</code></pre></div></div>
+
+<p>定义处必须给出完整数组：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">g_scores</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span><span class="w">        </span><span class="cm">/* 定义：10 个 int 的存储 */</span>
+</code></pre></div></div>
+
+<p>数组声明不写长度是合法的（不完整类型），但定义必须完整。初学阶段如果记不住，就老老实实把数组封装进结构体，用函数传指针和长度——这也是更安全的工程习惯。</p>
+<hr />
+<h2 id="hcc97844d">7. 核心概念五：<code>static</code>——把名字关进文件里</h2>
+<h3 id="hb36153fa">7.1 三种「链接属性」先分清</h3>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>写法</th>
+<th>链接属性</th>
+<th>谁能看见</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>普通全局变量 / 普通函数</td>
+<td>外部链接</td>
+<td>所有 <code>.c</code>，链接器可解析</td>
+</tr>
+<tr>
+<td>文件作用域的 <code>static</code> 变量/函数</td>
+<td>内部链接</td>
+<td>只有当前 <code>.c</code>（当前编译单元）</td>
+</tr>
+<tr>
+<td>函数内的局部变量</td>
+<td>无链接</td>
+<td>只有当前函数作用域</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><code>static</code> 放在<strong>文件作用域</strong>（函数外面）时，含义是「这个符号只属于本编译单元，不导出给链接器」。它和「函数内的 static 局部变量」是两件事：后者讲的是<strong>生存期</strong>（程序运行期间一直存在），前者讲的是<strong>可见性</strong>（别的文件看不见）。初学阶段先把这两个概念分开，不要混成一句「static 就是静态」。</p>
+<h3 id="hbfe22d09">7.2 看一遍 <code>03_static_internal.c</code></h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cm">/* 03_static_internal.c —— 文件作用域 static：内部链接，只属于当前编译单元</span>
+<span class="cm"> * 编译：gcc -Wall -Wextra -std=c99 -g 03_static_internal.c -o 03_static_internal.exe</span>
+<span class="cm"> */</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+
+<span class="cm">/* 文件作用域的 static 变量：其他 .c 文件既看不见，也无法 extern 到它 */</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">s_score_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="cm">/* 文件作用域的 static 函数：本文件的私人助手，不导出符号 */</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">clamp_score</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">score</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">score</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">score</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">score</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/* 对外接口：其他 .c 只能通过这个函数间接使用 clamp_score */</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">record_score</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">score</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">s_score_count</span><span class="o">++</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">clamp_score</span><span class="p">(</span><span class="n">score</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">get_score_count</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">s_score_count</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"record_score(120) = %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">record_score</span><span class="p">(</span><span class="mi">120</span><span class="p">));</span><span class="w">  </span><span class="cm">/* 100 */</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"record_score(-5)  = %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">record_score</span><span class="p">(</span><span class="mi">-5</span><span class="p">));</span><span class="w">   </span><span class="cm">/* 0 */</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"count = %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">get_score_count</span><span class="p">());</span><span class="w">              </span><span class="cm">/* 2 */</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>预期输出：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>record_score(120) = 100
+record_score(-5)  = 0
+count = 2
+</code></pre></div></div>
+
+<p><code>record_score</code> 和 <code>get_score_count</code> 是公开接口，其他 <code>.c</code> 可以调用；<code>s_score_count</code> 和 <code>clamp_score</code> 被 <code>static</code> 关在本文件里。别的 <code>.c</code> 就算写 <code>extern int s_score_count;</code>，链接时也只会得到 <code>undefined reference</code>——因为链接器根本看不到这个内部符号。</p>
+<h3 id="h959bd791">7.3 文件作用域 static 的三个好处</h3>
+<ol>
+<li><strong>防重名</strong>：两个模块都可以有自己的 <code>static int s_count;</code> 或 <code>static void helper(void);</code>，链接器不会打架；</li>
+<li><strong>隐藏实现</strong>：头文件里不用暴露辅助函数，接口更干净；</li>
+<li><strong>减少误用</strong>：别人无法绕过你的公开接口直接改内部状态。</li>
+</ol>
+<p>可以把 <code>static</code> 理解成「这个车间内部的工具，不出厂」。工具留在车间里，总装线不需要知道它。</p>
+<h3 id="he74a22fb">7.4 函数内的 static：另一件事</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">tick</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">   </span><span class="cm">/* 只初始化一次，函数返回后仍然活着 */</span>
+<span class="w">    </span><span class="n">count</span><span class="o">++</span><span class="p">;</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"tick = %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>每次调用 <code>tick</code>，<code>count</code> 都保留上一次的值。它没有链接属性，只影响生存期。用它可以做「调用次数统计」「只初始化一次」这类事，但要注意：它让函数带上了隐藏状态，测试时不好重置。<strong>能用参数传状态，就别用 static 局部变量藏状态。</strong></p>
+<h3 id="hab816b35">7.5 static 和头文件：不要乱放</h3>
+<p>如果你在头文件里写：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">helper</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>每个包含该头文件的 <code>.c</code> 都会得到<strong>自己的一份</strong> <code>helper</code>。它们互不共享，代码体积还会膨胀。更糟的是，你在头文件里声明 <code>static int helper(int);</code> 却没有定义，包含它的 <code>.c</code> 会得到「声明了 static 但没定义」的警告或错误。</p>
+<p>规则很简单：</p>
+<ul>
+<li><strong>公开函数</strong>：在 <code>.h</code> 里放原型，在 <code>.c</code> 里定义，不加 <code>static</code>；</li>
+<li><strong>私有函数</strong>：只在 <code>.c</code> 里定义，加 <code>static</code>，头文件里连提都不要提；</li>
+<li><strong>头文件里不要放普通函数定义</strong>，也不要放 <code>static</code> 函数定义（<code>static inline</code> 是例外，等以后再说）。</li>
+</ul>
+<p><strong>默认给函数加 <code>static</code>，除非你确定它是这个模块的公开接口。</strong> 这是「最小暴露原则」在 C 里的具体写法。</p>
+<hr />
+<h2 id="h1addfe5a">8. 核心概念六：编译单元与链接——编译器一次只看见一个 <code>.c</code></h2>
+<h3 id="h2a786f10">8.1 编译单元是什么</h3>
+<p>把 <code>main.c</code> 和它包含的所有头文件放在一起，经过预处理，得到一份巨大的 <code>.c</code> 文本；这份文本就是一个<strong>编译单元（translation unit，简称 TU）</strong>。编译器把这个 TU 翻译成一个目标文件 <code>main.o</code>。</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>main.c ──include──&gt; calc.h
+calc.c ──include──&gt; calc.h
+   │                    │
+   ▼                    ▼
+main.o               calc.o
+   └────── link ───────┘
+            ▼
+       calc_demo.exe
+</code></pre></div></div>
+
+<p>关键事实：</p>
+<ol>
+<li><strong><code>.h</code> 不会被单独编译成 <code>.o</code></strong>。它只是被复制进包含它的 <code>.c</code>；</li>
+<li><strong>每个 <code>.c</code> 独立编译</strong>。编译 <code>main.c</code> 时，编译器完全不知道 <code>calc.c</code> 里有什么；</li>
+<li><strong>链接器负责拼装</strong>。它把多个 <code>.o</code> 和标准库放在一起，解析符号引用，生成 <code>.exe</code>；</li>
+<li><strong><code>#include</code> 发生在链接之前</strong>。它只解决「声明可见」，不解决「实现在哪」。</li>
+</ol>
+<h3 id="h6bc36d9c">8.2 编译器与链接器的分工</h3>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>谁在工作</th>
+<th>它看什么</th>
+<th>它关心什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预处理</td>
+<td>预处理器</td>
+<td><code>#include</code>、<code>#define</code></td>
+<td>文本替换、展开头文件</td>
+</tr>
+<tr>
+<td>编译</td>
+<td>编译器</td>
+<td>一个编译单元</td>
+<td>语法、类型、原型是否可见</td>
+</tr>
+<tr>
+<td>汇编</td>
+<td>汇编器</td>
+<td>汇编代码</td>
+<td>生成机器码 <code>.o</code></td>
+</tr>
+<tr>
+<td>链接</td>
+<td>链接器</td>
+<td>多个 <code>.o</code> + 库</td>
+<td>符号是否有定义、是否重复</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>编译器看到 <code>calc_add(1, 2)</code> 时，只要之前有原型，它就放心生成调用代码；它不检查 <code>calc_add</code> 到底在哪个 <code>.o</code> 里。链接器看到 <code>main.o</code> 里有一个「未定义的 <code>calc_add</code>」，就去其他 <code>.o</code> 和库里找；找到就接上，找不到就报 <code>undefined reference</code>。</p>
+<p><strong>链接器只认名字，不认参数类型。</strong> 这句话很重要：如果你在头文件里写 <code>int calc_add(int, int);</code>，在 <code>calc.c</code> 里却定义成 <code>double calc_add(double, double)</code>，编译器在 <code>calc.c</code> 里会报冲突（因为它包含了自己的头文件）；但如果某个调用者没包含新头文件，链接器仍可能把名字接上，运行时参数和返回值的解释全错。<strong>头文件是唯一的合同，改签名必须同步改头文件和所有调用者。</strong></p>
+<h3 id="h98f79871">8.3 错误三兄弟：undefined、multiple、implicit</h3>
+<h4 id="h0c96ef03">8.3.1 <code>undefined reference to 'calc_add'</code></h4>
+<p><strong>症状：</strong> 编译都过了，最后链接时出现 <code>undefined reference to 'calc_add'</code>。</p>
+<p><strong>本质：</strong> 有人<strong>引用</strong>了这个符号，但链接器在所有 <code>.o</code> 和库里都找不到它的<strong>定义</strong>。</p>
+<p><strong>常见原因：</strong></p>
+<ul>
+<li>编译命令漏了实现文件：只写了 <code>gcc main.c -o app.exe</code>，没带 <code>calc.c</code>；</li>
+<li>函数只在头文件里声明了，<code>.c</code> 里忘了写函数体；</li>
+<li>函数名拼写不一致：声明 <code>calc_add</code>，定义 <code>calc_ad</code>；</li>
+<li>函数在另一个 <code>.c</code> 里被 <code>static</code> 了，链接器看不见；</li>
+<li>条件编译导致定义被 <code>#if</code> 排除了。</li>
+</ul>
+<p><strong>药方：</strong> 先看「谁引用了它、谁应该定义它」，再把该 <code>.c</code> 加入编译命令；如果是 <code>static</code> 导致的，要么把接口改成公开函数，要么把调用移到同一个 <code>.c</code>。</p>
+<h4 id="h5d3a1091">8.3.2 <code>multiple definition of 'g_score'</code></h4>
+<p><strong>症状：</strong> 链接器说某个符号「first defined here」，然后 <code>multiple definition</code>。</p>
+<p><strong>本质：</strong> 同一个外部符号在多个 <code>.o</code> 里都有定义，链接器不知道选哪个。</p>
+<p><strong>最常见的原因：</strong> 把变量定义或函数体写进了头文件。头文件被两个 <code>.c</code> 包含，就产生两份定义。</p>
+<p><strong>药方：</strong></p>
+<ul>
+<li>变量：头文件里改成 <code>extern</code> 声明，定义只留在一个 <code>.c</code>；</li>
+<li>函数：头文件只留原型，函数体搬回 <code>.c</code>；</li>
+<li>检查有没有 <code>#include "xxx.c"</code> 这种操作。</li>
+</ul>
+<p><strong>注意：</strong> 头文件守卫<strong>不能</strong>修复这个错误。守卫只保证同一个 TU 不重复展开，不能阻止两个 TU 各自定义一份。</p>
+<h4 id="hd65c41f1">8.3.3 <code>implicit declaration of function 'str_len'</code></h4>
+<p><strong>症状：</strong> 调用函数时，编译器说「隐式声明」。较老的 GCC 在 <code>-Wall</code> 下给警告，本机 GCC 16.2 直接给 error。</p>
+<p><strong>本质：</strong> 调用点之前没有看见这个函数的原型。C99 已经取消了「隐式声明返回 int」的合法地位，编译器只能根据旧规则猜，或者直接拒绝。</p>
+<p><strong>常见原因：</strong></p>
+<ul>
+<li>忘了包含字符串工具的头文件；</li>
+<li>头文件里忘了写这个函数的原型；</li>
+<li>函数定义在调用之后，而调用前没有原型；</li>
+<li>函数名或头文件名拼写错误，结果包含的头文件里没有这个原型。</li>
+</ul>
+<p><strong>为什么危险：</strong> 如果编译器按旧规则猜成「返回 int」，而你实际函数返回 <code>char *</code> 或 <code>struct *</code>，返回值可能被截断成 32 位，指针高位丢失，运行时崩溃。<strong>隐式声明不是「能用就行」，是「编译器在替你猜，而它很可能猜错」。</strong></p>
+<p><strong>药方：</strong> 在头文件里写原型，在调用者里包含头文件；确保 <code>-Wall -Wextra</code> 下零警告。新版 GCC 把它当 error 其实是好事——它在帮你把炸弹提前拆掉。</p>
+<h3 id="h35fbd489">8.4 三兄弟的记忆法</h3>
+<ul>
+<li><code>undefined reference</code> = <strong>有人要，没人给</strong>；</li>
+<li><code>multiple definition</code> = <strong>两个人抢着给</strong>；</li>
+<li><code>implicit declaration</code> = <strong>用之前没人告诉编译器它长什么样</strong>。</li>
+</ul>
+<p>遇到它们，先问一句：<strong>这是编译期还是链接期？</strong> 编译期的问题去查头文件、原型、类型；链接期的问题去查源文件清单、定义、<code>static</code>、重复包含。方向对了，解决只是几分钟的事。</p>
+<hr />
+<h2 id="hc69fc886">9. 核心概念七：模块化拆分——按职责切，不按行数切</h2>
+<h3 id="h418064de">9.1 拆分的三条原则</h3>
+<p><strong>第一，按职责拆，不按行数拆。</strong> 「这个文件 300 行了，切成两个」是裁纸，不是设计。正确的问法是：「这个模块为什么存在？它负责哪一类变化？」登录逻辑、个人信息、菜单显示、字符串工具，它们变化的原因不同，应该分开。</p>
+<p><strong>第二，依赖单向。</strong> 入口层可以依赖业务层，业务层可以依赖工具层，工具层不要反过来依赖菜单。依赖成环（A 包含 B，B 又包含 A）会让头文件互相撕扯，编译顺序怎么排都不对。真遇到共享类型，抽一个只放类型的小头文件，让两边都依赖它。</p>
+<p><strong>第三，接口最小。</strong> 头文件只暴露调用者真正需要的东西。辅助函数用 <code>static</code> 藏在 <code>.c</code> 里，内部状态不要做成全局变量。接口越小，改实现时越不容易波及别人。</p>
+<h3 id="hc4c80e08">9.2 一个最小多文件工程：<code>04_project_demo\</code></h3>
+<p>目录结构：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>04_project_demo\
+├── main.c      程序入口，负责调用和演示
+├── calc.h      计算模块的公开接口
+├── calc.c      计算模块的实现
+└── Makefile    构建脚本
+</code></pre></div></div>
+
+<p><code>calc.h</code>：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cm">/* calc.h —— 计算模块的公开接口：只放声明，不放实现 */</span>
+<span class="cp">#ifndef CALC_H</span>
+<span class="cp">#define CALC_H</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">calc_add</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">calc_sub</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">calc_mul</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">);</span>
+
+<span class="cm">/* 除法：成功返回 0，并通过 out 带回商；除数为 0 或 out 为空返回 -1 */</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">calc_div</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">);</span>
+
+<span class="cp">#endif </span><span class="cm">/* CALC_H */</span>
+</code></pre></div></div>
+
+<p><code>calc.c</code>：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cm">/* calc.c —— 计算模块的实现：包含自己的头文件，保证声明与定义一致 */</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">"calc.h"</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stddef.h&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">calc_add</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">calc_sub</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">calc_mul</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">calc_div</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">out</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="o">*</span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code>main.c</code>：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cm">/* main.c —— 程序入口：只负责调用 calc 模块，不重复实现计算 */</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">"calc.h"</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">quotient</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"3 + 4 = %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">calc_add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">));</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"3 - 4 = %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">calc_sub</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">));</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"3 * 4 = %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">calc_mul</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">));</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">calc_div</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">quotient</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">"7 / 2 = %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">quotient</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">"7 / 2 failed</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">calc_div</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">quotient</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">"1 / 0 rejected</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>预期输出：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>3 + 4 = 7
+3 - 4 = -1
+3 * 4 = 12
+7 / 2 = 3
+1 / 0 rejected
+</code></pre></div></div>
+
+<h3 id="hf6ff14a6">9.3 谁包含谁、谁链接谁</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>main.c ──#include──&gt; calc.h &lt;──#include── calc.c
+   │                                      │
+   ▼                                      ▼
+main.o                                 calc.o
+   └────────────── link ─────────────────┘
+                    ▼
+              calc_demo.exe
+</code></pre></div></div>
+
+<ul>
+<li><code>main.c</code> 包含 <code>calc.h</code>，因为它要调用 <code>calc_add</code>、<code>calc_div</code>；</li>
+<li><code>calc.c</code> 也包含 <code>calc.h</code>，因为它要让编译器核对自己的定义；</li>
+<li><code>calc.h</code> 不包含任何 <code>.c</code>，也不包含 <code>main.c</code>；</li>
+<li>链接器只负责把 <code>main.o</code> 和 <code>calc.o</code> 拼起来，不关心谁包含了谁。</li>
+</ul>
+<p><code>calc_div</code> 的接口还顺手示范了一个重要的工程习惯：<strong>用返回值报告成功/失败，用指针参数带回结果。</strong> 这样调用者可以先判断 <code>calc_div(...) == 0</code>，再使用 <code>quotient</code>，不会在除零时拿到一个未定义的值。这个模式在考核里也会用到——但具体怎么用，由你设计。</p>
+<blockquote>
+<p>小提醒：<code>04</code> 为了演示 <code>NULL</code> 包含了 <code>&lt;stddef.h&gt;</code>。考核题面如果只允许 <code>stdio.h</code> / <code>stdlib.h</code>，就改用这两个头文件里提供的 <code>NULL</code>（它们同样定义 <code>NULL</code>），或者直接判 <code>out == 0</code>，不要额外包含 <code>&lt;stddef.h&gt;</code>。<strong>示例工程不是考核模板，头文件范围以题面为准。</strong></p>
+</blockquote>
+<h3 id="h58f28430">9.4 拆到多细才合适</h3>
+<p>对考核这种几百行的程序，<strong>4~6 个模块</strong>通常足够：</p>
+<ul>
+<li><code>main.c</code>：入口、状态循环、顶层调度；</li>
+<li>登录门禁模块：负责认证与尝试次数；</li>
+<li>个人信息模块：负责结构体、初始化、字段修改、展示；</li>
+<li>输入/菜单模块：负责显示、读入、清洗、错误提示；</li>
+<li>字符串工具模块：手写长度、比较、拷贝等（如果题面禁止库函数）。</li>
+</ul>
+<p>再拆细就容易出现「一个函数一个文件」的过度设计；再拆粗就回到 800 行 <code>main.c</code>。判断标准不是行数，而是：<strong>这个文件能不能用一句话说清它的职责？</strong> 说不清，就该拆；说得清但只有十行，也许该合并。</p>
+<hr />
+<h2 id="h4e6b1b93">10. 核心概念八：菜单驱动程序——状态机、分派与输入清洗</h2>
+<h3 id="hb7b0e29a">10.1 菜单程序的五个部件</h3>
+<p>一个能用的菜单程序，通常由五部分组成：</p>
+<ol>
+<li><strong>状态（state）</strong>：现在是在登录、在主菜单、在某个子功能，还是该退出；</li>
+<li><strong>显示（view）</strong>：把当前可选的菜单项打印出来；</li>
+<li><strong>输入（input）</strong>：读一行、解析成数字、清洗非法字符；</li>
+<li><strong>分派（dispatch）</strong>：根据选择调用对应函数；</li>
+<li><strong>动作（action）</strong>：真正干活的函数，比如修改姓名、显示信息。</li>
+</ol>
+<p>初学者常把五样东西全塞进 <code>main</code> 的 <code>while</code> 里，结果 <code>main</code> 越来越长，登录和菜单缠在一起，改一个选项要动十处。正确的做法是：<strong><code>main</code> 只做状态循环和分派，具体动作都在函数里。</strong></p>
+<h3 id="h8449e085">10.2 状态机：把「现在在哪」画出来</h3>
+<p>用文字画一个最简单的状态图：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>[登录门禁] --成功--&gt; [主菜单] --选择功能--&gt; [功能处理] --完成--&gt; 回到主菜单
+     |                   |
+     |                   +--选择退出--&gt; [结束]
+     +--失败达到上限------------------&gt; [结束]
+</code></pre></div></div>
+
+<p>每个方框是一个状态，箭头是转移条件。把它写成代码，就是一个 <code>while</code> 加一个 <code>switch</code>，或者一个 <code>enum</code> 状态变量：</p>
+<ul>
+<li><code>APP_LOGIN</code>：显示登录提示，读输入，校验；成功则转到 <code>APP_MENU</code>，失败但未达上限则留在 <code>APP_LOGIN</code> 继续下一次，失败次数达到上限则转到 <code>APP_EXIT</code>；</li>
+<li><code>APP_MENU</code>：显示主菜单，读选择，分派到具体功能；选择退出则转到 <code>APP_EXIT</code>；</li>
+<li><code>APP_EXIT</code>：循环结束，打印结束语，返回 0。</li>
+</ul>
+<p>这样做的好处是：<strong>登录只是状态机里的一个状态，不是套在菜单外面的另一层循环。</strong> 很多初学者写出「登录成功后再进入一个菜单循环，菜单退出后又回到登录」的迷宫，就是因为没有把状态理清。</p>
+<h3 id="hd49001a2">10.3 函数分派：<code>switch</code> 是调度台，不是干活的地方</h3>
+<p>一个清晰的分派函数长这样（这是结构示意，不是完整程序）：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">choice</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="k">case</span><span class="w"> </span><span class="mi">1</span><span class="p">:</span>
+<span class="w">    </span><span class="n">do_show</span><span class="p">(</span><span class="n">profile</span><span class="p">);</span>
+<span class="w">    </span><span class="k">break</span><span class="p">;</span>
+<span class="k">case</span><span class="w"> </span><span class="mi">2</span><span class="p">:</span>
+<span class="w">    </span><span class="n">do_edit</span><span class="p">(</span><span class="n">profile</span><span class="p">);</span>
+<span class="w">    </span><span class="k">break</span><span class="p">;</span>
+<span class="k">case</span><span class="w"> </span><span class="mi">0</span><span class="p">:</span>
+<span class="w">    </span><span class="n">running</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">break</span><span class="p">;</span>
+<span class="k">default</span><span class="o">:</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"无效选项，请重新输入。</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">    </span><span class="k">break</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>每个 <code>case</code> 只做一件事：调用对应的动作函数。动作函数负责具体的输入、修改、打印；分派函数负责「选谁」。这样你加一个菜单项，只改菜单显示和 <code>switch</code>，不用动业务函数。</p>
+<p>如果你学到练习 7，还可以把 <code>switch</code> 换成<strong>函数指针数组</strong>：把「选第几个函数」变成「查表」。语法形状是 <code>void (*actions[])(void) = {action_one, action_two};</code>，调用 <code>actions[choice]();</code>——前提是所有动作函数的签名完全一致。菜单如果需要传参，就把参数类型也写进函数指针类型，例如 <code>void (*actions[])(AppData *)</code>，调用时传 <code>&amp;app</code>。它适合菜单项很多、或者需要动态换菜单的场景；初学阶段先把 <code>switch</code> 写扎实，函数指针作为挑战。</p>
+<h3 id="h0d78d0d5">10.4 输入清洗：菜单程序的头号 bug 来源</h3>
+<p>先看一个经典事故（<strong>错误示范，不要照抄</strong>）：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">choice</span><span class="p">;</span>
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"请选择："</span><span class="p">);</span>
+<span class="w">    </span><span class="n">scanf</span><span class="p">(</span><span class="s">"%d"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">choice</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">choice</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="cm">/* ... */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>用户输入 <code>abc</code>，<code>scanf("%d", &amp;choice)</code> 返回 0，<code>choice</code> 没被赋值，<code>abc</code> 还留在输入缓冲区里。下一轮循环，<code>scanf</code> 又看到 <code>abc</code>，又失败……屏幕上瞬间刷出成千上万行「请选择：」。这不是死循环，是<strong>输入缓冲区里的垃圾没被清走</strong>。</p>
+<p>正确的输入清洗至少要做四件事：</p>
+<ol>
+<li><strong>读整行</strong>：用 <code>fgets</code> 或逐字符读到 <code>\n</code>，把一行完整取出来；</li>
+<li><strong>解析</strong>：只接受合法数字，拒绝空行、字母、多余字符；</li>
+<li><strong>清残留</strong>：如果一行太长，把剩余字符读掉，别留给下一轮；</li>
+<li><strong>处理 EOF</strong>：用户按 Ctrl+Z / Ctrl+D 时退出，不要空转。</li>
+</ol>
+<p>配套 <code>05_menu_skeleton.c</code> 是一个完整可编译的骨架。它用一个「示例任务面板」演示结构，<strong>不含任何考核业务</strong>；你学的是骨架，不是把它的业务照搬。</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cm">/* 05_menu_skeleton.c —— 菜单驱动程序骨架：循环 + 分派 + 输入清洗</span>
+<span class="cm"> * 编译：gcc -Wall -Wextra -std=c99 -g 05_menu_skeleton.c -o 05_menu_skeleton.exe</span>
+<span class="cm"> * 说明：演示工程结构，不含任何考核业务；把 AppData 和示例动作换成你的业务即可。</span>
+<span class="cm"> */</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+
+<span class="cp">#define LINE_MAX 64</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">task_count</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">AppData</span><span class="p">;</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">MENU_SHOW</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="n">MENU_ADD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">    </span><span class="n">MENU_CLEAR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">    </span><span class="n">MENU_EXIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="p">}</span><span class="w"> </span><span class="n">MenuChoice</span><span class="p">;</span>
+
+<span class="cm">/* 读一整行，丢掉换行；超长部分也一并丢弃，避免残留在缓冲区。</span>
+<span class="cm"> * 返回 0 表示 EOF 且没有读到任何字符，返回 1 表示读到了一行。 */</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">read_line</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">cap</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">ch</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cap</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">((</span><span class="n">ch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getchar</span><span class="p">())</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="sc">'\n'</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">ch</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">EOF</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">len</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">cap</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">buf</span><span class="p">[</span><span class="n">len</span><span class="o">++</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="p">)</span><span class="n">ch</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">buf</span><span class="p">[</span><span class="n">len</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">'\0'</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ch</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">EOF</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">len</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/* 只接受十进制整数，前后可有空格/tab，其他字符一律判失败。</span>
+<span class="cm"> * 菜单数字很小，这里用 1000000 的上限避免 int 溢出。 */</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">parse_int</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">sign</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">' '</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">'\t'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">i</span><span class="o">++</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">'+'</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">'-'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">'-'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">sign</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">i</span><span class="o">++</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="sc">'0'</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="sc">'9'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="sc">'0'</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">'9'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="sc">'0'</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">1000000L</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">i</span><span class="o">++</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">' '</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">'\t'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">i</span><span class="o">++</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="sc">'\0'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="o">*</span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="n">sign</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">show_menu</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">===== 示例任务面板 =====</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"1. 查看任务数量</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"2. 添加一条示例任务</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"3. 清空任务</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"0. 退出</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">do_show</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">AppData</span><span class="w"> </span><span class="o">*</span><span class="n">app</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"当前任务数：%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">app</span><span class="o">-&gt;</span><span class="n">task_count</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">do_add</span><span class="p">(</span><span class="n">AppData</span><span class="w"> </span><span class="o">*</span><span class="n">app</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">app</span><span class="o">-&gt;</span><span class="n">task_count</span><span class="o">++</span><span class="p">;</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"已添加，当前任务数：%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">app</span><span class="o">-&gt;</span><span class="n">task_count</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">do_clear</span><span class="p">(</span><span class="n">AppData</span><span class="w"> </span><span class="o">*</span><span class="n">app</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">app</span><span class="o">-&gt;</span><span class="n">task_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"已清空。</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/* 返回 1 表示继续循环，返回 0 表示退出；菜单分派集中在这里 */</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">dispatch</span><span class="p">(</span><span class="n">AppData</span><span class="w"> </span><span class="o">*</span><span class="n">app</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">choice</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">choice</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">MENU_SHOW</span><span class="p">:</span>
+<span class="w">        </span><span class="n">do_show</span><span class="p">(</span><span class="n">app</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">MENU_ADD</span><span class="p">:</span>
+<span class="w">        </span><span class="n">do_add</span><span class="p">(</span><span class="n">app</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">MENU_CLEAR</span><span class="p">:</span>
+<span class="w">        </span><span class="n">do_clear</span><span class="p">(</span><span class="n">app</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">MENU_EXIT</span><span class="p">:</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">default</span><span class="o">:</span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">"无效选项，请输入 0~3。</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">AppData</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">line</span><span class="p">[</span><span class="n">LINE_MAX</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">choice</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">running</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">running</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">show_menu</span><span class="p">();</span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">"请选择："</span><span class="p">);</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">read_line</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="k">sizeof</span><span class="w"> </span><span class="n">line</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">printf</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">输入结束，退出。</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">parse_int</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">choice</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">printf</span><span class="p">(</span><span class="s">"这不是有效数字，请重试。</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">            </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">running</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dispatch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">app</span><span class="p">,</span><span class="w"> </span><span class="n">choice</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"程序结束。</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这份骨架的关键点：</p>
+<ul>
+<li><code>read_line</code> 一次读一整行，超过 <code>LINE_MAX</code> 的字符被丢弃，不会留下残渣；</li>
+<li><code>parse_int</code> 自己解析十进制，不依赖 <code>atoi</code>，非法字符直接拒绝；</li>
+<li><code>dispatch</code> 只做分派，具体动作在 <code>do_show</code>、<code>do_add</code>、<code>do_clear</code> 里；</li>
+<li><code>main</code> 只有一个 <code>while</code>，一个 <code>running</code> 标志，没有嵌套菜单循环；</li>
+<li><code>AppData *</code> 和 <code>const AppData *</code> 演示了「改数据传指针、只读数据传 const 指针」。</li>
+</ul>
+<p>把 <code>AppData</code> 换成你的个人信息结构体，把 <code>do_show</code>/<code>do_add</code> 换成你的业务函数，骨架就能用。<strong>但考核的登录、字段校验、5 次机会，必须由你按题面自己实现。</strong></p>
+<h3 id="haf96d242">10.5 登录门禁应该怎么放</h3>
+<p>登录不是「在菜单里加一个选项」，而是菜单之前的门禁。结构上建议：</p>
+<ul>
+<li>用一个独立的登录函数或登录模块，输入账号/口令，返回「成功/失败/输入结束」；</li>
+<li>失败次数由调用者或登录模块按题面要求计数，达到上限就退出，不要无限重试；</li>
+<li>每次失败后清洗输入，避免残留字符影响下一次；</li>
+<li>登录成功后设置状态，再进入主菜单；</li>
+<li>登录失败提示不要泄露「是账号错还是口令错」这类细节（如果题面没有要求区分）；</li>
+<li>不要把登录循环嵌在菜单循环里，也不要在登录函数里直接打印主菜单。</li>
+</ul>
+<p><strong>状态机的好处在这里体现：登录和菜单是两个状态，各自只做自己的事。</strong> 你不需要写「登录成功后再 while 菜单，菜单退出再回到登录」这种绕来绕去的结构。</p>
+<h3 id="h7e96360b">10.6 菜单程序的三个验收动作</h3>
+<p>写完菜单，至少手动做这三件事：</p>
+<ol>
+<li>输入 <code>abc</code>、空行、超长字符串、<code>999</code>，看程序是否给出提示并回到菜单，而不是崩溃或刷屏；</li>
+<li>输入 EOF（Ctrl+Z 回车 / Ctrl+D），看程序是否正常退出；</li>
+<li>选择每个菜单项，走完「修改→查看→退出→重新运行」的完整路径，确认没有状态残留。</li>
+</ol>
+<p>这三件事比多写十个功能更能决定考核成败。</p>
+<hr />
+<h2 id="hd33412ce">11. 核心概念九：Makefile 入门——让机器记住「谁依赖谁」</h2>
+<h3 id="h278173f7">11.1 为什么需要 Makefile</h3>
+<p>手动编译多文件，命令会越来越长：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="n">gcc</span> <span class="n">-Wall</span> <span class="n">-Wextra</span> <span class="n">-std</span><span class="p">=</span><span class="n">c99</span> <span class="n">-g</span> <span class="n">main</span><span class="p">.</span><span class="n">c</span> <span class="n">calc</span><span class="p">.</span><span class="n">c</span> <span class="n">-o</span> <span class="n">calc_demo</span><span class="p">.</span><span class="n">exe</span>
+</code></pre></div></div>
+
+<p>每次改一个文件，所有 <code>.c</code> 都重新编译，所有 <code>.o</code> 都重新生成。程序小的时候无所谓，文件一多，等编译的时间足够你泡一杯茶。更麻烦的是：你很容易忘记把新加的 <code>.c</code> 加进命令，然后对着 <code>undefined reference</code> 发呆。</p>
+<p>Makefile 的核心思想只有一句：<strong>只重建「比依赖旧」的目标。</strong> 它把「源文件、头文件、目标文件、可执行文件」之间的依赖关系写成规则，然后根据文件修改时间决定谁需要重编。这就是<strong>增量编译</strong>。</p>
+<h3 id="h337e3cef">11.2 最小可用 Makefile</h3>
+<p><code>04_project_demo\Makefile</code> 的完整内容：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="nv">CC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"C:/Program Files (x86)/mingw64/bin/gcc.exe"</span>
+<span class="nv">CFLAGS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>-Wall<span class="w"> </span>-Wextra<span class="w"> </span>-std<span class="o">=</span>c99<span class="w"> </span>-g
+<span class="nv">TARGET</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>calc_demo.exe
+<span class="nv">OBJS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>main.o<span class="w"> </span>calc.o
+
+<span class="nf">all</span><span class="o">:</span><span class="w"> </span><span class="k">$(</span><span class="nv">TARGET</span><span class="k">)</span>
+
+<span class="nf">$(TARGET)</span><span class="o">:</span><span class="w"> </span><span class="k">$(</span><span class="nv">OBJS</span><span class="k">)</span>
+<span class="w">    </span><span class="k">$(</span>CC<span class="k">)</span><span class="w"> </span><span class="k">$(</span>OBJS<span class="k">)</span><span class="w"> </span>-o<span class="w"> </span><span class="k">$(</span>TARGET<span class="k">)</span>
+
+<span class="nf">main.o</span><span class="o">:</span><span class="w"> </span><span class="n">main</span>.<span class="n">c</span> <span class="n">calc</span>.<span class="n">h</span>
+<span class="w">    </span><span class="k">$(</span>CC<span class="k">)</span><span class="w"> </span><span class="k">$(</span>CFLAGS<span class="k">)</span><span class="w"> </span>-c<span class="w"> </span>main.c<span class="w"> </span>-o<span class="w"> </span>main.o
+
+<span class="nf">calc.o</span><span class="o">:</span><span class="w"> </span><span class="n">calc</span>.<span class="n">c</span> <span class="n">calc</span>.<span class="n">h</span>
+<span class="w">    </span><span class="k">$(</span>CC<span class="k">)</span><span class="w"> </span><span class="k">$(</span>CFLAGS<span class="k">)</span><span class="w"> </span>-c<span class="w"> </span>calc.c<span class="w"> </span>-o<span class="w"> </span>calc.o
+
+<span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">all</span> <span class="n">clean</span>
+<span class="nf">clean</span><span class="o">:</span>
+<span class="w">    </span>-del<span class="w"> </span>/Q<span class="w"> </span><span class="k">$(</span>OBJS<span class="k">)</span><span class="w"> </span><span class="k">$(</span>TARGET<span class="k">)</span><span class="w"> </span><span class="m">2</span>&gt;NUL
+</code></pre></div></div>
+
+<blockquote>
+<p><strong>注意：</strong> 上面每个命令行开头都是<strong>一个真实的 Tab 字符</strong>，不是四个空格。Markdown 里看起来像缩进，复制到编辑器后请确认状态栏显示的是 <code>Tab</code>，不是 <code>Spaces: 4</code>。这是 Makefile 最著名的入门坑，后面 §14 还会再提。</p>
+</blockquote>
+<h3 id="h100122ef">11.3 逐行拆解</h3>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>行</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CC = ...</code></td>
+<td>编译器变量。路径带空格，所以用双引号包住；以后换编译器只改这一行</td>
+</tr>
+<tr>
+<td><code>CFLAGS = ...</code></td>
+<td>编译选项：警告、C99、调试信息</td>
+</tr>
+<tr>
+<td><code>TARGET = calc_demo.exe</code></td>
+<td>最终目标文件名</td>
+</tr>
+<tr>
+<td><code>OBJS = main.o calc.o</code></td>
+<td>所有目标文件，链接时要一起用</td>
+</tr>
+<tr>
+<td><code>all: $(TARGET)</code></td>
+<td>默认目标。直接运行 <code>mingw32-make</code> 时，从第一个目标开始</td>
+</tr>
+<tr>
+<td><code>$(TARGET): $(OBJS)</code></td>
+<td>可执行文件依赖两个 <code>.o</code>；任何一个比它新，就重新链接</td>
+</tr>
+<tr>
+<td><code>$(CC) $(OBJS) -o $(TARGET)</code></td>
+<td>链接命令，<strong>没有</strong> <code>-c</code></td>
+</tr>
+<tr>
+<td><code>main.o: main.c calc.h</code></td>
+<td><code>main.o</code> 依赖 <code>main.c</code> 和 <code>calc.h</code>；头文件变了也要重编</td>
+</tr>
+<tr>
+<td><code>$(CC) $(CFLAGS) -c main.c -o main.o</code></td>
+<td>编译命令，<code>-c</code> 表示只编译不链接</td>
+</tr>
+<tr>
+<td><code>calc.o: calc.c calc.h</code></td>
+<td>同理，<code>calc.o</code> 也依赖 <code>calc.h</code></td>
+</tr>
+<tr>
+<td><code>.PHONY: all clean</code></td>
+<td>声明 <code>all</code>、<code>clean</code> 是「假目标」，不是真实文件</td>
+</tr>
+<tr>
+<td><code>clean:</code></td>
+<td>清理目标，删除 <code>.o</code> 和 <code>.exe</code></td>
+</tr>
+<tr>
+<td><code>-del /Q ... 2&gt;NUL</code></td>
+<td>Windows 删除命令；开头的 <code>-</code> 表示忽略删除失败（文件本来就不存在时）</td>
+</tr>
+</tbody>
+</table></div></div>
+<h3 id="hfaab47b4">11.4 运行与观察增量编译</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="nv">$make</span> <span class="p">=</span> <span class="s2">"C:\Program Files (x86)\mingw64\bin\mingw32-make.exe"</span>
+<span class="nb">Push-Location</span> <span class="n">code</span><span class="p">\</span><span class="n">阶段八_多文件工程</span><span class="p">\</span><span class="n">04_project_demo</span>
+
+<span class="p">&amp;</span> <span class="nv">$make</span>                 <span class="c"># 第一次：编译 main.o、calc.o，再链接</span>
+<span class="p">.\</span><span class="n">calc_demo</span><span class="p">.</span><span class="n">exe</span>
+<span class="p">&amp;</span> <span class="nv">$make</span>                 <span class="c"># 第二次：应当显示 Nothing to be done for 'all'.</span>
+<span class="p">&amp;</span> <span class="nv">$make</span> <span class="n">clean</span>           <span class="c"># 删除产物</span>
+<span class="nb">Pop-Location</span>
+</code></pre></div></div>
+
+<p>第一次运行，你应该看到三条命令：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>gcc ... -c main.c -o main.o
+gcc ... -c calc.c -o calc.o
+gcc main.o calc.o -o calc_demo.exe
+</code></pre></div></div>
+
+<p>第二次运行，应该只看到：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>mingw32-make: Nothing to be done for 'all'.
+</code></pre></div></div>
+
+<p>现在做两个实验：</p>
+<ol>
+<li>只修改 <code>calc.c</code>（比如在某个函数里加一行注释保存），再 <code>mingw32-make</code>：应该只有 <code>calc.o</code> 重编，然后重新链接；</li>
+<li>修改 <code>calc.h</code>（比如加一行注释保存），再 <code>mingw32-make</code>：<code>main.o</code> 和 <code>calc.o</code> 都应该重编，因为两个目标都把 <code>calc.h</code> 列为依赖。</li>
+</ol>
+<p>这就是增量编译。它不神秘，只是<strong>依赖图 + 时间戳</strong>。</p>
+<h3 id="h13f37d20">11.5 变量与自动变量</h3>
+<p>Makefile 的变量用 <code>$(名字)</code> 展开。除了自己定义的 <code>CC</code>、<code>CFLAGS</code>，Make 还提供<strong>自动变量</strong>：</p>
+<ul>
+<li><code>$@</code>：当前目标名；</li>
+<li><code>$^</code>：所有依赖名；</li>
+<li><code>$&lt;</code>：第一个依赖名。</li>
+</ul>
+<p>用自动变量可以把规则写得更通用：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="nf">%.o</span><span class="o">:</span><span class="w"> </span>%.<span class="n">c</span>
+<span class="w">    </span><span class="k">$(</span>CC<span class="k">)</span><span class="w"> </span><span class="k">$(</span>CFLAGS<span class="k">)</span><span class="w"> </span>-c<span class="w"> </span>$&lt;<span class="w"> </span>-o<span class="w"> </span><span class="nv">$@</span>
+</code></pre></div></div>
+
+<p>这条模式规则的意思是：任何 <code>.o</code> 都可以由同名 <code>.c</code> 编译而来，命令是「编译第一个依赖，输出到目标」。初学阶段先把显式规则写清楚；读别人的 Makefile 时，认识 <code>$@</code>、<code>$^</code>、<code>$&lt;</code> 就够了。</p>
+<h3 id="hdecc9df0">11.6 <code>.PHONY</code> 为什么重要</h3>
+<p><code>all</code> 和 <code>clean</code> 不是真实文件。如果目录里恰好有一个叫 <code>clean</code> 的文件，Make 会认为 <code>clean</code> 目标已经「最新」，于是不执行清理命令。<code>.PHONY</code> 告诉 Make：「别管同名文件，这个目标每次都执行。」</p>
+<p>同理，<code>all</code> 也是一个假目标，只是用来汇总最终产物。养成写 <code>.PHONY</code> 的习惯，能避免很多「为什么 make clean 不删文件」的怪事。</p>
+<h3 id="hb197d53e">11.7 CMake：概念级对照</h3>
+<p>CMake 不是编译器，也不是 Make 的替代品；它是<strong>构建系统生成器</strong>。你写一份 <code>CMakeLists.txt</code> 描述「有哪些源文件、要生成什么目标」，CMake 根据你的平台生成 Makefile、Ninja 文件或 Visual Studio 工程，然后由底层的构建工具去执行。</p>
+<p>一个概念示例（<strong>不是本阶段配套文件</strong>，只是让你看懂形状）：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="nb">cmake_minimum_required</span><span class="p">(</span><span class="s">VERSION</span><span class="w"> </span><span class="s">3.10</span><span class="p">)</span>
+<span class="nb">project</span><span class="p">(</span><span class="s">calc_demo</span><span class="w"> </span><span class="s">C</span><span class="p">)</span>
+
+<span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_C_STANDARD</span><span class="w"> </span><span class="s">99</span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_C_STANDARD_REQUIRED</span><span class="w"> </span><span class="s">ON</span><span class="p">)</span>
+
+<span class="nb">add_executable</span><span class="p">(</span><span class="s">calc_demo</span><span class="w"> </span><span class="s">main.c</span><span class="w"> </span><span class="s">calc.c</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>它表达的意思和 Makefile 一样：用 <code>main.c</code>、<code>calc.c</code> 生成 <code>calc_demo</code>。但 CMake 会自动处理很多依赖细节，支持「out-of-source build」（在 <code>build/</code> 目录里生成产物，不污染源码目录），也更容易跨平台。</p>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>Makefile</th>
+<th>CMake</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>本质</td>
+<td>直接写构建规则</td>
+<td>描述工程，生成构建规则</td>
+</tr>
+<tr>
+<td>学习曲线</td>
+<td>先懂目标/依赖/命令</td>
+<td>先懂工程/目标/生成器</td>
+</tr>
+<tr>
+<td>依赖管理</td>
+<td>手写头文件依赖</td>
+<td>通常自动分析</td>
+</tr>
+<tr>
+<td>跨平台</td>
+<td>命令常带平台色彩</td>
+<td>生成对应平台工程</td>
+</tr>
+<tr>
+<td>适合</td>
+<td>小工程、教学、嵌入式</td>
+<td>中大型、多平台工程</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><strong>现在的学习顺序是对的：先手写 Makefile，看清「目标—依赖—命令」；以后再用 CMake，才不会把它当黑魔法。</strong> 本机目前没有安装 CMake，所以本阶段只要求看懂概念，不要求跑通。</p>
+<h3 id="h1db9b672">11.8 Windows 上叫 <code>mingw32-make</code></h3>
+<p>MinGW 安装里通常没有叫 <code>make</code> 的命令，而是 <code>mingw32-make.exe</code>。在 PowerShell 里用完整路径调用最稳：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="p">&amp;</span> <span class="s2">"C:\Program Files (x86)\mingw64\bin\mingw32-make.exe"</span> <span class="p">-</span><span class="n">-version</span>
+</code></pre></div></div>
+
+<p>如果你以后把 MinGW 的 <code>bin</code> 加进 <code>PATH</code>，才可以简写成 <code>mingw32-make</code>。不要假设 <code>make</code> 一定存在。</p>
+<hr />
+<h2 id="h23abf0a4">12. 编译与运行（阶段八全部代码）</h2>
+<p>以下命令假设当前目录是资料根目录 <code>C:\Users\lonel\Desktop\C语言学习计划_AI生成</code>。先把工具路径和 <code>build</code> 目录准备好：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="nv">$gcc</span> <span class="p">=</span> <span class="s2">"C:\Program Files (x86)\mingw64\bin\gcc.exe"</span>
+<span class="nv">$make</span> <span class="p">=</span> <span class="s2">"C:\Program Files (x86)\mingw64\bin\mingw32-make.exe"</span>
+<span class="nb">New-Item</span> <span class="n">-ItemType</span> <span class="n">Directory</span> <span class="n">-Force</span> <span class="n">build</span> <span class="p">|</span> <span class="nb">Out-Null</span>
+</code></pre></div></div>
+
+<h3 id="hde856f51">12.1 单文件示例：01、02、03、05</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="p">&amp;</span> <span class="nv">$gcc</span> <span class="n">-Wall</span> <span class="n">-Wextra</span> <span class="n">-std</span><span class="p">=</span><span class="n">c99</span> <span class="n">-g</span> <span class="n">code</span><span class="p">\</span><span class="n">阶段八_多文件工程</span><span class="p">\</span><span class="n">01_decl_vs_def</span><span class="p">.</span><span class="n">c</span> <span class="n">-o</span> <span class="n">build</span><span class="p">\</span><span class="n">01_decl_vs_def</span><span class="p">.</span><span class="n">exe</span>
+<span class="p">.\</span><span class="n">build</span><span class="p">\</span><span class="n">01_decl_vs_def</span><span class="p">.</span><span class="n">exe</span>
+
+<span class="p">&amp;</span> <span class="nv">$gcc</span> <span class="n">-Wall</span> <span class="n">-Wextra</span> <span class="n">-std</span><span class="p">=</span><span class="n">c99</span> <span class="n">-g</span> <span class="n">code</span><span class="p">\</span><span class="n">阶段八_多文件工程</span><span class="p">\</span><span class="n">02_header_guard</span><span class="p">.</span><span class="n">c</span> <span class="n">-o</span> <span class="n">build</span><span class="p">\</span><span class="n">02_header_guard</span><span class="p">.</span><span class="n">exe</span>
+<span class="p">.\</span><span class="n">build</span><span class="p">\</span><span class="n">02_header_guard</span><span class="p">.</span><span class="n">exe</span>
+
+<span class="p">&amp;</span> <span class="nv">$gcc</span> <span class="n">-Wall</span> <span class="n">-Wextra</span> <span class="n">-std</span><span class="p">=</span><span class="n">c99</span> <span class="n">-g</span> <span class="n">code</span><span class="p">\</span><span class="n">阶段八_多文件工程</span><span class="p">\</span><span class="n">03_static_internal</span><span class="p">.</span><span class="n">c</span> <span class="n">-o</span> <span class="n">build</span><span class="p">\</span><span class="n">03_static_internal</span><span class="p">.</span><span class="n">exe</span>
+<span class="p">.\</span><span class="n">build</span><span class="p">\</span><span class="n">03_static_internal</span><span class="p">.</span><span class="n">exe</span>
+
+<span class="p">&amp;</span> <span class="nv">$gcc</span> <span class="n">-Wall</span> <span class="n">-Wextra</span> <span class="n">-std</span><span class="p">=</span><span class="n">c99</span> <span class="n">-g</span> <span class="n">code</span><span class="p">\</span><span class="n">阶段八_多文件工程</span><span class="p">\</span><span class="n">05_menu_skeleton</span><span class="p">.</span><span class="n">c</span> <span class="n">-o</span> <span class="n">build</span><span class="p">\</span><span class="n">05_menu_skeleton</span><span class="p">.</span><span class="n">exe</span>
+<span class="p">.\</span><span class="n">build</span><span class="p">\</span><span class="n">05_menu_skeleton</span><span class="p">.</span><span class="n">exe</span>
+</code></pre></div></div>
+
+<p><code>02</code> 的源文件里故意包含了两次 <code>02_header_guard.h</code>；如果它能编译通过，说明守卫生效。<code>05</code> 是交互程序，运行后依次输入 <code>1</code>、<code>2</code>、<code>9</code>、<code>abc</code>、<code>0</code>，观察它如何提示并回到菜单。</p>
+<h3 id="h89e8e072">12.2 多文件工程：先分别编译，再链接</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="p">&amp;</span> <span class="nv">$gcc</span> <span class="n">-Wall</span> <span class="n">-Wextra</span> <span class="n">-std</span><span class="p">=</span><span class="n">c99</span> <span class="n">-g</span> <span class="n">-c</span> <span class="n">code</span><span class="p">\</span><span class="n">阶段八_多文件工程</span><span class="p">\</span><span class="n">04_project_demo</span><span class="p">\</span><span class="n">main</span><span class="p">.</span><span class="n">c</span> <span class="n">-o</span> <span class="n">build</span><span class="p">\</span><span class="n">main</span><span class="p">.</span><span class="n">o</span>
+<span class="p">&amp;</span> <span class="nv">$gcc</span> <span class="n">-Wall</span> <span class="n">-Wextra</span> <span class="n">-std</span><span class="p">=</span><span class="n">c99</span> <span class="n">-g</span> <span class="n">-c</span> <span class="n">code</span><span class="p">\</span><span class="n">阶段八_多文件工程</span><span class="p">\</span><span class="n">04_project_demo</span><span class="p">\</span><span class="n">calc</span><span class="p">.</span><span class="n">c</span> <span class="n">-o</span> <span class="n">build</span><span class="p">\</span><span class="n">calc</span><span class="p">.</span><span class="n">o</span>
+<span class="p">&amp;</span> <span class="nv">$gcc</span> <span class="n">build</span><span class="p">\</span><span class="n">main</span><span class="p">.</span><span class="n">o</span> <span class="n">build</span><span class="p">\</span><span class="n">calc</span><span class="p">.</span><span class="n">o</span> <span class="n">-o</span> <span class="n">build</span><span class="p">\</span><span class="n">calc_demo</span><span class="p">.</span><span class="n">exe</span>
+<span class="p">.\</span><span class="n">build</span><span class="p">\</span><span class="n">calc_demo</span><span class="p">.</span><span class="n">exe</span>
+</code></pre></div></div>
+
+<p>注意最后一行：<strong>没有 <code>-c</code></strong>，因为它做的是链接。前两行有 <code>-c</code>，所以只生成 <code>.o</code>，不生成 exe。这一组命令是你理解「编译」和「链接」分界的最好实验：故意只执行前两行和最后一行中的一部分，看看报错发生在哪一步。</p>
+<p>也可以让 gcc 一步完成：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="p">&amp;</span> <span class="nv">$gcc</span> <span class="n">-Wall</span> <span class="n">-Wextra</span> <span class="n">-std</span><span class="p">=</span><span class="n">c99</span> <span class="n">-g</span> <span class="n">code</span><span class="p">\</span><span class="n">阶段八_多文件工程</span><span class="p">\</span><span class="n">04_project_demo</span><span class="p">\</span><span class="n">main</span><span class="p">.</span><span class="n">c</span> <span class="n">code</span><span class="p">\</span><span class="n">阶段八_多文件工程</span><span class="p">\</span><span class="n">04_project_demo</span><span class="p">\</span><span class="n">calc</span><span class="p">.</span><span class="n">c</span> <span class="n">-o</span> <span class="n">build</span><span class="p">\</span><span class="n">calc_demo</span><span class="p">.</span><span class="n">exe</span>
+<span class="p">.\</span><span class="n">build</span><span class="p">\</span><span class="n">calc_demo</span><span class="p">.</span><span class="n">exe</span>
+</code></pre></div></div>
+
+<p>这只是「编译 + 链接」的简写，底层仍然是两个编译单元，不要因为它能一行跑通就以为多文件不存在。</p>
+<h3 id="he45b8549">12.3 用 Makefile 构建</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="nb">Push-Location</span> <span class="n">code</span><span class="p">\</span><span class="n">阶段八_多文件工程</span><span class="p">\</span><span class="n">04_project_demo</span>
+
+<span class="p">&amp;</span> <span class="nv">$make</span>                 <span class="c"># 第一次构建</span>
+<span class="p">.\</span><span class="n">calc_demo</span><span class="p">.</span><span class="n">exe</span>
+<span class="p">&amp;</span> <span class="nv">$make</span>                 <span class="c"># 第二次：Nothing to be done</span>
+<span class="p">&amp;</span> <span class="nv">$make</span> <span class="n">clean</span>           <span class="c"># 清理</span>
+
+<span class="nb">Pop-Location</span>
+</code></pre></div></div>
+
+<p>预期输出与 §9 的 <code>calc_demo</code> 一致。若 <code>mingw32-make</code> 报 <code>missing separator</code>，先去检查命令行开头是不是 Tab（§14）。</p>
+<h3 id="h89a56f80">12.4 预期输出速查</h3>
+<ul>
+<li><code>01</code>：两行，<code>add(3, 4) = 7</code> 和 <code>g_total = 7</code>；</li>
+<li><code>02</code>：<code>item = 1/guard</code> 和 <code>demo_add(2, 3) = 5</code>；</li>
+<li><code>03</code>：<code>record_score(120) = 100</code>、<code>record_score(-5) = 0</code>、<code>count = 2</code>；</li>
+<li><code>04</code>：五行，包含 <code>7 / 2 = 3</code> 和 <code>1 / 0 rejected</code>；</li>
+<li><code>05</code>：交互输出，重点是非法输入不会刷屏、<code>0</code> 能正常退出。</li>
+</ul>
+<p><strong>老规矩：先预测，再运行。</strong> 尤其 <code>03</code> 的 <code>static</code> 计数和 <code>05</code> 的非法输入路径，先在脑子里走一遍。</p>
+<hr />
+<h2 id="h7b052a8a">13. 本阶段练习（题目在 <code>exercises\阶段八\练习_题目.md</code>，答案同目录）</h2>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>级别</th>
+<th>内容</th>
+<th>训练点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>基础</td>
+<td>原型与声明：写函数原型、定义、<code>extern</code> 变量，观察声明重复与定义唯一</td>
+<td>声明/定义、链接属性</td>
+</tr>
+<tr>
+<td>2</td>
+<td>基础</td>
+<td>头文件守卫：写一个会被包含两次的头文件，去掉守卫看报错，再加回</td>
+<td>守卫三行、重复包含</td>
+</tr>
+<tr>
+<td>3</td>
+<td>基础 · 纸上</td>
+<td>编译链接产物与「谁包含谁」：画 <code>.c/.h/.o/.exe</code> 关系图，推演 4 个文件的编译顺序</td>
+<td>编译单元、链接</td>
+</tr>
+<tr>
+<td>4</td>
+<td>提高</td>
+<td>手写无库字符串工具：<code>strlen</code> / <code>strcmp</code> / <code>strcpy</code> / <code>strcat</code>，只用循环和指针</td>
+<td>无库函数、字符串、指针</td>
+</tr>
+<tr>
+<td>5</td>
+<td>提高</td>
+<td>多文件拆分 <code>student</code> 模块：<code>student.h</code>、<code>student.c</code>、<code>main.c</code></td>
+<td>模块化、头文件接口</td>
+</tr>
+<tr>
+<td>6</td>
+<td>提高</td>
+<td>Makefile 与增量编译：给多文件工程写 Makefile，验证改 <code>.c</code> / 改 <code>.h</code> 的重编范围</td>
+<td>目标/依赖/命令、增量</td>
+</tr>
+<tr>
+<td>7</td>
+<td>挑战</td>
+<td>函数指针菜单分派：把 <code>switch</code> 菜单改成函数指针数组</td>
+<td>函数指针、表驱动</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><strong>对应答案文件：</strong></p>
+<ul>
+<li>练习 1：<code>exercises\阶段八\答案_练习1_原型与声明.c</code></li>
+<li>练习 2：<code>exercises\阶段八\答案_练习2_头文件守卫.c</code></li>
+<li>练习 3 与练习 6 的文字推演、Makefile 参考答案：<code>exercises\阶段八\答案_参考_文字题.md</code></li>
+<li>练习 4：<code>exercises\阶段八\答案_练习4_无库字符串工具.c</code></li>
+<li>练习 5：<code>exercises\阶段八\答案_练习5_多文件拆分\</code>（<code>student.h</code>、<code>student.c</code>、<code>main.c</code>）</li>
+<li>练习 7：<code>exercises\阶段八\答案_练习7_函数指针菜单.c</code></li>
+</ul>
+<p><strong>做题纪律：</strong> 先自己写，再对答案。练习 3 必须动笔画图，不能只在脑子里想；练习 6 必须真的运行 <code>mingw32-make</code> 两次，观察输出，而不是抄一份 Makefile 就算完。练习 1~6 建议全做，练习 7 是挑战但强烈推荐——函数指针菜单是菜单分派的进阶形态，理解它之后再回看 <code>switch</code> 会通透很多。</p>
+<p><strong>边界重申：</strong> 以上练习都是原创通用能力训练，不是考核题目的解答。练习 5 的 <code>student</code> 模块是练习用的教学模块，不要把它改名后直接当考核提交；考核的结构、字段、登录规则以 PDF 为准。</p>
+<hr />
+<h2 id="hf00cdf95">14. 常见错误与调试速查（本阶段相关）</h2>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>症状</th>
+<th>真因</th>
+<th>一句话药方</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>undefined reference to 'calc_add'</code></td>
+<td>声明有了，但链接命令没带 <code>calc.c</code>，或函数没定义</td>
+<td>把实现文件加进编译命令；先分清「编译错误」还是「链接错误」</td>
+</tr>
+<tr>
+<td><code>multiple definition of 'g_score'</code></td>
+<td>头文件里写了变量定义，被多个 <code>.c</code> 各展开一份</td>
+<td>头文件改成 <code>extern</code>，定义只留在一个 <code>.c</code></td>
+</tr>
+<tr>
+<td><code>redefinition of 'struct Student'</code> / <code>conflicting types</code></td>
+<td>同一头文件在一个编译单元里被包含两次，没写守卫</td>
+<td>给每个 <code>.h</code> 加 <code>#ifndef/#define/#endif</code></td>
+</tr>
+<tr>
+<td><code>implicit declaration of function 'str_len'</code></td>
+<td>调用点没看到原型：没包含头文件，或头文件里没声明</td>
+<td>在 <code>.h</code> 声明并在调用者包含；新版 GCC 会直接报 error，别忽略</td>
+</tr>
+<tr>
+<td><code>missing separator. Stop.</code></td>
+<td>Makefile 的命令行用了空格缩进，不是 Tab</td>
+<td>命令行开头改成真实 Tab；VSCode 状态栏确认不是 <code>Spaces: 4</code></td>
+</tr>
+<tr>
+<td>链接 <code>.o</code> 时报 <code>file format not recognized</code>，或出现 <code>WinMainCRTStartup</code> 重复定义</td>
+<td>忘了 <code>-c</code>，<code>gcc x.c -o x.o</code> 生成的是 exe，不是目标文件</td>
+<td>编译加 <code>-c</code>；<code>-o</code> 后面的 <code>.o</code> 必须真的是目标文件</td>
+</tr>
+<tr>
+<td><code>undefined reference to 'g_total'</code></td>
+<td>头文件里 <code>extern</code> 了，但没有任何 <code>.c</code> 写定义</td>
+<td>在一个且仅一个 <code>.c</code> 里写 <code>int g_total = 0;</code></td>
+</tr>
+<tr>
+<td><code>undefined reference to 'helper'</code></td>
+<td><code>helper</code> 是别的 <code>.c</code> 里的 <code>static</code>，内部链接不导出</td>
+<td>把 <code>helper</code> 改成公开函数并在 <code>.h</code> 声明，或把调用移到同一 <code>.c</code></td>
+</tr>
+<tr>
+<td><code>fatal error: calc.h: No such file or directory</code></td>
+<td>头文件不在搜索路径、拼写错误，或目录结构不对</td>
+<td>头文件与 <code>.c</code> 同目录；必要时用 <code>-I</code> 指定包含目录</td>
+</tr>
+<tr>
+<td>菜单输入字母后无限刷屏</td>
+<td><code>scanf("%d")</code> 失败，非法字符留在缓冲区</td>
+<td>读整行再解析，或清空到换行；检查 <code>scanf</code> 返回值</td>
+</tr>
+<tr>
+<td>改了 <code>.h</code> 但 <code>make</code> 没重编</td>
+<td><code>.o</code> 的依赖里没列头文件</td>
+<td>把 <code>.h</code> 加进相关 <code>.o</code> 的依赖；或使用自动依赖</td>
+</tr>
+<tr>
+<td><code>undefined reference to 'WinMain'</code> / 找不到入口</td>
+<td><code>main</code> 拼错，或编译命令漏了含 <code>main</code> 的源文件</td>
+<td>检查入口拼写和源文件清单</td>
+</tr>
+<tr>
+<td><code>multiple definition of 'calc_add'</code></td>
+<td>函数体写进了头文件，被多个 <code>.c</code> 包含</td>
+<td>头文件只留原型，函数体搬回 <code>.c</code></td>
+</tr>
+</tbody>
+</table></div></div>
+<p><strong>调试顺序（照这个顺序走，别乱试）：</strong></p>
+<ol>
+<li><strong>先看第一条错误</strong>，不要从最后一条倒着看；前面的错误可能带出一串假错误；</li>
+<li><strong>判断阶段</strong>：是编译期（语法/类型/原型）还是链接期（符号）？看错误里有没有 <code>ld</code>、<code>undefined reference</code>；</li>
+<li><strong>逐个编译</strong>：对每个 <code>.c</code> 单独执行 <code>gcc -c</code>，能定位是哪个文件本身有问题，还是链接清单不全；</li>
+<li><strong>检查清单</strong>：所有 <code>.c</code> 都加进命令了吗？每个头文件有守卫吗？头文件里有没有定义？<code>static</code> 是否挡住了别人？；</li>
+<li><strong>清理重建</strong>：删掉 <code>.o</code> 和 <code>.exe</code> 再来一次，排除旧产物干扰；</li>
+<li><strong>警告清零</strong>：<code>-Wall -Wextra</code> 下不允许有 warning；警告是未来的链接错误/运行时错误。</li>
+</ol>
+<hr />
+<h2 id="hf346de61">15. 安全与规范：本阶段三条铁律</h2>
+<h3 id="h2f58ad61">15.1 三条铁律</h3>
+<ol>
+<li><strong>一个外部符号只有一份定义。</strong> 头文件只放接口（声明、类型、宏），变量定义、函数体一律放 <code>.c</code>；共享变量用 <code>extern</code> 声明，定义只留一处。每次把东西写进 <code>.h</code> 之前，先问：「这会被几个 <code>.c</code> 包含？会不会变成多份？」</li>
+<li><strong>每个头文件都有守卫，每个 <code>.c</code> 都包含自己的头文件。</strong> 守卫防同一编译单元重复包含；包含自己的头文件让编译器核对声明与定义。私有函数一律 <code>static</code>，不导出、不写进头文件。</li>
+<li><strong>警告零容忍，输入必校验，指针必可证。</strong> 用 <code>-Wall -Wextra -std=c99</code> 编译；每个 <code>scanf</code>/读入都检查返回值；每个菜单输入都处理非法值、空行、超长和 EOF；每个指针出生时初始化，解引用前能说清它指向谁。</li>
+</ol>
+<p>考核还额外有硬性要求：<strong>只允许 <code>stdio.h</code> / <code>stdlib.h</code>，至少一处指针，必须模块化，必须有注释。</strong> 前三条铁律是工程底线，后面四条是题面底线，一条都不能破。</p>
+<h3 id="h65d9cfcd">15.2 命名规范</h3>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>对象</th>
+<th>建议</th>
+<th>例子</th>
+<th>避免</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>函数</td>
+<td>模块_动作_对象，小写+下划线</td>
+<td><code>profile_set_name</code>、<code>auth_login</code></td>
+<td><code>f1</code>、<code>gaiming</code>、<code>doit</code></td>
+</tr>
+<tr>
+<td>变量</td>
+<td>名词，能读出含义</td>
+<td><code>student_count</code>、<code>current_index</code></td>
+<td><code>a</code>、<code>b</code>、<code>tmp</code>（循环下标 <code>i/j/k</code> 除外）</td>
+</tr>
+<tr>
+<td>常量/宏</td>
+<td>全大写+下划线</td>
+<td><code>MAX_NAME_LEN</code>、<code>MENU_EXIT</code></td>
+<td><code>max</code>、<code>N</code></td>
+</tr>
+<tr>
+<td>类型</td>
+<td>首字母大写或 <code>_t</code> 后缀，全项目统一</td>
+<td><code>Student</code> 或 <code>student_t</code></td>
+<td>同一工程两种风格混用</td>
+</tr>
+<tr>
+<td>文件</td>
+<td>模块名小写</td>
+<td><code>calc.c</code>、<code>calc.h</code></td>
+<td>大小写混写、带空格或中文的文件名</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>命名不是审美问题，是<strong>可维护性</strong>问题。考核要求「变量定义规范」，评审看到 <code>int a, b, c;</code> 和看到 <code>int student_count;</code>，对代码质量的判断完全不同。你不需要起很长，但要能读懂。</p>
+<h3 id="hb493ebe2">15.3 注释规范</h3>
+<ul>
+<li><strong>文件头注释</strong>：文件名、模块职责、编译方式（可选）。让评审一眼知道这个文件干什么；</li>
+<li><strong>函数注释</strong>：做什么、参数含义、返回值含义、失败时怎么办。尤其是返回状态码的函数，必须写清 0 和 -1 各代表什么；</li>
+<li><strong>关键逻辑注释</strong>：为什么这样做，而不是逐行翻译代码。比如「登录失败只提示一次，避免泄露账号是否存在」；</li>
+<li><strong>不要注释掉的死代码</strong>：提交前删掉，或至少标明「历史版本，不参与编译」；满屏注释掉的代码会拉低评审印象；</li>
+<li><strong>注释跟着代码改</strong>：改了参数或返回值，注释必须同步，否则比没有注释更危险。</li>
+</ul>
+<h3 id="h299e4135">15.4 格式与提交</h3>
+<ul>
+<li>C 代码用 4 个空格缩进，左花括号风格全工程统一；一行一条语句；函数之间空一行；</li>
+<li>运算符两侧留空格，逗号后留空格；<code>if (</code>、<code>for (</code>、<code>while (</code> 括号前留空格；</li>
+<li>一行不要过长，复杂表达式拆开；嵌套超过三层就考虑抽函数；</li>
+<li><strong>Makefile 的命令行必须用 Tab</strong>，这是唯一允许/要求 Tab 的地方；</li>
+<li>提交 Gitee 前检查 <code>.gitignore</code>：不要提交 <code>*.exe</code>、<code>*.o</code>、<code>build/</code>、临时文件；</li>
+<li>写一个简短 <code>README.md</code>：怎么编译、怎么运行、每个文件负责什么；这是「模块化」的对外说明书；</li>
+<li>考核任务要求独立完成。教程、练习、答案都是学习材料，<strong>不要让 AI 替你写考核实现</strong>——那会让你在答辩/面试时原形毕露，也违反任务规则。</li>
+</ul>
+<hr />
+<h2 id="h182cd9e7">16. 任务作战指南（考核：知识映射 + 结构设计 + 自查清单，零答案）</h2>
+<blockquote>
+<p><strong>铁律重申：本节只给「地图、形状、清单」，不给任何可直接提交的考核实现代码。</strong> 下面出现的函数签名只是「接口形状」，不是实现；模块表只是职责建议，不是让你照抄的答案。登录、校验、菜单、字段修改的代码必须由你独立完成。</p>
+</blockquote>
+<h3 id="hf939b390">16.1 知识映射表</h3>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>考核要求</th>
+<th>对应教程节</th>
+<th>配套示例/练习</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>结构体保存个人信息</td>
+<td>阶段六（结构体定义、成员访问、结构体数组）</td>
+<td>阶段六示例；本阶段 §9 的模块化思路</td>
+</tr>
+<tr>
+<td>登录与 5 次机会</td>
+<td>阶段二（循环、<code>scanf</code> 返回值、边界）+ 本阶段 §10 状态机</td>
+<td><code>05_menu_skeleton.c</code> 的循环与分派骨架</td>
+</tr>
+<tr>
+<td>菜单修改姓名/学号/性别/身高</td>
+<td>阶段四（字符数组）、阶段五（指针）、阶段六（结构体）</td>
+<td>练习 5 的模块拆分；<code>05_menu_skeleton.c</code></td>
+</tr>
+<tr>
+<td>禁止库函数，仅 <code>stdio.h</code>/<code>stdlib.h</code></td>
+<td>阶段四、五的手写字符串原理</td>
+<td>练习 4：<code>strlen</code>/<code>strcmp</code>/<code>strcpy</code>/<code>strcat</code></td>
+</tr>
+<tr>
+<td>至少一处指针</td>
+<td>阶段五（指针、传出参数、<code>const</code>）</td>
+<td><code>04_project_demo</code> 的 <code>calc_div</code>；<code>05</code> 的 <code>AppData *</code></td>
+</tr>
+<tr>
+<td>模块化（<code>.h</code>/<code>.c</code> 分离）</td>
+<td>本阶段 §3~§9</td>
+<td><code>04_project_demo</code> 全套</td>
+</tr>
+<tr>
+<td>头文件守卫、<code>extern</code>/<code>static</code></td>
+<td>本阶段 §5~§7</td>
+<td><code>02</code>、<code>03</code></td>
+</tr>
+<tr>
+<td>无警告编译</td>
+<td>阶段一（<code>-Wall -Wextra</code>）+ 本阶段 §8</td>
+<td><code>04</code> 的 <code>CFLAGS</code></td>
+</tr>
+<tr>
+<td>关键处注释、命名规范</td>
+<td>本阶段 §15</td>
+<td>所有示例的文件头/函数注释</td>
+</tr>
+<tr>
+<td>提交 Gitee 并发链接</td>
+<td>阶段一（Gitee 仓库）</td>
+<td>阶段一教程</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><strong>读题提醒：</strong> PDF 里的字段、登录规则、5 组测试样例，是唯一权威。不要用本教程的示例字段或测试数据替代题面；题面要求什么，就实现什么，不多做也不少做。</p>
+<h3 id="h0fe7d64b">16.2 结构设计模式建议（只给形状，不给实现）</h3>
+<h4 id="h11f34e37">模块划分（建议 5 个模块左右）</h4>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>模块</th>
+<th>职责</th>
+<th>接口形状（只是形状，不是实现）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>main.c</code></td>
+<td>程序入口、顶层状态循环、调用登录和菜单</td>
+<td><code>int main(void);</code></td>
+</tr>
+<tr>
+<td>登录门禁</td>
+<td>读账号/口令、校验、计数、返回成功/失败/EOF</td>
+<td><code>int auth_login(const Profile *user, int max_tries);</code></td>
+</tr>
+<tr>
+<td>个人信息</td>
+<td>结构体定义、初始化、按字段修改、展示</td>
+<td><code>void profile_init(Profile *p);</code>、<code>int profile_set_name(Profile *p, const char *name);</code>、<code>void profile_show(const Profile *p);</code></td>
+</tr>
+<tr>
+<td>菜单/输入</td>
+<td>显示菜单、读整行、解析整数、错误提示</td>
+<td><code>void menu_show_main(void);</code>、<code>int input_read_line(char *buf, int cap);</code>、<code>int input_read_int(const char *prompt, int *out);</code></td>
+</tr>
+<tr>
+<td>字符串工具</td>
+<td>手写长度、比较、拷贝、拼接；不依赖 <code>string.h</code></td>
+<td><code>int str_len(const char *s);</code>、<code>int str_cmp(const char *a, const char *b);</code>、<code>int str_copy(char *dst, int cap, const char *src);</code></td>
+</tr>
+</tbody>
+</table></div></div>
+<p>这些名字可以改，但职责边界建议保留：<strong>登录不要负责打印主菜单，菜单不要负责校验口令，字符串工具不要依赖个人信息结构体。</strong> 依赖方向最好是：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>main.c ──&gt; 登录 / 菜单 / 个人信息 ──&gt; 字符串工具
+</code></pre></div></div>
+
+<p>工具层最底，谁都可以用；它不反过来包含菜单。个人信息结构体建议放在自己的头文件里，登录模块需要时通过 <code>const Profile *</code> 只读访问，避免两个模块互相包含。</p>
+<h4 id="h80a87285">数据结构思路</h4>
+<ul>
+<li>姓名字符串用<strong>固定长度字符数组</strong>，长度按题面上限留足 <code>+1</code> 给 <code>'\0'</code>；不要用变长数组；</li>
+<li>学号建议用<strong>字符串</strong>保存，而不是 <code>int</code>——前导零会丢，长度也可能超出整型范围；</li>
+<li>性别可以用 <code>char</code> 或 <code>enum</code>，但输入/输出要统一映射，别一会儿 <code>'m'</code> 一会儿 <code>"男"</code>；</li>
+<li>身高用 <code>double</code>，输出格式按题面（比如保留两位小数）；比较/修改时注意浮点误差，不要用 <code>==</code> 判断身高；</li>
+<li>登录口令如果题面要求保存，用固定字符数组；<strong>不要在屏幕上回显口令</strong>（如果题面要求隐藏输入，按题面做，不要自己发明）；</li>
+<li>所有字符串操作都要检查目标缓冲区容量，杜绝越界。</li>
+</ul>
+<h4 id="h58d1e30b">状态机与流程</h4>
+<p>建议把流程画成：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code>[登录] --成功--&gt; [主菜单] --选择--&gt; [功能] --完成--&gt; 回主菜单
+   |                  |
+   |                  +--退出--&gt; [结束]
+   +--失败达上限 / EOF-------&gt; [结束]
+</code></pre></div></div>
+
+<p>实现时用一个 <code>while</code> 和一个状态变量（<code>enum</code> 或 <code>int</code>），每个状态只做自己的事。登录失败按题面计数；成功进入菜单；菜单退出结束。<strong>不要</strong>写「登录成功后 while 菜单，菜单退出再回登录」的嵌套循环，除非题面明确要求。</p>
+<h4 id="h8c3801e8">指针计划（满足「至少一处」且不摆设）</h4>
+<ul>
+<li>修改个人信息的函数接收 <code>Profile *</code>，在函数内通过 <code>-&gt;</code> 改字段；</li>
+<li>只读展示接收 <code>const Profile *</code>，向调用者承诺不改；</li>
+<li>手写字符串比较接收 <code>const char *</code>，用指针遍历到 <code>'\0'</code>；</li>
+<li>如果使用传出参数（比如让函数返回状态、用指针带回结果），确保调用者传的是有效地址；</li>
+<li>每个指针定义时初始化（<code>NULL</code> 或有效地址），解引用前能说清它指向谁。</li>
+</ul>
+<p><strong>不要为了凑指针数量，把 <code>int</code> 改成 <code>int *</code> 再解引用。</strong> 评审一眼能看出是不是真需求；一处有意义的指针，胜过五处摆设。</p>
+<h4 id="h6cf05afa">输入与测试计划</h4>
+<ul>
+<li>统一用「读整行 → 解析」的方式，不要混用 <code>scanf("%d")</code> 和 <code>fgets</code>；</li>
+<li>每次读入都处理：空行、字母、超长、前后空格、EOF；</li>
+<li>按 PDF 的 5 组登录样例逐条测试，记录实际输出；</li>
+<li>额外补边界：连续失败达到上限、第 4 次失败后第 5 次成功、空输入、超长姓名、修改每个字段后立即查看、退出后重新运行；</li>
+<li>菜单每个选项都走一遍，确认不会回到错误的状态；</li>
+<li>用 <code>-Wall -Wextra -std=c99</code> 编译，警告清零再提交。</li>
+</ul>
+<h4 id="h1c772c12">构建与提交</h4>
+<ul>
+<li>目录可以扁平（<code>main.c</code>、各模块 <code>.h/.c</code>、<code>Makefile</code>），也可以 <code>src/</code>，但全工程统一；</li>
+<li>如果写 Makefile，确保 <code>all</code> 能一次构建，<code>clean</code> 能清理；如果不会写，至少给出一行完整编译命令；</li>
+<li>只提交源码、Makefile、README，不提交 <code>.exe</code>、<code>.o</code>；</li>
+<li>提交前在干净目录重新编译一次，确认不是靠旧产物跑通的。</li>
+</ul>
+<h3 id="haee405ab">16.3 提交前自查清单</h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 只包含了 <code>stdio.h</code> / <code>stdlib.h</code>，没有 <code>string.h</code>、<code>ctype.h</code>、<code>math.h</code> 等越界头文件；</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 每个 <code>.h</code> 都有头文件守卫；头文件里没有函数体、没有变量定义、没有 <code>main</code>；</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 每个公开函数都有原型，每个 <code>.c</code> 都包含自己的头文件；<code>-Wall -Wextra</code> 下没有 <code>implicit declaration</code>；</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 链接命令包含全部 <code>.c</code>；没有 <code>undefined reference</code>，没有 <code>multiple definition</code>；</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 至少一处指针是真实需求：修改用 <code>Profile *</code>，只读用 <code>const Profile *</code>；指针初始化、解引用前可证；</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 登录最多 5 次，失败/成功/EOF 三条路径都符合题面；输入缓冲区不会把上一次的残留带进下一次；</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 菜单对非法输入（字母、空行、越界数字、超长）有提示且不会刷屏；<code>0</code> 能退出；</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 姓名、学号、性别、身高都能修改并重新查看；学号按字符串保存，没有丢前导零；</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 代码分模块，<code>main.c</code> 没有堆满业务；每个模块职责能用一句话说清；</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 命名统一、缩进统一、关键处有中文注释；没有大段注释掉的死代码；</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 从干净目录重新编译通过，零警告；<code>.exe</code>/<code>.o</code>/<code>build/</code> 没有被提交；</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 已按 PDF 的 5 组登录样例自测并记录结果；代码由你独立完成，Gitee 链接可访问。</li>
+</ul>
+<hr />
+<h2 id="h21d4d00d">17. 验收清单（全部打勾才进入阶段九）</h2>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能用自己的话解释声明与定义的区别，并说出「为什么声明可以重复、定义只能一份」。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能默写头文件守卫三行，并解释它为什么防不住跨 <code>.c</code> 的 <code>multiple definition</code>。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能说出头文件该放什么、不该放什么，并解释 <code>.c</code> 为什么要包含自己的头文件。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能用 <code>extern</code> 组织跨文件变量，用 <code>static</code> 隐藏私有函数，并各跑一个例子验证。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能画出 <code>main.c / calc.h / calc.c / main.o / calc.o / exe</code> 的「谁包含谁、谁链接谁」结构图。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 遇到 <code>undefined reference</code>、<code>multiple definition</code>、<code>implicit declaration</code>，能判断阶段并给出修复方向。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能手动用 <code>gcc -c</code> 分别编译 <code>04_project_demo</code> 的两个 <code>.c</code>，再链接运行；也能用 <code>mingw32-make</code> 完成增量构建。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能解释 Makefile 的目标、依赖、命令、<code>.PHONY</code> 和 Tab 规则；能说出 CMake 与 Make 的区别（概念级）。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能独立写出一个菜单骨架，非法输入不刷屏、EOF 能退出、菜单项分派清晰。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 练习 1~6 完成（挑战 7 强烈推荐）；考核任务通过 PDF 的 5 组登录测试、零警告、模块化、至少一处指针、注释规范，并已 push Gitee、发出仓库链接。</li>
+</ul>
+<hr />
+<h2 id="h24699665">18. 本阶段复盘与下一阶段衔接</h2>
+<p><strong>复盘三问：</strong></p>
+<ol>
+<li>阶段三你只会说「声明说有，定义给实现」；现在你能用<strong>编译单元</strong>和<strong>链接器</strong>解释这句话了吗？为什么头文件里的函数原型可以被多个 <code>.c</code> 重复包含，而头文件里的变量定义不行？</li>
+<li>头文件守卫和 <code>extern</code> 各自解决什么问题？如果只写守卫、不写 <code>extern</code>，为什么 <code>multiple definition</code> 还会出现？如果只写 <code>extern</code>、不写守卫，又会在什么情况下报 <code>redefinition</code>？</li>
+<li>Makefile 的「增量」本质上是在维护一张什么图？改 <code>.c</code> 和改 <code>.h</code> 时，为什么重编的范围不同？这张图和「谁包含谁」的结构图是不是同一件事的两种画法？</li>
+</ol>
+<p><strong>衔接预告（阶段九：动态内存与文件 IO）：</strong> 考核程序现在有一个遗憾——<strong>一退出，所有修改都没了</strong>。下次运行，姓名、学号、身高又回到初始值。阶段九会给你两把新钥匙：<code>malloc/calloc/realloc/free</code> 管理运行期的动态数据，<code>fopen/fprintf/fscanf/fgets</code> 把数据写进文件、下次启动再读回来。到那时，你可以把考核系统升级成「重启后还记得你」的版本；也会第一次面对「谁分配、谁释放」的配对纪律。阶段八的模块化结构，正好是阶段九加功能时不把代码写乱的地基。</p>
+<p>C 语言任务线到考核这里就收官了，但「工程能力」这条线才刚开头。把验收清单一条条勾完，把 Gitee 链接发出去——那不是结束，是你第一次把一堆语法知识，交付成一个别人能编译、能运行、能看懂的工程。</p>
+<p>清单全勾了吗？勾了，就回复「继续」进阶段九。</p>
+<footer class="doc">
+  由 Markdown 教程自动转换生成 · 配套 .c 代码在 code\ 与 exercises\ 目录<br>
+  <a href="./index.html">返回教程目录</a>
+</footer>
+</div>
+<button id="totop" type="button" aria-label="回到顶部" title="回到顶部">↑</button>
+<script>
+(function () {
+  var nav = document.getElementById('docnav');
+  var cur = nav && nav.querySelector('a.cur');
+  if (cur && nav.scrollWidth > nav.clientWidth) {
+    nav.scrollLeft = cur.offsetLeft - nav.clientWidth / 2 + cur.offsetWidth / 2;
+  }
+  var btn = document.getElementById('totop');
+  if (!btn) return;
+  var onScroll = function () {
+    btn.classList.toggle('show', window.scrollY > 480);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  btn.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+(function () {
+  var boxes = document.querySelectorAll('.scroll-hint');
+  Array.prototype.forEach.call(boxes, function (box) {
+    var sc = box.firstElementChild;
+    if (!sc) return;
+    function upd() {
+      var more = sc.scrollWidth - sc.clientWidth > 4;
+      box.classList.toggle('has-more', more);
+      box.classList.toggle('at-end', more && sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 4);
+    }
+    upd();
+    sc.addEventListener('scroll', upd, { passive: true });
+    window.addEventListener('resize', upd);
+  });
+})();
+
+</script>
+</body>
+</html>

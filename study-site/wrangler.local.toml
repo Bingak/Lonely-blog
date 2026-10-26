@@ -1,0 +1,19 @@
+name = "study-lonelybing-localtest"
+main = "src/worker.js"
+compatibility_date = "2025-10-01"
+
+# 本地链路测试专用配置：关掉自定义域名（本地没有），只用 assets 透传。
+# Turnstile 用 Cloudflare 官方测试密钥对 —— 任何 token 都会验证通过，
+# 这样可以在本地把「登录 -> 签发会话 -> 访问 /exercises/...」整条链路跑通。
+# ⚠️ 本文件只在本地 dev 用，绝不部署：SESSION_SECRET 等是明文弱值。
+[vars]
+TURNSTILE_SITE_KEY = "1x00000000000000000000AA"
+TURNSTILE_SECRET_KEY = "1x0000000000000000000000000000000AA"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+# 关键：必须为 true，否则命中静态资源时 Cloudflare 直接返回文件，绕过登录门禁
+run_worker_first = true
+# 关掉自动 .html -> 干净 URL 重定向：本站链接一律显式写 .html
+html_handling = "none"

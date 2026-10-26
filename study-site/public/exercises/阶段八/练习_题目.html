@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1117" media="(prefers-color-scheme: dark)">
+<meta name="format-detection" content="telephone=no">
+<title>阶段八 练习题（多文件工程与考核冲刺）</title>
+<style>pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #ffffcc }
+.codehilite { background: #f8f8f8; }
+.codehilite .c { color: #3D7B7B; font-style: italic } /* Comment */
+.codehilite .err { border: 1px solid #F00 } /* Error */
+.codehilite .k { color: #008000; font-weight: bold } /* Keyword */
+.codehilite .o { color: #666 } /* Operator */
+.codehilite .ch { color: #3D7B7B; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #3D7B7B; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #9C6500 } /* Comment.Preproc */
+.codehilite .cpf { color: #3D7B7B; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #3D7B7B; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
+.codehilite .gd { color: #A00000 } /* Generic.Deleted */
+.codehilite .ge { font-style: italic } /* Generic.Emph */
+.codehilite .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #E40000 } /* Generic.Error */
+.codehilite .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #008400 } /* Generic.Inserted */
+.codehilite .go { color: #717171 } /* Generic.Output */
+.codehilite .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.codehilite .gt { color: #04D } /* Generic.Traceback */
+.codehilite .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #008000 } /* Keyword.Pseudo */
+.codehilite .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #B00040 } /* Keyword.Type */
+.codehilite .m { color: #666 } /* Literal.Number */
+.codehilite .s { color: #BA2121 } /* Literal.String */
+.codehilite .na { color: #687822 } /* Name.Attribute */
+.codehilite .nb { color: #008000 } /* Name.Builtin */
+.codehilite .nc { color: #00F; font-weight: bold } /* Name.Class */
+.codehilite .no { color: #800 } /* Name.Constant */
+.codehilite .nd { color: #A2F } /* Name.Decorator */
+.codehilite .ni { color: #717171; font-weight: bold } /* Name.Entity */
+.codehilite .ne { color: #CB3F38; font-weight: bold } /* Name.Exception */
+.codehilite .nf { color: #00F } /* Name.Function */
+.codehilite .nl { color: #767600 } /* Name.Label */
+.codehilite .nn { color: #00F; font-weight: bold } /* Name.Namespace */
+.codehilite .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #19177C } /* Name.Variable */
+.codehilite .ow { color: #A2F; font-weight: bold } /* Operator.Word */
+.codehilite .w { color: #BBB } /* Text.Whitespace */
+.codehilite .mb { color: #666 } /* Literal.Number.Bin */
+.codehilite .mf { color: #666 } /* Literal.Number.Float */
+.codehilite .mh { color: #666 } /* Literal.Number.Hex */
+.codehilite .mi { color: #666 } /* Literal.Number.Integer */
+.codehilite .mo { color: #666 } /* Literal.Number.Oct */
+.codehilite .sa { color: #BA2121 } /* Literal.String.Affix */
+.codehilite .sb { color: #BA2121 } /* Literal.String.Backtick */
+.codehilite .sc { color: #BA2121 } /* Literal.String.Char */
+.codehilite .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.codehilite .s2 { color: #BA2121 } /* Literal.String.Double */
+.codehilite .se { color: #AA5D1F; font-weight: bold } /* Literal.String.Escape */
+.codehilite .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.codehilite .si { color: #A45A77; font-weight: bold } /* Literal.String.Interpol */
+.codehilite .sx { color: #008000 } /* Literal.String.Other */
+.codehilite .sr { color: #A45A77 } /* Literal.String.Regex */
+.codehilite .s1 { color: #BA2121 } /* Literal.String.Single */
+.codehilite .ss { color: #19177C } /* Literal.String.Symbol */
+.codehilite .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #00F } /* Name.Function.Magic */
+.codehilite .vc { color: #19177C } /* Name.Variable.Class */
+.codehilite .vg { color: #19177C } /* Name.Variable.Global */
+.codehilite .vi { color: #19177C } /* Name.Variable.Instance */
+.codehilite .vm { color: #19177C } /* Name.Variable.Magic */
+.codehilite .il { color: #666 } /* Literal.Number.Integer.Long */</style>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --bg: #f7f8fa;
+  --bg-elev: #ffffff;
+  --ink: #1f2328;
+  --ink-soft: #4c5560;
+  --muted: #8a9199;
+  --accent: #b03a2e;
+  --link: #1a6fb5;
+  --line: #e4e7ea;
+  --line-soft: #eef0f2;
+  --code-bg: #f6f7f9;
+  --code-ink: #c0214a;
+  --quote-bg: #fff8e8;
+  --quote-line: #e6a23c;
+  --quote-ink: #6b5900;
+  --th-bg: #f2f4f6;
+  --tr-alt: #fafbfc;
+  --shadow: 0 1px 2px rgba(16,24,40,.04), 0 8px 24px rgba(16,24,40,.05);
+  --shadow-lift: 0 2px 6px rgba(16,24,40,.06), 0 16px 40px rgba(16,24,40,.09);
+  --radius: 14px;
+  --maxw: 50rem;
+  --scroll-shadow: rgba(15, 23, 42, .16);
+  --mono: "JetBrains Mono", "Cascadia Mono", Consolas, "SF Mono", Menlo, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Microsoft YaHei", "Noto Sans SC", "Source Han Sans SC", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1117;
+    --bg-elev: #161b23;
+    --ink: #e7eaf0;
+    --ink-soft: #b8c0cd;
+    --muted: #8b93a3;
+    --accent: #ff8f7e;
+    --link: #82b6ff;
+    --line: #262d38;
+    --line-soft: #1c232c;
+    --code-bg: #1b212b;
+    --code-ink: #ff9db0;
+    --quote-bg: #241f13;
+    --quote-line: #b98a2e;
+    --quote-ink: #e8d3a0;
+    --th-bg: #1d232c;
+    --tr-alt: #171d25;
+    --shadow: 0 1px 2px rgba(0,0,0,.45), 0 10px 30px rgba(0,0,0,.35);
+    --shadow-lift: 0 2px 8px rgba(0,0,0,.5), 0 20px 50px rgba(0,0,0,.45);
+    --scroll-shadow: rgba(255, 255, 255, .16);
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-wrap: break-word;
+}
+
+::selection { background: rgba(26,111,181,.22); }
+
+.wrap {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 28px clamp(14px, 4vw, 28px) 96px;
+}
+
+/* ── 顶部文档导航：吸顶 + 横向滑动 ───────────────────────── */
+nav.docnav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  padding: 10px 12px;
+  margin: 0 0 26px;
+  background: var(--bg-elev);
+  background: color-mix(in srgb, var(--bg-elev) 88%, transparent);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+nav.docnav::-webkit-scrollbar { display: none; }
+nav.docnav b {
+  flex: none;
+  color: var(--accent);
+  font-size: 12.5px;
+  letter-spacing: .06em;
+  padding-right: 4px;
+}
+nav.docnav a {
+  flex: none;
+  display: inline-block;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: background .18s, color .18s;
+}
+nav.docnav a:hover { background: var(--line-soft); color: var(--ink); }
+nav.docnav a.cur {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 650;
+}
+@media (prefers-color-scheme: dark) {
+  nav.docnav a.cur { color: #1a0f0d; }
+}
+nav.docnav a.home { color: var(--link); }
+
+/* 桌面端：导航平铺换行，全部可见，不吸顶（避免遮挡正文） */
+@media (min-width: 861px) {
+  nav.docnav {
+    position: static;
+    flex-wrap: wrap;
+    overflow: visible;
+    white-space: normal;
+    row-gap: 4px;
+  }
+}
+
+/* ── 页眉 ──────────────────────────────────────────────── */
+header.doc {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+  margin-bottom: 26px;
+}
+header.doc .kicker {
+  display: inline-block;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: .16em;
+  font-size: 11.5px;
+  text-transform: uppercase;
+}
+h1 {
+  font-size: clamp(21px, 4.4vw, 30px);
+  line-height: 1.38;
+  margin: 8px 0 0;
+  letter-spacing: -.01em;
+}
+
+/* ── 正文排版 ──────────────────────────────────────────── */
+h2 {
+  font-size: clamp(18px, 3vw, 23px);
+  line-height: 1.42;
+  margin: 2.1em 0 .9em;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  scroll-margin-top: 72px;
+}
+h3 {
+  font-size: clamp(16px, 2.3vw, 19px);
+  margin: 1.7em 0 .6em;
+  color: var(--ink);
+  scroll-margin-top: 72px;
+}
+h4 { font-size: 16px; margin: 1.4em 0 .5em; color: var(--ink-soft); }
+p { margin: .85em 0; }
+p, li { text-align: left; }
+
+a { color: var(--link); text-decoration: none; border-bottom: 1px solid transparent; }
+a:hover { border-bottom-color: currentColor; }
+
+strong { color: var(--accent); font-weight: 700; }
+em { color: var(--ink-soft); }
+
+blockquote {
+  margin: 1.2em 0;
+  padding: 12px 16px;
+  background: var(--quote-bg);
+  border-left: 4px solid var(--quote-line);
+  border-radius: 0 12px 12px 0;
+  color: var(--quote-ink);
+}
+blockquote p { margin: .35em 0; }
+blockquote strong { color: inherit; }
+
+hr {
+  border: none;
+  border-top: 1px dashed var(--line);
+  margin: 2.2em 0;
+}
+
+/* ── 行内代码 ──────────────────────────────────────────── */
+code {
+  font-family: var(--mono);
+  font-size: .885em;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  padding: .12em .42em;
+  border-radius: 6px;
+  border: 1px solid var(--line-soft);
+  word-break: break-word;
+}
+
+/* ── 代码块：横向滚动，不撑破屏幕 ───────────────────────── */
+.codehilite {
+  position: relative;
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 1.1em 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  font-size: 14px;
+  line-height: 1.62;
+}
+.codehilite pre {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: inherit;
+  line-height: inherit;
+  tab-size: 4;
+}
+.codehilite code {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+  white-space: pre;
+}
+
+/* 细滚动条（代码块 / 表格横向滚动时更轻盈） */
+.codehilite, .table-wrap {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.codehilite::-webkit-scrollbar,
+.table-wrap::-webkit-scrollbar { height: 7px; }
+.codehilite::-webkit-scrollbar-track,
+.table-wrap::-webkit-scrollbar-track { background: transparent; }
+.codehilite::-webkit-scrollbar-thumb,
+.table-wrap::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 99px;
+}
+.codehilite::-webkit-scrollbar-thumb:hover,
+.table-wrap::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ── 表格：外层可横向滚动 ──────────────────────────────── */
+.table-wrap {
+  margin: 1.1em 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  border-radius: 12px;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+th, td {
+  border: 1px solid var(--line);
+  padding: 8px 11px;
+  text-align: left;
+  vertical-align: top;
+}
+th { background: var(--th-bg); font-weight: 650; white-space: nowrap; }
+tbody tr:nth-child(even) td { background: var(--tr-alt); }
+table code { white-space: nowrap; }
+
+/* ── 任务清单复选框 ────────────────────────────────────── */
+ul.task-list, ul.contains-task-list { list-style: none; padding-left: 2px; }
+ul.task-list li, ul.contains-task-list li { margin: .4em 0; }
+ul.task-list input[type=checkbox] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 17px; height: 17px;
+  border: 1.5px solid var(--muted);
+  border-radius: 5px;
+  margin-right: 9px;
+  vertical-align: -3px;
+  background: var(--bg-elev);
+  flex: none;
+}
+ul.task-list input[type=checkbox]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'><path d='M6.4 11.2 3.2 8l-1.1 1.1 4.3 4.3 8-8-1.1-1.1z'/></svg>");
+  background-size: 12px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ── 目录折叠块 ────────────────────────────────────────── */
+details.toc {
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 18px;
+  margin-bottom: 26px;
+  box-shadow: var(--shadow);
+}
+details.toc summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--link);
+  padding: 4px 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+details.toc summary::-webkit-details-marker { display: none; }
+details.toc summary::before {
+  content: "";
+  width: 0; height: 0;
+  border-left: 6px solid currentColor;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  transition: transform .2s;
+}
+details.toc[open] summary::before { transform: rotate(90deg); }
+details.toc ol { margin: 10px 0 6px; padding-left: 22px; }
+details.toc li { margin: .3em 0; }
+details.toc a { font-size: 14px; color: var(--ink-soft); }
+details.toc a:hover { color: var(--link); }
+
+/* ── 页脚 ──────────────────────────────────────────────── */
+footer.doc {
+  margin-top: 56px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12.5px;
+  text-align: center;
+  line-height: 1.8;
+}
+
+/* ── 回到顶部 ──────────────────────────────────────────── */
+#totop {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  z-index: 40;
+  width: 46px; height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--bg-elev);
+  color: var(--ink-soft);
+  box-shadow: var(--shadow-lift);
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity .22s, transform .22s, visibility .22s;
+}
+#totop.show { opacity: 1; visibility: visible; transform: none; }
+#totop:active { transform: scale(.94); }
+
+/* ── 平板 ──────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .wrap { padding-top: 18px; }
+  body { font-size: 15.5px; line-height: 1.8; }
+  .codehilite { font-size: 13.2px; padding: 12px 13px; }
+  table { font-size: 13.2px; }
+  th, td { padding: 7px 9px; }
+}
+
+/* ── 手机 ──────────────────────────────────────────────── */
+@media (max-width: 560px) {
+  html { scroll-behavior: auto; }
+  .wrap { padding: 12px 13px 84px; }
+  body { font-size: 15px; line-height: 1.78; }
+
+  nav.docnav { top: 0; border-radius: 12px; padding: 8px 9px; margin-bottom: 18px; }
+  nav.docnav b { display: none; }
+  nav.docnav a { font-size: 12.5px; padding: 6px 10px; }
+
+  header.doc { padding-bottom: 12px; margin-bottom: 18px; }
+  header.doc .kicker { font-size: 10.5px; letter-spacing: .12em; }
+
+  h1 { font-size: 20px; }
+  h2 { font-size: 17.5px; padding-left: 9px; border-left-width: 3px; margin-top: 1.8em; }
+  h3 { font-size: 15.5px; }
+  h4 { font-size: 14.5px; }
+  p { margin: .8em 0; }
+
+  blockquote { padding: 10px 12px; border-radius: 0 10px 10px 0; }
+
+  .codehilite { font-size: 12.2px; padding: 11px 12px; border-radius: 10px; }
+  table { font-size: 12.6px; }
+  th, td { padding: 6px 8px; }
+  th { white-space: normal; }
+
+  details.toc { padding: 10px 14px; margin-bottom: 18px; }
+  details.toc ol { padding-left: 18px; }
+  details.toc a { font-size: 13px; }
+
+  /* 触控目标不小于 40px */
+  ul.task-list li { padding: 2px 0; }
+  ul.task-list input[type=checkbox] { width: 19px; height: 19px; }
+
+  footer.doc { margin-top: 40px; font-size: 11.5px; }
+  #totop { width: 42px; height: 42px; font-size: 16px; }
+}
+
+/* ── 打印 ──────────────────────────────────────────────── */
+@media print {
+  nav.docnav, #totop, details.toc { display: none !important; }
+  body { background: #fff; color: #000; font-size: 11pt; }
+  .wrap { max-width: none; padding: 0; }
+  .codehilite, table, blockquote { box-shadow: none; }
+  a { color: #000; }
+  h2, h3 { page-break-after: avoid; }
+  .codehilite, table { page-break-inside: avoid; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+</style>
+<style>
+.doc.ex-tasks header.doc .kicker { color: var(--accent); }
+.doc.ex-tasks h2 { border-left-color: var(--accent); }
+.doc.ex-answers header.doc .kicker { color: #1a7f5a; }
+.doc.ex-answers h2 { border-left-color: #1a7f5a; }
+@media (prefers-color-scheme: dark) {
+  .doc.ex-answers header.doc .kicker { color: #4fd39a; }
+  .doc.ex-answers h2 { border-left-color: #4fd39a; }
+}
+.ex-tag {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  vertical-align: 3px;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
+}
+.doc.ex-answers .ex-tag {
+  color: #1a7f5a;
+  background: rgba(26, 127, 90, .12);
+  border-color: rgba(26, 127, 90, .32);
+}
+@media (prefers-color-scheme: dark) {
+  .doc.ex-answers .ex-tag { color: #4fd39a; background: rgba(79,211,154,.13); border-color: rgba(79,211,154,.34); }
+}
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+pre { line-height: 125%; }
+td.linenos .normal { color: #aaaaaa; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #aaaaaa; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #404040 }
+.codehilite { background: #202020; color: #D0D0D0 }
+.codehilite .c { color: #ABABAB; font-style: italic } /* Comment */
+.codehilite .err { color: #A61717; background-color: #E3D2D2 } /* Error */
+.codehilite .esc { color: #D0D0D0 } /* Escape */
+.codehilite .g { color: #D0D0D0 } /* Generic */
+.codehilite .k { color: #6EBF26; font-weight: bold } /* Keyword */
+.codehilite .l { color: #D0D0D0 } /* Literal */
+.codehilite .n { color: #D0D0D0 } /* Name */
+.codehilite .o { color: #D0D0D0 } /* Operator */
+.codehilite .x { color: #D0D0D0 } /* Other */
+.codehilite .p { color: #D0D0D0 } /* Punctuation */
+.codehilite .ch { color: #ABABAB; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #ABABAB; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #FF3A3A; font-weight: bold } /* Comment.Preproc */
+.codehilite .cpf { color: #ABABAB; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #ABABAB; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #E50808; font-weight: bold; background-color: #520000 } /* Comment.Special */
+.codehilite .gd { color: #FF3A3A } /* Generic.Deleted */
+.codehilite .ge { color: #D0D0D0; font-style: italic } /* Generic.Emph */
+.codehilite .ges { color: #D0D0D0; font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #FF3A3A } /* Generic.Error */
+.codehilite .gh { color: #FFF; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #589819 } /* Generic.Inserted */
+.codehilite .go { color: #CCC } /* Generic.Output */
+.codehilite .gp { color: #AAA } /* Generic.Prompt */
+.codehilite .gs { color: #D0D0D0; font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #FFF; text-decoration: underline } /* Generic.Subheading */
+.codehilite .gt { color: #FF3A3A } /* Generic.Traceback */
+.codehilite .kc { color: #6EBF26; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #6EBF26; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #6EBF26; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #6EBF26 } /* Keyword.Pseudo */
+.codehilite .kr { color: #6EBF26; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #6EBF26; font-weight: bold } /* Keyword.Type */
+.codehilite .ld { color: #D0D0D0 } /* Literal.Date */
+.codehilite .m { color: #51B2FD } /* Literal.Number */
+.codehilite .s { color: #ED9D13 } /* Literal.String */
+.codehilite .na { color: #BBB } /* Name.Attribute */
+.codehilite .nb { color: #2FBCCD } /* Name.Builtin */
+.codehilite .nc { color: #71ADFF; text-decoration: underline } /* Name.Class */
+.codehilite .no { color: #40FFFF } /* Name.Constant */
+.codehilite .nd { color: #FFA500 } /* Name.Decorator */
+.codehilite .ni { color: #D0D0D0 } /* Name.Entity */
+.codehilite .ne { color: #BBB } /* Name.Exception */
+.codehilite .nf { color: #71ADFF } /* Name.Function */
+.codehilite .nl { color: #D0D0D0 } /* Name.Label */
+.codehilite .nn { color: #71ADFF; text-decoration: underline } /* Name.Namespace */
+.codehilite .nx { color: #D0D0D0 } /* Name.Other */
+.codehilite .py { color: #D0D0D0 } /* Name.Property */
+.codehilite .nt { color: #6EBF26; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #40FFFF } /* Name.Variable */
+.codehilite .ow { color: #6EBF26; font-weight: bold } /* Operator.Word */
+.codehilite .pm { color: #D0D0D0 } /* Punctuation.Marker */
+.codehilite .w { color: #666 } /* Text.Whitespace */
+.codehilite .mb { color: #51B2FD } /* Literal.Number.Bin */
+.codehilite .mf { color: #51B2FD } /* Literal.Number.Float */
+.codehilite .mh { color: #51B2FD } /* Literal.Number.Hex */
+.codehilite .mi { color: #51B2FD } /* Literal.Number.Integer */
+.codehilite .mo { color: #51B2FD } /* Literal.Number.Oct */
+.codehilite .sa { color: #ED9D13 } /* Literal.String.Affix */
+.codehilite .sb { color: #ED9D13 } /* Literal.String.Backtick */
+.codehilite .sc { color: #ED9D13 } /* Literal.String.Char */
+.codehilite .dl { color: #ED9D13 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #ED9D13 } /* Literal.String.Doc */
+.codehilite .s2 { color: #ED9D13 } /* Literal.String.Double */
+.codehilite .se { color: #ED9D13 } /* Literal.String.Escape */
+.codehilite .sh { color: #ED9D13 } /* Literal.String.Heredoc */
+.codehilite .si { color: #ED9D13 } /* Literal.String.Interpol */
+.codehilite .sx { color: #FFA500 } /* Literal.String.Other */
+.codehilite .sr { color: #ED9D13 } /* Literal.String.Regex */
+.codehilite .s1 { color: #ED9D13 } /* Literal.String.Single */
+.codehilite .ss { color: #ED9D13 } /* Literal.String.Symbol */
+.codehilite .bp { color: #2FBCCD } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #71ADFF } /* Name.Function.Magic */
+.codehilite .vc { color: #40FFFF } /* Name.Variable.Class */
+.codehilite .vg { color: #40FFFF } /* Name.Variable.Global */
+.codehilite .vi { color: #40FFFF } /* Name.Variable.Instance */
+.codehilite .vm { color: #40FFFF } /* Name.Variable.Magic */
+.codehilite .il { color: #51B2FD } /* Literal.Number.Integer.Long */
+}
+</style>
+<style>
+.scroll-hint { position: relative; }
+.scroll-hint::after {
+  content: "";
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 30px;
+  border-radius: 0 12px 12px 0;
+  pointer-events: none;
+  background: linear-gradient(270deg, var(--scroll-shadow), transparent);
+  opacity: 0;
+  transition: opacity .18s;
+}
+.scroll-hint.has-more::after { opacity: 1; }
+.scroll-hint.at-end::after { opacity: 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="docnav" id="docnav"><b>EXERCISES</b><a class="home" href="../../index.html">教程目录</a><a href="../../09_阶段八_多文件工程与考核冲刺.html">← 阶段八_多文件工程与考核冲刺</a><a href="./练习_题目.html" class="cur">📋 题目</a><a href="./答案_参考_文字题.html">📖 答案_参考_文字题</a></nav>
+<header class="doc ex-tasks"><span class="kicker">C 语言学习计划 · 练习题目 · 阶段八</span><h1>阶段八 练习题（多文件工程与考核冲刺）<span class="ex-tag">先做后看答案</span></h1></header>
+<blockquote>
+<p>纪律：先做后看答案；练习 3 是纸上作业，必须做——它是从「一个文件」走向「一个工程」的地图。
+本阶段只记一句话：<strong>编译器一次只认一个 <code>.c</code>，链接器才把 <code>.o</code> 拼成程序。</strong>
+全程 <code>gcc -Wall -Wextra -std=c99</code>，警告必须清零；每个 <code>.c</code> 先能单独 <code>-c</code> 通过，再谈链接。</p>
+</blockquote>
+<h2 id="h545adb30">练习 1（基础）原型与声明</h2>
+<p>写一个程序，<strong>4 个函数的定义全部放在 <code>main</code> 之后</strong>：</p>
+<ol>
+<li><code>int max3(int a, int b, int c);</code> —— 返回三个数中的最大值；</li>
+<li><code>int is_leap(int year);</code> —— 闰年返回 1，否则返回 0（能被 4 整除且不能被 100 整除，或能被 400 整除）；</li>
+<li><code>int digit_sum(int n);</code> —— 返回非负整数 <code>n</code> 的各位数字之和（如 <code>2026</code> → <code>10</code>）；</li>
+<li><code>void print_rule(int width);</code> —— 打印 <code>width</code> 个 <code>-</code> 再换行。</li>
+</ol>
+<p>要求：</p>
+<ul>
+<li><code>main</code> 之前只写 4 行函数原型，函数体全部写在 <code>main</code> 之后；</li>
+<li><code>main</code> 里逐个调用并打印结果（含边界：<code>max3(3, 9, 4)</code>、<code>is_leap(2024)</code>、<code>is_leap(1900)</code>、
+  <code>digit_sum(0)</code>、<code>print_rule(20)</code>）；</li>
+<li>注释里回答：<strong>删掉其中一行原型</strong>，编译器会报什么？把原文关键词抄下来；
+  为什么 C99 不允许「用到才声明」？</li>
+</ul>
+<p>禁止事项：</p>
+<ul>
+<li>禁止把函数定义挪到 <code>main</code> 前面来「绕过」问题（本题练的就是原型）；</li>
+<li>禁止改 <code>-std=gnu89</code> 或关掉 <code>-Wall</code> 来掩盖报错。</li>
+</ul>
+<p>自检要点：</p>
+<ul>
+<li><code>gcc -Wall -Wextra -std=c99 -c 你的文件.c</code> 零错误零警告；</li>
+<li>备份后故意删一行原型，亲手复现一次报错，再还原；</li>
+<li>能说清「声明可以重复、定义只能一次」。</li>
+</ul>
+<h2 id="h4d36396b">练习 2（基础）头文件守卫</h2>
+<p>写三个文件：</p>
+<ol>
+<li><code>mylib.h</code>：头文件守卫、<code>MYLIB_VERSION</code>、宏 <code>MYLIB_MAX(a, b)</code>、
+   <code>typedef struct { int x; int y; } MyPoint;</code>、<code>extern int mylib_calls;</code>、两个函数原型
+   （曼哈顿距离 <code>int mylib_manhattan(const MyPoint *p);</code>、打印点 <code>void mylib_print_point(const MyPoint *p);</code>）；</li>
+<li><code>mylib.c</code>：<code>#include "mylib.h"</code>，定义 <code>mylib_calls</code> 与两个函数（每次调用把计数 +1）；</li>
+<li><code>main.c</code>：<strong>故意 <code>#include "mylib.h"</code> 两次</strong>，调用上面两个函数并打印计数。</li>
+</ol>
+<p>要求：</p>
+<ul>
+<li>先注释掉守卫的三行，编译一次，把报错原文关键词记下来；再把守卫加回去，确认零警告；</li>
+<li>注释里说明：为什么第二次包含时整段内容会被跳过？<code>#include</code> 的本质是什么？</li>
+<li>文字回答（写在注释里）：<code>#pragma once</code> 与 <code>#ifndef</code> 守卫各自的优缺点，什么场合选哪个。</li>
+</ul>
+<p>禁止事项：</p>
+<ul>
+<li>禁止在头文件里写函数体或变量定义；</li>
+<li>禁止用 <code>#pragma once</code> 代替守卫来完成本题（可以额外试一下，但主答案必须是守卫）；</li>
+<li>禁止把 <code>mylib_calls</code> 定义两次。</li>
+</ul>
+<p>自检要点：</p>
+<ul>
+<li><code>gcc -E main.c</code> 观察预处理结果，确认 <code>MyPoint</code> 只出现一份；</li>
+<li>三个文件都能单独 <code>-c</code> 通过（<code>main.c</code> 用 <code>-I.</code> 找头文件）；</li>
+<li>能说清「头文件里放什么、不放什么」。</li>
+</ul>
+<h2 id="h5528f362">练习 3（基础 · 纸上作业，必须做）编译链接推演</h2>
+<p>给定下面这个 3 个 <code>.c</code> + 1 个 <code>.h</code> 的小工程（不用抄代码，读懂即可）：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cm">/* student.h */</span>
+<span class="cp">#ifndef STUDENT_H</span>
+<span class="cp">#define STUDENT_H</span>
+
+<span class="cp">#define STU_NUM 3</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">name</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">int</span><span class="w">  </span><span class="n">score</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">Stu</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w">    </span><span class="nf">stu_total</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Stu</span><span class="w"> </span><span class="o">*</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">);</span>
+<span class="kt">double</span><span class="w"> </span><span class="nf">stu_average</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Stu</span><span class="w"> </span><span class="o">*</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">);</span>
+<span class="kt">void</span><span class="w">   </span><span class="nf">stu_print</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Stu</span><span class="w"> </span><span class="o">*</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">);</span>
+
+<span class="cp">#endif</span>
+</code></pre></div></div>
+
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cm">/* student.c */</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">"student.h"</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">stu_total</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Stu</span><span class="w"> </span><span class="o">*</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">list</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">score</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">sum</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">double</span><span class="w"> </span><span class="nf">stu_average</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Stu</span><span class="w"> </span><span class="o">*</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">stu_total</span><span class="p">(</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">n</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cm">/* util.c */</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">"student.h"</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">stu_print</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Stu</span><span class="w"> </span><span class="o">*</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">"%-8s %3d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">list</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">list</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">score</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cm">/* main.c */</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">"student.h"</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Stu</span><span class="w"> </span><span class="n">list</span><span class="p">[</span><span class="n">STU_NUM</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">{</span><span class="s">"Alice"</span><span class="p">,</span><span class="w"> </span><span class="mi">90</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="s">"Bob"</span><span class="p">,</span><span class="w"> </span><span class="mi">75</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="s">"Cara"</span><span class="p">,</span><span class="w"> </span><span class="mi">88</span><span class="p">}</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="n">stu_print</span><span class="p">(</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="n">STU_NUM</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"总分 = %d，平均分 = %.2f</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span>
+<span class="w">           </span><span class="n">stu_total</span><span class="p">(</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="n">STU_NUM</span><span class="p">),</span><span class="w"> </span><span class="n">stu_average</span><span class="p">(</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="n">STU_NUM</span><span class="p">));</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>不写代码、先不运行</strong>，在纸上回答：</p>
+<ol>
+<li>三个 <code>.c</code> 各自执行 <code>gcc -Wall -Wextra -std=c99 -c</code> 后，产物分别叫什么？这些 <code>.o</code> 里有什么？</li>
+<li>写出把三个 <code>.o</code> 变成 <code>score.exe</code> 的完整链接命令（带 <code>-Wall -Wextra -std=c99</code>）；</li>
+<li>如果 <code>main.c</code> 里把 <code>stu_average</code> 拼成了 <code>stu_averge</code>，会发生什么？
+   请分「编译期」和「链接期」两种情况，写出报错原文里的关键词；</li>
+<li>如果 <code>student.h</code> 里声明的是 <code>double stu_average(const Stu *list, int n);</code>，
+   而 <code>student.c</code> 里定义成 <code>double stu_average(const Stu *list)</code>，会发生什么？
+   如果 <code>student.c</code> <strong>忘了</strong> <code>#include "student.h"</code>，又会发生什么？为什么后者更危险？</li>
+</ol>
+<p>要求：</p>
+<ul>
+<li>四问全部用文字写清「哪个阶段、谁报错、关键词是什么」；</li>
+<li>写完再上机逐个验证，把实际报错原文补在旁边；</li>
+<li>第 4 问要能解释「签名不一致但链接器不查签名」这件事。</li>
+</ul>
+<p>自检要点：</p>
+<ul>
+<li>能不看答案说出 <code>.o</code>、<code>.exe</code>、<code>undefined reference</code>、<code>conflicting types</code> 各属于哪个阶段；</li>
+<li>能解释链接器为什么只认符号名、不认参数表。</li>
+</ul>
+<h2 id="hf10f3ac4">练习 4（提高）无库字符串工具</h2>
+<p><strong>不许 <code>#include &lt;string.h&gt;</code></strong>，手写下面 5 个函数（全部用指针实现，函数体内禁止 <code>[ ]</code> 下标）：</p>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>函数</th>
+<th>语义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>int my_strlen(const char *s)</code></td>
+<td>返回字符个数，不含 <code>'\0'</code></td>
+</tr>
+<tr>
+<td><code>int my_strcmp(const char *a, const char *b)</code></td>
+<td>相等返回 0；<code>a &gt; b</code> 返回正数；<code>a &lt; b</code> 返回负数（不要求具体数值）</td>
+</tr>
+<tr>
+<td><code>char *my_strcpy(char *dest, const char *src)</code></td>
+<td>复制含 <code>'\0'</code>，返回 <code>dest</code> 首地址</td>
+</tr>
+<tr>
+<td><code>char *my_strcat(char *dest, const char *src)</code></td>
+<td>追加含 <code>'\0'</code>，返回 <code>dest</code> 首地址</td>
+</tr>
+<tr>
+<td><code>const char *my_strchr(const char *s, char ch)</code></td>
+<td>找到返回指向该字符的指针；找不到返回 <code>NULL</code>；找 <code>'\0'</code> 返回指向结尾的指针</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>要求：</p>
+<ul>
+<li>测试用例必须覆盖：空串、相同串、前缀关系（<code>"app"</code> vs <code>"apple"</code>）、大小写、找不到字符、
+  拼接到已有内容之后；</li>
+<li>每个用例打印「期望值 vs 实际值」，方便肉眼对拍；</li>
+<li><code>my_strcpy</code> / <code>my_strcat</code> 的容量由调用者保证，注释里写明这一点（缓冲区给足，禁止故意越界）。</li>
+</ul>
+<p>禁止事项：</p>
+<ul>
+<li>禁止调用任何 <code>&lt;string.h&gt;</code> 里的函数，也禁止用 <code>sprintf</code> 冒充复制；</li>
+<li>禁止故意越界写来「看看会怎样」——真会崩的实验不跑；</li>
+<li>禁止写成一行 <code>while (*d++ = *s++)</code> 后不补 <code>'\0'</code> 的紧凑式（本题要求显式补）。</li>
+</ul>
+<p>自检要点：</p>
+<ul>
+<li><code>gcc -Wall -Wextra -std=c99</code> 零警告；</li>
+<li>能默写 <code>my_strlen</code> 与 <code>my_strcpy</code>（考核禁库函数时最常用）；</li>
+<li>能口述「目标缓冲区不够长是谁的责任」。</li>
+</ul>
+<h2 id="h329155cc">练习 5（提高）多文件拆分</h2>
+<p>把「学生成绩管理」拆成三个文件：</p>
+<ul>
+<li><code>student.h</code>：头文件守卫、<code>STU_MAX</code>、<code>COURSE_NUM</code>、结构体
+  <code>Student</code>（<code>char name[32]</code>、<code>int id</code>、<code>int scores[3]</code>、<code>double average</code>）、
+  4 个函数原型（录入、算平均、打印、按平均分排序）；</li>
+<li><code>student.c</code>：实现上述函数，第一行 <code>#include "student.h"</code>；</li>
+<li><code>main.c</code>：定义 <code>Student list[STU_MAX]</code>，调用录入 → 打印 → 排序 → 再打印。</li>
+</ul>
+<p>要求：</p>
+<ul>
+<li>录入用 <code>scanf</code> 并检查返回值；人数范围 1 ~ <code>STU_MAX</code>；姓名用 <code>%31s</code> 防止溢出；</li>
+<li>平均分 = 三门课平均；排序从高到低（选择排序或冒泡，交换整个结构体）；</li>
+<li>三个 <code>.c</code> 分别 <code>-c</code> 零警告，再链接运行，输入 3 个学生验证排序结果。</li>
+</ul>
+<p>禁止事项：</p>
+<ul>
+<li>禁止在头文件里写函数体或变量定义；</li>
+<li>禁止用全局变量传学生数组（要通过参数传）；</li>
+<li>禁止用 <code>malloc</code>（阶段九才学）和 <code>qsort</code>（先手写排序）。</li>
+</ul>
+<p>自检要点：</p>
+<ul>
+<li>只改某个学生的成绩，平均分与排序结果应随之变化；</li>
+<li>边界：1 个学生、平均分相同、人数输错；</li>
+<li>能画出「main.c → student.h ← student.c」的依赖箭头。</li>
+</ul>
+<h2 id="hbf267595">练习 6（提高）Makefile 与增量编译</h2>
+<p>给练习 5 的工程写一个 Makefile：</p>
+<ul>
+<li>变量：<code>CC</code>、<code>CFLAGS</code>（<code>-Wall -Wextra -std=c99</code>）、<code>TARGET</code>（<code>grade.exe</code>）、<code>OBJS</code>；</li>
+<li>规则：最终目标依赖两个 <code>.o</code>；每个 <code>.o</code> 依赖自己的 <code>.c</code> 和 <code>student.h</code>；</li>
+<li><code>clean</code> 目标 + <code>.PHONY</code>；</li>
+<li>命令行缩进必须是 <strong>TAB</strong>。</li>
+</ul>
+<p>要求：</p>
+<ol>
+<li><code>mingw32-make</code> 全量构建成功；<code>mingw32-make clean</code> 后目录只剩源码；</li>
+<li>只改 <code>student.c</code> 里的一个空格，再 <code>mingw32-make</code>，观察输出：只重编哪一个？链接执行了吗？</li>
+<li>解释「只改一个 <code>.c</code> 为什么只重编一个」——用「目标 / 依赖 / 时间戳」三个词回答；</li>
+<li>解释 <code>.PHONY</code> 的作用；如果目录里真的有一个叫 <code>clean</code> 的文件，会发生什么？</li>
+<li>把 <code>CFLAGS</code> 临时改成 <code>-std=c89</code>，观察 <code>//</code> 注释或混合声明报错，再改回来。</li>
+</ol>
+<p>禁止事项：</p>
+<ul>
+<li>禁止把三条编译命令用 <code>;</code> 串成一行来「绕过」依赖关系；</li>
+<li>禁止用空格缩进命令行；</li>
+<li>禁止在 <code>clean</code> 里写 <code>del *.*</code> 这类通配删除（只删自己的 <code>.o</code> 和 <code>.exe</code>）。</li>
+</ul>
+<p>自检要点：</p>
+<ul>
+<li>能读懂 <code>mingw32-make -n</code> 打印的命令；</li>
+<li>能解释 <code>$@</code>、<code>$&lt;</code>、<code>$^</code> 各代表什么（用到哪个解释哪个）；</li>
+<li><code>clean</code> 执行后再 <code>mingw32-make</code>，应能从头完整重建。</li>
+</ul>
+<h2 id="had1d9404">练习 7（挑战）函数指针菜单分派</h2>
+<p>用「函数指针数组 + 菜单」实现一个可扩展的命令分派器：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="k">typedef</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">CommandFn</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">name</span><span class="p">;</span><span class="w">    </span><span class="cm">/* 命令名，如 hello */</span>
+<span class="w">    </span><span class="n">CommandFn</span><span class="w">   </span><span class="n">run</span><span class="p">;</span><span class="w">     </span><span class="cm">/* 对应的函数 */</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">help</span><span class="p">;</span><span class="w">    </span><span class="cm">/* 一行说明 */</span>
+<span class="p">}</span><span class="w"> </span><span class="n">Command</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>要求：</p>
+<ol>
+<li>命令表里至少 4 条：<code>hello</code>（打招呼）、<code>sum</code>（求 1..n 的和）、<code>upper</code>（小写转大写）、
+   <code>help</code>（列出所有命令）；<code>quit</code> 在循环里单独判断（不进表）；</li>
+<li>主循环读一整行命令，遍历命令表用 <code>strcmp</code> 找到就调用，找不到提示「未知命令」；</li>
+<li><strong>加一个新命令（例如 <code>pi</code> 打印 3.14159）只允许改命令表 + 新增一个函数</strong>，主循环一行不动；</li>
+<li>注释里回答：函数指针数组比 <code>switch</code> 好在哪（至少 3 点）；函数指针的签名为什么必须一致？</li>
+<li>边界：空行忽略、未知命令提示、EOF 正常退出。</li>
+</ol>
+<p>禁止事项：</p>
+<ul>
+<li>禁止用 <code>if-else</code> 链或 <code>switch</code> 代替查表分派；</li>
+<li>禁止把命令的具体实现写进 <code>main</code>；</li>
+<li>禁止用全局变量在命令之间传状态（每个命令自己读输入）。</li>
+</ul>
+<p>自检要点：</p>
+<ul>
+<li><code>gcc -Wall -Wextra -std=c99</code> 零警告；</li>
+<li>亲手加一次 <code>pi</code> 命令，确认只动了「表 + 一个函数」；</li>
+<li>能说清 <code>void (*f)(void)</code> 与 <code>void *f(void)</code> 的区别（这是面试常问）。</li>
+</ul>
+<h2 id="he1bea203">验收提醒</h2>
+<ul>
+<li><strong>练习 3、6 是工程能力题</strong>，考核提交前必须会；练习 3 的四个阶段判断错一个，后面调试就靠猜；</li>
+<li><strong>练习 4 是考核「禁用库函数」的直系积木</strong>，<code>my_strlen</code> / <code>my_strcpy</code> 要练到能默写；</li>
+<li><strong>练习 5 的三文件结构就是考核建议的提交结构</strong>（<code>main.c</code> + 模块 <code>.c/.h</code>），提前按这个结构写；</li>
+<li>本阶段<strong>不提供登录 / 密码 / 用户管理系统的任何代码</strong>——那部分必须自己设计，
+  抄现成答案一律按「不会」处理；</li>
+<li>全部完成后，用 <code>-Wall -Wextra</code> 把整个工程重编一遍，警告清零再提交 Gitee。</li>
+</ul>
+<footer class="doc">
+  阶段八 的配套材料 · 代码答案（.c）在本地仓库 exercises\阶段八\ 目录<br>
+  <a href="../../index.html">返回教程目录</a>
+</footer>
+</div>
+<button id="totop" type="button" aria-label="回到顶部" title="回到顶部">↑</button>
+<script>
+(function () {
+  var nav = document.getElementById('docnav');
+  var cur = nav && nav.querySelector('a.cur');
+  if (cur && nav.scrollWidth > nav.clientWidth) {
+    nav.scrollLeft = cur.offsetLeft - nav.clientWidth / 2 + cur.offsetWidth / 2;
+  }
+  var btn = document.getElementById('totop');
+  if (!btn) return;
+  var onScroll = function () {
+    btn.classList.toggle('show', window.scrollY > 480);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  btn.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+(function () {
+  var boxes = document.querySelectorAll('.scroll-hint');
+  Array.prototype.forEach.call(boxes, function (box) {
+    var sc = box.firstElementChild;
+    if (!sc) return;
+    function upd() {
+      var more = sc.scrollWidth - sc.clientWidth > 4;
+      box.classList.toggle('has-more', more);
+      box.classList.toggle('at-end', more && sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 4);
+    }
+    upd();
+    sc.addEventListener('scroll', upd, { passive: true });
+    window.addEventListener('resize', upd);
+  });
+})();
+
+</script>
+</body>
+</html>

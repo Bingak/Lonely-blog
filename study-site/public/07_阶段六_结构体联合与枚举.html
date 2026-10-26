@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1117" media="(prefers-color-scheme: dark)">
+<meta name="format-detection" content="telephone=no">
+<title>07 阶段六：结构体、联合与枚举（给散装数据装上盒子）</title>
+<style>pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #ffffcc }
+.codehilite { background: #f8f8f8; }
+.codehilite .c { color: #3D7B7B; font-style: italic } /* Comment */
+.codehilite .err { border: 1px solid #F00 } /* Error */
+.codehilite .k { color: #008000; font-weight: bold } /* Keyword */
+.codehilite .o { color: #666 } /* Operator */
+.codehilite .ch { color: #3D7B7B; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #3D7B7B; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #9C6500 } /* Comment.Preproc */
+.codehilite .cpf { color: #3D7B7B; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #3D7B7B; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
+.codehilite .gd { color: #A00000 } /* Generic.Deleted */
+.codehilite .ge { font-style: italic } /* Generic.Emph */
+.codehilite .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #E40000 } /* Generic.Error */
+.codehilite .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #008400 } /* Generic.Inserted */
+.codehilite .go { color: #717171 } /* Generic.Output */
+.codehilite .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.codehilite .gt { color: #04D } /* Generic.Traceback */
+.codehilite .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #008000 } /* Keyword.Pseudo */
+.codehilite .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #B00040 } /* Keyword.Type */
+.codehilite .m { color: #666 } /* Literal.Number */
+.codehilite .s { color: #BA2121 } /* Literal.String */
+.codehilite .na { color: #687822 } /* Name.Attribute */
+.codehilite .nb { color: #008000 } /* Name.Builtin */
+.codehilite .nc { color: #00F; font-weight: bold } /* Name.Class */
+.codehilite .no { color: #800 } /* Name.Constant */
+.codehilite .nd { color: #A2F } /* Name.Decorator */
+.codehilite .ni { color: #717171; font-weight: bold } /* Name.Entity */
+.codehilite .ne { color: #CB3F38; font-weight: bold } /* Name.Exception */
+.codehilite .nf { color: #00F } /* Name.Function */
+.codehilite .nl { color: #767600 } /* Name.Label */
+.codehilite .nn { color: #00F; font-weight: bold } /* Name.Namespace */
+.codehilite .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #19177C } /* Name.Variable */
+.codehilite .ow { color: #A2F; font-weight: bold } /* Operator.Word */
+.codehilite .w { color: #BBB } /* Text.Whitespace */
+.codehilite .mb { color: #666 } /* Literal.Number.Bin */
+.codehilite .mf { color: #666 } /* Literal.Number.Float */
+.codehilite .mh { color: #666 } /* Literal.Number.Hex */
+.codehilite .mi { color: #666 } /* Literal.Number.Integer */
+.codehilite .mo { color: #666 } /* Literal.Number.Oct */
+.codehilite .sa { color: #BA2121 } /* Literal.String.Affix */
+.codehilite .sb { color: #BA2121 } /* Literal.String.Backtick */
+.codehilite .sc { color: #BA2121 } /* Literal.String.Char */
+.codehilite .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.codehilite .s2 { color: #BA2121 } /* Literal.String.Double */
+.codehilite .se { color: #AA5D1F; font-weight: bold } /* Literal.String.Escape */
+.codehilite .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.codehilite .si { color: #A45A77; font-weight: bold } /* Literal.String.Interpol */
+.codehilite .sx { color: #008000 } /* Literal.String.Other */
+.codehilite .sr { color: #A45A77 } /* Literal.String.Regex */
+.codehilite .s1 { color: #BA2121 } /* Literal.String.Single */
+.codehilite .ss { color: #19177C } /* Literal.String.Symbol */
+.codehilite .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #00F } /* Name.Function.Magic */
+.codehilite .vc { color: #19177C } /* Name.Variable.Class */
+.codehilite .vg { color: #19177C } /* Name.Variable.Global */
+.codehilite .vi { color: #19177C } /* Name.Variable.Instance */
+.codehilite .vm { color: #19177C } /* Name.Variable.Magic */
+.codehilite .il { color: #666 } /* Literal.Number.Integer.Long */</style>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --bg: #f7f8fa;
+  --bg-elev: #ffffff;
+  --ink: #1f2328;
+  --ink-soft: #4c5560;
+  --muted: #8a9199;
+  --accent: #b03a2e;
+  --link: #1a6fb5;
+  --line: #e4e7ea;
+  --line-soft: #eef0f2;
+  --code-bg: #f6f7f9;
+  --code-ink: #c0214a;
+  --quote-bg: #fff8e8;
+  --quote-line: #e6a23c;
+  --quote-ink: #6b5900;
+  --th-bg: #f2f4f6;
+  --tr-alt: #fafbfc;
+  --shadow: 0 1px 2px rgba(16,24,40,.04), 0 8px 24px rgba(16,24,40,.05);
+  --shadow-lift: 0 2px 6px rgba(16,24,40,.06), 0 16px 40px rgba(16,24,40,.09);
+  --radius: 14px;
+  --maxw: 50rem;
+  --scroll-shadow: rgba(15, 23, 42, .16);
+  --mono: "JetBrains Mono", "Cascadia Mono", Consolas, "SF Mono", Menlo, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Microsoft YaHei", "Noto Sans SC", "Source Han Sans SC", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1117;
+    --bg-elev: #161b23;
+    --ink: #e7eaf0;
+    --ink-soft: #b8c0cd;
+    --muted: #8b93a3;
+    --accent: #ff8f7e;
+    --link: #82b6ff;
+    --line: #262d38;
+    --line-soft: #1c232c;
+    --code-bg: #1b212b;
+    --code-ink: #ff9db0;
+    --quote-bg: #241f13;
+    --quote-line: #b98a2e;
+    --quote-ink: #e8d3a0;
+    --th-bg: #1d232c;
+    --tr-alt: #171d25;
+    --shadow: 0 1px 2px rgba(0,0,0,.45), 0 10px 30px rgba(0,0,0,.35);
+    --shadow-lift: 0 2px 8px rgba(0,0,0,.5), 0 20px 50px rgba(0,0,0,.45);
+    --scroll-shadow: rgba(255, 255, 255, .16);
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-wrap: break-word;
+}
+
+::selection { background: rgba(26,111,181,.22); }
+
+.wrap {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 28px clamp(14px, 4vw, 28px) 96px;
+}
+
+/* ── 顶部文档导航：吸顶 + 横向滑动 ───────────────────────── */
+nav.docnav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  padding: 10px 12px;
+  margin: 0 0 26px;
+  background: var(--bg-elev);
+  background: color-mix(in srgb, var(--bg-elev) 88%, transparent);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+nav.docnav::-webkit-scrollbar { display: none; }
+nav.docnav b {
+  flex: none;
+  color: var(--accent);
+  font-size: 12.5px;
+  letter-spacing: .06em;
+  padding-right: 4px;
+}
+nav.docnav a {
+  flex: none;
+  display: inline-block;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: background .18s, color .18s;
+}
+nav.docnav a:hover { background: var(--line-soft); color: var(--ink); }
+nav.docnav a.cur {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 650;
+}
+@media (prefers-color-scheme: dark) {
+  nav.docnav a.cur { color: #1a0f0d; }
+}
+nav.docnav a.home { color: var(--link); }
+
+/* 桌面端：导航平铺换行，全部可见，不吸顶（避免遮挡正文） */
+@media (min-width: 861px) {
+  nav.docnav {
+    position: static;
+    flex-wrap: wrap;
+    overflow: visible;
+    white-space: normal;
+    row-gap: 4px;
+  }
+}
+
+/* ── 页眉 ──────────────────────────────────────────────── */
+header.doc {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+  margin-bottom: 26px;
+}
+header.doc .kicker {
+  display: inline-block;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: .16em;
+  font-size: 11.5px;
+  text-transform: uppercase;
+}
+h1 {
+  font-size: clamp(21px, 4.4vw, 30px);
+  line-height: 1.38;
+  margin: 8px 0 0;
+  letter-spacing: -.01em;
+}
+
+/* ── 正文排版 ──────────────────────────────────────────── */
+h2 {
+  font-size: clamp(18px, 3vw, 23px);
+  line-height: 1.42;
+  margin: 2.1em 0 .9em;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  scroll-margin-top: 72px;
+}
+h3 {
+  font-size: clamp(16px, 2.3vw, 19px);
+  margin: 1.7em 0 .6em;
+  color: var(--ink);
+  scroll-margin-top: 72px;
+}
+h4 { font-size: 16px; margin: 1.4em 0 .5em; color: var(--ink-soft); }
+p { margin: .85em 0; }
+p, li { text-align: left; }
+
+a { color: var(--link); text-decoration: none; border-bottom: 1px solid transparent; }
+a:hover { border-bottom-color: currentColor; }
+
+strong { color: var(--accent); font-weight: 700; }
+em { color: var(--ink-soft); }
+
+blockquote {
+  margin: 1.2em 0;
+  padding: 12px 16px;
+  background: var(--quote-bg);
+  border-left: 4px solid var(--quote-line);
+  border-radius: 0 12px 12px 0;
+  color: var(--quote-ink);
+}
+blockquote p { margin: .35em 0; }
+blockquote strong { color: inherit; }
+
+hr {
+  border: none;
+  border-top: 1px dashed var(--line);
+  margin: 2.2em 0;
+}
+
+/* ── 行内代码 ──────────────────────────────────────────── */
+code {
+  font-family: var(--mono);
+  font-size: .885em;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  padding: .12em .42em;
+  border-radius: 6px;
+  border: 1px solid var(--line-soft);
+  word-break: break-word;
+}
+
+/* ── 代码块：横向滚动，不撑破屏幕 ───────────────────────── */
+.codehilite {
+  position: relative;
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 1.1em 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  font-size: 14px;
+  line-height: 1.62;
+}
+.codehilite pre {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: inherit;
+  line-height: inherit;
+  tab-size: 4;
+}
+.codehilite code {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+  white-space: pre;
+}
+
+/* 细滚动条（代码块 / 表格横向滚动时更轻盈） */
+.codehilite, .table-wrap {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.codehilite::-webkit-scrollbar,
+.table-wrap::-webkit-scrollbar { height: 7px; }
+.codehilite::-webkit-scrollbar-track,
+.table-wrap::-webkit-scrollbar-track { background: transparent; }
+.codehilite::-webkit-scrollbar-thumb,
+.table-wrap::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 99px;
+}
+.codehilite::-webkit-scrollbar-thumb:hover,
+.table-wrap::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ── 表格：外层可横向滚动 ──────────────────────────────── */
+.table-wrap {
+  margin: 1.1em 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  border-radius: 12px;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+th, td {
+  border: 1px solid var(--line);
+  padding: 8px 11px;
+  text-align: left;
+  vertical-align: top;
+}
+th { background: var(--th-bg); font-weight: 650; white-space: nowrap; }
+tbody tr:nth-child(even) td { background: var(--tr-alt); }
+table code { white-space: nowrap; }
+
+/* ── 任务清单复选框 ────────────────────────────────────── */
+ul.task-list, ul.contains-task-list { list-style: none; padding-left: 2px; }
+ul.task-list li, ul.contains-task-list li { margin: .4em 0; }
+ul.task-list input[type=checkbox] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 17px; height: 17px;
+  border: 1.5px solid var(--muted);
+  border-radius: 5px;
+  margin-right: 9px;
+  vertical-align: -3px;
+  background: var(--bg-elev);
+  flex: none;
+}
+ul.task-list input[type=checkbox]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'><path d='M6.4 11.2 3.2 8l-1.1 1.1 4.3 4.3 8-8-1.1-1.1z'/></svg>");
+  background-size: 12px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ── 目录折叠块 ────────────────────────────────────────── */
+details.toc {
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 18px;
+  margin-bottom: 26px;
+  box-shadow: var(--shadow);
+}
+details.toc summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--link);
+  padding: 4px 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+details.toc summary::-webkit-details-marker { display: none; }
+details.toc summary::before {
+  content: "";
+  width: 0; height: 0;
+  border-left: 6px solid currentColor;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  transition: transform .2s;
+}
+details.toc[open] summary::before { transform: rotate(90deg); }
+details.toc ol { margin: 10px 0 6px; padding-left: 22px; }
+details.toc li { margin: .3em 0; }
+details.toc a { font-size: 14px; color: var(--ink-soft); }
+details.toc a:hover { color: var(--link); }
+
+/* ── 页脚 ──────────────────────────────────────────────── */
+footer.doc {
+  margin-top: 56px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12.5px;
+  text-align: center;
+  line-height: 1.8;
+}
+
+/* ── 回到顶部 ──────────────────────────────────────────── */
+#totop {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  z-index: 40;
+  width: 46px; height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--bg-elev);
+  color: var(--ink-soft);
+  box-shadow: var(--shadow-lift);
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity .22s, transform .22s, visibility .22s;
+}
+#totop.show { opacity: 1; visibility: visible; transform: none; }
+#totop:active { transform: scale(.94); }
+
+/* ── 平板 ──────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .wrap { padding-top: 18px; }
+  body { font-size: 15.5px; line-height: 1.8; }
+  .codehilite { font-size: 13.2px; padding: 12px 13px; }
+  table { font-size: 13.2px; }
+  th, td { padding: 7px 9px; }
+}
+
+/* ── 手机 ──────────────────────────────────────────────── */
+@media (max-width: 560px) {
+  html { scroll-behavior: auto; }
+  .wrap { padding: 12px 13px 84px; }
+  body { font-size: 15px; line-height: 1.78; }
+
+  nav.docnav { top: 0; border-radius: 12px; padding: 8px 9px; margin-bottom: 18px; }
+  nav.docnav b { display: none; }
+  nav.docnav a { font-size: 12.5px; padding: 6px 10px; }
+
+  header.doc { padding-bottom: 12px; margin-bottom: 18px; }
+  header.doc .kicker { font-size: 10.5px; letter-spacing: .12em; }
+
+  h1 { font-size: 20px; }
+  h2 { font-size: 17.5px; padding-left: 9px; border-left-width: 3px; margin-top: 1.8em; }
+  h3 { font-size: 15.5px; }
+  h4 { font-size: 14.5px; }
+  p { margin: .8em 0; }
+
+  blockquote { padding: 10px 12px; border-radius: 0 10px 10px 0; }
+
+  .codehilite { font-size: 12.2px; padding: 11px 12px; border-radius: 10px; }
+  table { font-size: 12.6px; }
+  th, td { padding: 6px 8px; }
+  th { white-space: normal; }
+
+  details.toc { padding: 10px 14px; margin-bottom: 18px; }
+  details.toc ol { padding-left: 18px; }
+  details.toc a { font-size: 13px; }
+
+  /* 触控目标不小于 40px */
+  ul.task-list li { padding: 2px 0; }
+  ul.task-list input[type=checkbox] { width: 19px; height: 19px; }
+
+  footer.doc { margin-top: 40px; font-size: 11.5px; }
+  #totop { width: 42px; height: 42px; font-size: 16px; }
+}
+
+/* ── 打印 ──────────────────────────────────────────────── */
+@media print {
+  nav.docnav, #totop, details.toc { display: none !important; }
+  body { background: #fff; color: #000; font-size: 11pt; }
+  .wrap { max-width: none; padding: 0; }
+  .codehilite, table, blockquote { box-shadow: none; }
+  a { color: #000; }
+  h2, h3 { page-break-after: avoid; }
+  .codehilite, table { page-break-inside: avoid; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+pre { line-height: 125%; }
+td.linenos .normal { color: #aaaaaa; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #aaaaaa; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #404040 }
+.codehilite { background: #202020; color: #D0D0D0 }
+.codehilite .c { color: #ABABAB; font-style: italic } /* Comment */
+.codehilite .err { color: #A61717; background-color: #E3D2D2 } /* Error */
+.codehilite .esc { color: #D0D0D0 } /* Escape */
+.codehilite .g { color: #D0D0D0 } /* Generic */
+.codehilite .k { color: #6EBF26; font-weight: bold } /* Keyword */
+.codehilite .l { color: #D0D0D0 } /* Literal */
+.codehilite .n { color: #D0D0D0 } /* Name */
+.codehilite .o { color: #D0D0D0 } /* Operator */
+.codehilite .x { color: #D0D0D0 } /* Other */
+.codehilite .p { color: #D0D0D0 } /* Punctuation */
+.codehilite .ch { color: #ABABAB; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #ABABAB; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #FF3A3A; font-weight: bold } /* Comment.Preproc */
+.codehilite .cpf { color: #ABABAB; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #ABABAB; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #E50808; font-weight: bold; background-color: #520000 } /* Comment.Special */
+.codehilite .gd { color: #FF3A3A } /* Generic.Deleted */
+.codehilite .ge { color: #D0D0D0; font-style: italic } /* Generic.Emph */
+.codehilite .ges { color: #D0D0D0; font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #FF3A3A } /* Generic.Error */
+.codehilite .gh { color: #FFF; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #589819 } /* Generic.Inserted */
+.codehilite .go { color: #CCC } /* Generic.Output */
+.codehilite .gp { color: #AAA } /* Generic.Prompt */
+.codehilite .gs { color: #D0D0D0; font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #FFF; text-decoration: underline } /* Generic.Subheading */
+.codehilite .gt { color: #FF3A3A } /* Generic.Traceback */
+.codehilite .kc { color: #6EBF26; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #6EBF26; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #6EBF26; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #6EBF26 } /* Keyword.Pseudo */
+.codehilite .kr { color: #6EBF26; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #6EBF26; font-weight: bold } /* Keyword.Type */
+.codehilite .ld { color: #D0D0D0 } /* Literal.Date */
+.codehilite .m { color: #51B2FD } /* Literal.Number */
+.codehilite .s { color: #ED9D13 } /* Literal.String */
+.codehilite .na { color: #BBB } /* Name.Attribute */
+.codehilite .nb { color: #2FBCCD } /* Name.Builtin */
+.codehilite .nc { color: #71ADFF; text-decoration: underline } /* Name.Class */
+.codehilite .no { color: #40FFFF } /* Name.Constant */
+.codehilite .nd { color: #FFA500 } /* Name.Decorator */
+.codehilite .ni { color: #D0D0D0 } /* Name.Entity */
+.codehilite .ne { color: #BBB } /* Name.Exception */
+.codehilite .nf { color: #71ADFF } /* Name.Function */
+.codehilite .nl { color: #D0D0D0 } /* Name.Label */
+.codehilite .nn { color: #71ADFF; text-decoration: underline } /* Name.Namespace */
+.codehilite .nx { color: #D0D0D0 } /* Name.Other */
+.codehilite .py { color: #D0D0D0 } /* Name.Property */
+.codehilite .nt { color: #6EBF26; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #40FFFF } /* Name.Variable */
+.codehilite .ow { color: #6EBF26; font-weight: bold } /* Operator.Word */
+.codehilite .pm { color: #D0D0D0 } /* Punctuation.Marker */
+.codehilite .w { color: #666 } /* Text.Whitespace */
+.codehilite .mb { color: #51B2FD } /* Literal.Number.Bin */
+.codehilite .mf { color: #51B2FD } /* Literal.Number.Float */
+.codehilite .mh { color: #51B2FD } /* Literal.Number.Hex */
+.codehilite .mi { color: #51B2FD } /* Literal.Number.Integer */
+.codehilite .mo { color: #51B2FD } /* Literal.Number.Oct */
+.codehilite .sa { color: #ED9D13 } /* Literal.String.Affix */
+.codehilite .sb { color: #ED9D13 } /* Literal.String.Backtick */
+.codehilite .sc { color: #ED9D13 } /* Literal.String.Char */
+.codehilite .dl { color: #ED9D13 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #ED9D13 } /* Literal.String.Doc */
+.codehilite .s2 { color: #ED9D13 } /* Literal.String.Double */
+.codehilite .se { color: #ED9D13 } /* Literal.String.Escape */
+.codehilite .sh { color: #ED9D13 } /* Literal.String.Heredoc */
+.codehilite .si { color: #ED9D13 } /* Literal.String.Interpol */
+.codehilite .sx { color: #FFA500 } /* Literal.String.Other */
+.codehilite .sr { color: #ED9D13 } /* Literal.String.Regex */
+.codehilite .s1 { color: #ED9D13 } /* Literal.String.Single */
+.codehilite .ss { color: #ED9D13 } /* Literal.String.Symbol */
+.codehilite .bp { color: #2FBCCD } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #71ADFF } /* Name.Function.Magic */
+.codehilite .vc { color: #40FFFF } /* Name.Variable.Class */
+.codehilite .vg { color: #40FFFF } /* Name.Variable.Global */
+.codehilite .vi { color: #40FFFF } /* Name.Variable.Instance */
+.codehilite .vm { color: #40FFFF } /* Name.Variable.Magic */
+.codehilite .il { color: #51B2FD } /* Literal.Number.Integer.Long */
+}
+</style>
+<style>
+.scroll-hint { position: relative; }
+.scroll-hint::after {
+  content: "";
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 30px;
+  border-radius: 0 12px 12px 0;
+  pointer-events: none;
+  background: linear-gradient(270deg, var(--scroll-shadow), transparent);
+  opacity: 0;
+  transition: opacity .18s;
+}
+.scroll-hint.has-more::after { opacity: 1; }
+.scroll-hint.at-end::after { opacity: 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="docnav" id="docnav"><b>DOCS</b><a class="home" href="./index.html">目录页</a><a href="00_任务与进度分析.html">00_任务与进度分析</a><a href="01_学习路线总览.html">01_学习路线总览</a><a href="02_阶段一_环境搭建与调试.html">02_阶段一_环境搭建与调试</a><a href="03_阶段二_基础语法与控制流.html">03_阶段二_基础语法与控制流</a><a href="04_阶段三_函数.html">04_阶段三_函数</a><a href="05_阶段四_数组与字符串.html">05_阶段四_数组与字符串</a><a href="06_阶段五_指针.html">06_阶段五_指针</a><a href="07_阶段六_结构体联合与枚举.html" class="cur">07_阶段六_结构体联合与枚举</a><a href="08_阶段七_类型深入与位运算.html">08_阶段七_类型深入与位运算</a><a href="09_阶段八_多文件工程与考核冲刺.html">09_阶段八_多文件工程与考核冲刺</a><a href="10_阶段九_动态内存与文件IO.html">10_阶段九_动态内存与文件IO</a><a href="11_阶段十_51单片机C语言预备.html">11_阶段十_51单片机C语言预备</a><a href="12_51实战一_数码管与按键.html">12_51实战一_数码管与按键</a><a href="13_51实战二_定时器串口与I2C.html">13_51实战二_定时器串口与I2C</a><a href="14_51实战三_时钟液晶AD与综合项目.html">14_51实战三_时钟液晶AD与综合项目</a></nav>
+<header class="doc"><span class="kicker">C 语言学习计划 · AI 生成教程</span><h1>07 阶段六：结构体、联合与枚举（给散装数据装上盒子）</h1></header>
+<details class="toc" id="toc"><summary>本文目录</summary><div class="toc">
+<ul>
+<li><a href="#h4994a1a2">1. 本节目标与前置知识</a></li>
+<li><a href="#hf334ae0f">2. 场景引入：散装的 x、y——而不是一个点</a></li>
+<li><a href="#h87ca87bf">3. 核心概念一：struct——定义图纸、三种出生、点访问</a><ul>
+<li><a href="#hcf4a0cee">3.1 先造图纸，再声明变量</a></li>
+<li><a href="#hb315b2ca">3.2 三种出生方式（与阶段四数组的初始化一一对应）</a></li>
+<li><a href="#h1312f8af">3.3 点访问 .：成员就是普通变量</a></li>
+<li><a href="#h56edb9d5">3.4 typedef 两种风格</a></li>
+</ul>
+</li>
+<li><a href="#h3fc72cec">4. 核心概念二：结构体整体赋值——值语义（与字符串的对照实验）</a></li>
+<li><a href="#h15469ba5">5. 核心概念三：结构体与函数——复印件定理的回收站</a><ul>
+<li><a href="#hbff2b4a6">5.1 传值：整个复印！</a></li>
+<li><a href="#h0f053fcc">5.2 传指针 + const：大结构体的标准姿势</a></li>
+<li><a href="#h63ed263f">5.3 -&gt; 与 (*p).field 等价</a></li>
+<li><a href="#h3360399d">5.4 传指针改原件：阶段五 swap 的同一手法</a></li>
+</ul>
+</li>
+<li><a href="#h431f511e">6. 核心概念四：结构体数组与嵌套</a><ul>
+<li><a href="#h69542a3b">6.1 结构体数组：一排盒子</a></li>
+<li><a href="#h34237c4b">6.2 嵌套：盒子里装盒子</a></li>
+</ul>
+</li>
+<li><a href="#h4d54c139">7. 核心概念五：sizeof 结构体与内存对齐（有印象即可）</a></li>
+<li><a href="#hc5d59143">8. 核心概念六：enum 枚举——消灭魔法数字</a></li>
+<li><a href="#h6432cf45">9. 核心概念七：union 联合——同一块内存的多种解读</a></li>
+<li><a href="#hcd98026d">10. 编译与运行（阶段六全部代码）</a></li>
+<li><a href="#h5cc24f7d">11. 本阶段练习（题目在 exercises\阶段六\练习_题目.md，答案同目录）</a></li>
+<li><a href="#h94dd95e0">12. 常见错误与调试速查（本阶段相关）</a></li>
+<li><a href="#h4564491b">13. 安全与规范：本阶段三条铁律</a></li>
+<li><a href="#h901a5e0b">14. 任务四 &amp; 任务六作战指南（知识映射 + 自查清单，独立完成）</a><ul>
+<li><a href="#hf863c26a">14.1 任务四（空间向量）知识映射</a></li>
+<li><a href="#h6efbdf6f">14.2 任务六（结构体交换）知识映射</a></li>
+</ul>
+</li>
+<li><a href="#ha36ff899">15. 验收清单（全部打勾才进入阶段七）</a></li>
+<li><a href="#h6b3aadb2">16. 本阶段复盘与下一阶段衔接</a></li>
+</ul>
+</div>
+</details>
+<script>if(window.matchMedia('(min-width:861px)').matches){var t=document.getElementById('toc');if(t)t.open=true;}</script>
+<blockquote>
+<p>预计学时：5~7 天（每天 1.5~2 小时）
+本阶段解锁任务：<strong>✅任务四（空间向量）</strong>、<strong>✅任务六（结构体交换）</strong> 的全部知识地图
+配套代码：<code>code\阶段六_结构体\</code>（5 个）；练习：<code>exercises\阶段六\</code>
+前置：阶段五（指针、<code>&amp;</code>、<code>*</code>、传指针改原件、指针与数组等价、const、野指针）——本阶段处处用到</p>
+</blockquote>
+<hr />
+<h2 id="h4994a1a2">1. 本节目标与前置知识</h2>
+<p><strong>目标：</strong>
+1. 掌握 <code>struct</code> 的定义、三种初始化（顺序 / <code>{0}</code> / 指定初始化 <code>.x=</code>）、成员访问 <code>.</code>。
+2. 理解<strong>结构体是值语义</strong>：能整体赋值、能整体复印——与阶段四「数组不能整体赋值」形成对照，并讲清原因。
+3. 掌握结构体作函数参数的两条路：<strong>传值（整个复印）vs 传指针（const 保护）</strong>——回收阶段三的复印件定理、阶段五的指针手法。
+4. 掌握 <code>-&gt;</code> 运算符及其与 <code>(*p).field</code> 的等价关系，会用「传指针」在函数里修改结构体原件。
+5. 掌握结构体数组（遍历、追加、擂台法找最值——阶段四功夫原样复用）与结构体嵌套（日期套进事项）。
+6. 对 <code>sizeof</code> 结构体与<strong>内存对齐</strong>建立「有印象即可」的认知（深讲留给阶段七/九）。
+7. 掌握 <code>enum</code> 消灭魔法数字（菜单、星期），并与 <code>#define</code> 对比。
+8. 掌握 <code>union</code> 的「同一块内存多种解读」，会用 union 做字节观察实验（阶段七字节序的预告）。
+9. 独立完成任务四与任务六。</p>
+<p><strong>前置：</strong> 阶段五全部内容。特别提醒一条：阶段五你已经会「把变量的地址传给函数，函数顺着地址改原件」——本阶段 §5 只是把那个「变量」换成一个结构体，手法一模一样。</p>
+<hr />
+<h2 id="hf334ae0f">2. 场景引入：散装的 x、y——而不是一个点</h2>
+<p>阶段五之前，你的数据全是「散装」的。想象程序里要处理一个二维坐标点：你得定义 <code>double x, y;</code> 两个变量；想把点传给函数，得 <code>f(x, y)</code> 两个参数地传；想处理 10 个点，得 <code>x[10], y[10]</code> 两个数组对齐着用——<strong>「这是一个点」这件事，代码里根本看不出来</strong>，全靠你脑子记着「x 和 y 是一对」。</p>
+<p><strong>结构体 = 把相关的数据装进一个盒子，贴上标签。</strong>定义一次「图纸」：<code>struct Point { double x; double y; };</code>，之后 <code>struct Point p;</code> 就是一个完整的点——传函数只传一个 <code>p</code>，数组只要一排盒子 <code>struct Point pts[10];</code>。盒子里的 x、y 永远绑在一起，想散都散不了。</p>
+<p>同样的道理：一本图书 = 书名 + 年份 + 定价；一个日期 = 年 + 月 + 日。凡是「几个数据天然属于一体」的地方，就是结构体的战场。<strong>任务四的三个分量（x,y,z）天然属于一个向量、任务六的几项信息天然属于一条记录——它们等你学完本阶段就能动手。</strong></p>
+<hr />
+<h2 id="h87ca87bf">3. 核心概念一：struct——定义图纸、三种出生、点访问</h2>
+<h3 id="hcf4a0cee">3.1 先造图纸，再声明变量</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Point</span><span class="w"> </span><span class="p">{</span><span class="w">                 </span><span class="cm">/* 定义「图纸」：一个点有两个 double 成员 */</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">Point</span><span class="w"> </span><span class="n">p1</span><span class="p">;</span><span class="w">               </span><span class="cm">/* 用图纸声明一个变量：p1 是一个完整的点 */</span>
+</code></pre></div></div>
+
+<p><code>struct Point</code> 合起来是一个类型名（<code>struct</code> 二字不能省，C 语言的规矩）。图纸本身不占内存，<strong>声明出变量才真的开出一块内存</strong>——就像 <code>int</code> 是图纸，<code>int a;</code> 才占 4 字节。</p>
+<h3 id="hb315b2ca">3.2 三种出生方式（与阶段四数组的初始化一一对应）</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Point</span><span class="w"> </span><span class="n">p1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mf">3.0</span><span class="p">,</span><span class="w"> </span><span class="mf">4.0</span><span class="p">};</span><span class="w">            </span><span class="cm">/* 顺序初始化：按成员顺序逐个给 */</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">Point</span><span class="w"> </span><span class="n">p2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">};</span><span class="w">                   </span><span class="cm">/* 惯用法：所有成员清零（数组 {0} 的同族） */</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">Point</span><span class="w"> </span><span class="n">p3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{.</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.5</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.5</span><span class="p">};</span><span class="w">  </span><span class="cm">/* 指定初始化：点名给，顺序随意 */</span>
+</code></pre></div></div>
+
+<p><strong>指定初始化（<code>.成员 = 值</code>）强烈推荐</strong>：成员一多，「按顺序给」很容易对错位置；点名给则一眼看清谁是谁，漏给的成员自动清零。</p>
+<h3 id="h1312f8af">3.3 点访问 <code>.</code>：成员就是普通变量</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="n">p1</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">10.0</span><span class="p">;</span><span class="w">                    </span><span class="cm">/* 写 */</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"%.1f</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">p1</span><span class="p">.</span><span class="n">y</span><span class="p">);</span><span class="w">         </span><span class="cm">/* 读 */</span>
+</code></pre></div></div>
+
+<p><code>p1.x</code> 读作「p1 这个盒子里贴着 x 的那一格」。它就是一个普通的 <code>double</code>，能运算、能取地址（<code>&amp;p1.x</code> 合法）、能 scanf。</p>
+<h3 id="h56edb9d5">3.4 typedef 两种风格</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="cm">/* 风格一：裸 struct，每次声明都写全 struct Point */</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">Point</span><span class="w"> </span><span class="n">a</span><span class="p">;</span>
+
+<span class="cm">/* 风格二：typedef 起短名，之后 Vec2 b; 即可 */</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">Vec2</span><span class="p">;</span>
+<span class="n">Vec2</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>两种风格都合法、都常见。翁恺课程以风格一为主，工程代码风格二居多——<strong>两种都要看得懂</strong>，因为网上的代码两种都有。配套 <code>01_struct_basics.c</code> 把两种风格并排演示。</p>
+<hr />
+<h2 id="h3fc72cec">4. 核心概念二：结构体整体赋值——值语义（与字符串的对照实验）</h2>
+<p>阶段四你背过一条纪律：<code>char t[10]; t = "hello";</code> <strong>编译错误</strong>，数组不能整体赋值；<code>s1 == s2</code> 比的是地址不是内容。</p>
+<p>结构体<strong>恰好相反</strong>：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Point</span><span class="w"> </span><span class="n">p1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mf">10.0</span><span class="p">,</span><span class="w"> </span><span class="mf">4.0</span><span class="p">};</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">Point</span><span class="w"> </span><span class="n">p5</span><span class="p">;</span>
+<span class="n">p5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p1</span><span class="p">;</span><span class="w">        </span><span class="cm">/* ✔ 合法！整个盒子逐字节复印一份 */</span>
+<span class="n">p5</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">99.0</span><span class="p">;</span><span class="w">    </span><span class="cm">/* 改 p5，p1 纹丝不动——两个独立的盒子 */</span>
+</code></pre></div></div>
+
+<p><strong>为什么数组不行、结构体行？</strong>因为 C 语言里<strong>结构体是值语义</strong>：它和 <code>int</code>、<code>double</code> 一样是「一个值」，赋值就是整个复印。而数组名在表达式里会退化成<strong>首地址</strong>（阶段五），<code>t = "hello"</code> 想做的其实是「把一个地址赋给另一个地址」——数组的地址是定死的，当然不行。</p>
+<p>记住这条对照，能一次解释阶段四和本阶段的两堆现象：</p>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>操作</th>
+<th>数组</th>
+<th>结构体</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>整体赋值 <code>b = a;</code></td>
+<td>✘ 编译错误</td>
+<td>✔ 整个复印</td>
+</tr>
+<tr>
+<td><code>a == b</code> 比内容</td>
+<td>✘ 比的是地址</td>
+<td>✘ <strong>也不能</strong>！结构体连 <code>==</code> 都不支持，要逐成员比</td>
+</tr>
+<tr>
+<td>传函数</td>
+<td>退化为首地址（改的是原件）</td>
+<td>传值（整个复印，改的是复印件）</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>配套 <code>01_struct_basics.c</code> 的「整体赋值」段：跑一遍，亲眼看看改 p5 之后 p1 纹丝不动。</p>
+<hr />
+<h2 id="h15469ba5">5. 核心概念三：结构体与函数——复印件定理的回收站</h2>
+<h3 id="hbff2b4a6">5.1 传值：整个复印！</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">translate_fail</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">Point</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">dx</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">dy</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">p</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">dx</span><span class="p">;</span><span class="w">   </span><span class="cm">/* 改的是复印件，原件不动 */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>阶段三的<strong>复印件定理</strong>原样适用，只是复印件从「4 字节的 int」变成了「16 字节的整个结构体」。后果有二：</p>
+<ol>
+<li><strong>改不动原件</strong>（老现象）；</li>
+<li><strong>浪费</strong>（新现象）：一个 100 字节的结构体每调一次函数就复印 100 字节，结构体越大越心疼。</li>
+</ol>
+<h3 id="h0f053fcc">5.2 传指针 + const：大结构体的标准姿势</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">print_point</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">label</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">Point</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"%s: (%.1f, %.1f)</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">label</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="o">-&gt;</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="o">-&gt;</span><span class="n">y</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>只传一个地址（8 字节），不管结构体多大都不浪费；<code>const</code> 承诺只读——<strong>阶段五学的 const 指针在这里正式上岗</strong>：以后看到「结构体 + 函数」，默认就该想到「传 const 指针」。</p>
+<h3 id="h63ed263f">5.3 <code>-&gt;</code> 与 <code>(*p).field</code> 等价</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="n">p</span><span class="o">-&gt;</span><span class="n">x</span><span class="w">      </span><span class="cm">/* 读作「p 指向的那个结构体的 x」 */</span>
+<span class="p">(</span><span class="o">*</span><span class="n">p</span><span class="p">).</span><span class="n">x</span><span class="w">    </span><span class="cm">/* 完全等价：先 * 解引用找到原件，再 . 取成员 */</span>
+</code></pre></div></div>
+
+<p><strong><code>(*p).x</code> 的括号不能省</strong>：<code>.</code> 的优先级比 <code>*</code> 高，<code>*p.x</code> 会被理解成 <code>*(p.x)</code>——编译器报错。正因为括号太烦，C 专门给了 <code>-&gt;</code> 这个语法糖。看到 <code>p-&gt;x</code>，脑子里翻译成 <code>(*p).x</code>，本质就清楚了。</p>
+<h3 id="h3360399d">5.4 传指针改原件：阶段五 swap 的同一手法</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">translate</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">Point</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">dx</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">dy</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">p</span><span class="o">-&gt;</span><span class="n">x</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">dx</span><span class="p">;</span><span class="w">      </span><span class="cm">/* 顺着地址改原件 */</span>
+<span class="w">    </span><span class="n">p</span><span class="o">-&gt;</span><span class="n">y</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">dy</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="cm">/* 调用：translate(&amp;a, 3.0, 4.0);  把 a 的地址抄给函数 */</span>
+</code></pre></div></div>
+
+<p>对照阶段五的 <code>swap(&amp;x, &amp;y)</code>：手法一字不差，只是「原件」从 int 变成了结构体。<strong>这就是任务六的全部技术内核</strong>——教程把知识交给你，任务代码由你自己组织。</p>
+<p>配套 <code>02_struct_function.c</code>：三条路并排跑一遍——传值失败现场、传指针成功、const 只读打印。<strong>先预测每行输出，再运行。</strong></p>
+<hr />
+<h2 id="h431f511e">6. 核心概念四：结构体数组与嵌套</h2>
+<h3 id="h69542a3b">6.1 结构体数组：一排盒子</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Book</span><span class="w"> </span><span class="n">shelf</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">{</span><span class="s">"C Primer Plus"</span><span class="p">,</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span><span class="w"> </span><span class="mf">128.00</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s">"The C Programming Language"</span><span class="p">,</span><span class="w"> </span><span class="mi">1988</span><span class="p">,</span><span class="w"> </span><span class="mf">45.00</span><span class="p">},</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>遍历、追加、找最值——<strong>阶段四的四大基本功原样复用</strong>，只是「一格」从 int 变成了一个盒子：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">best</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">                                   </span><span class="cm">/* 擂台法记下标 */</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">shelf</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">year</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">shelf</span><span class="p">[</span><span class="n">best</span><span class="p">].</span><span class="n">year</span><span class="p">)</span><span class="w"> </span><span class="n">best</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>注意结构体里装数组（<code>char title[40]</code>）完全合法——盒子里面还可以有小格子；反过来，给这种成员赋值时遵守阶段四纪律：<strong>字符串成员只能逐格写或初始化时给</strong>（<code>03_struct_array.c</code> 里追加那本书就是这么做的）。</p>
+<h3 id="h34237c4b">6.2 嵌套：盒子里装盒子</h3>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Date</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">year</span><span class="p">;</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">month</span><span class="p">;</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">day</span><span class="p">;</span><span class="w"> </span><span class="p">};</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">Event</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">what</span><span class="p">[</span><span class="mi">40</span><span class="p">];</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">Date</span><span class="w"> </span><span class="n">date</span><span class="p">;</span><span class="w">      </span><span class="cm">/* 事项里装着一个日期 */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">done</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">Event</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s">"机器人实验课"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">2026</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">25</span><span class="p">},</span><span class="w"> </span><span class="mi">0</span><span class="p">};</span><span class="w">   </span><span class="cm">/* 大括号套大括号 */</span>
+<span class="n">e</span><span class="p">.</span><span class="n">date</span><span class="p">.</span><span class="n">year</span><span class="w">        </span><span class="cm">/* 层层点下去：盒子里的盒子里的格子 */</span>
+</code></pre></div></div>
+
+<p>访问规则一句话：<strong>从外往里，一层一层点</strong>。传指针时则 <code>e-&gt;date.month</code>（<code>-&gt;</code> 优先于 <code>.</code>，从左往右读）。配套 <code>05_date_nested.c</code> 演示嵌套初始化、层层访问、以及「整体赋值会把嵌套的 Date 一起复印」这件事。</p>
+<hr />
+<h2 id="h4d54c139">7. 核心概念五：sizeof 结构体与内存对齐（有印象即可）</h2>
+<p><code>sizeof(struct Point)</code> = 16（两个 double，8+8，刚好）。但别急着推广：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Demo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">;</span><span class="w">     </span><span class="cm">/* 1 字节 */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w">  </span><span class="n">n</span><span class="p">;</span><span class="w">     </span><span class="cm">/* 4 字节 */</span>
+<span class="p">};</span><span class="w">              </span><span class="cm">/* sizeof 是多少？不是 5！通常是 8 */</span>
+</code></pre></div></div>
+
+<p><strong>内存对齐</strong>：编译器为了让 CPU 访问更快，会让 <code>int</code> 从「4 的倍数」的地址开始放，<code>char</code> 后面可能空出 3 字节「 padding（填充）」。所以：</p>
+<ul>
+<li><code>sizeof</code> 结构体 <strong>≥</strong> 各成员之和，具体多少由对齐规则决定；</li>
+<li><strong>用 <code>sizeof</code> 问编译器，永远不要自己算</strong>——这是唯一可靠的办法；</li>
+<li>想省内存？把大成员排前面、小成员排后面（印象即可）。</li>
+</ul>
+<p>深讲留给阶段七（配合类型大小一起看）和阶段九（动态内存分配要算准大小）。现在只需要一个印象：<strong>结构体在内存里不一定是严丝合缝的，sizeof 说了算。</strong>练习 3（纸上作业）会让你推演几个，建立起这个直觉。</p>
+<hr />
+<h2 id="hc5d59143">8. 核心概念六：enum 枚举——消灭魔法数字</h2>
+<p>阶段二的单位换算菜单里你写过 <code>if (choice == 1) ... else if (choice == 2)</code>——这个 <code>1</code>、<code>2</code> 就是<strong>魔法数字</strong>：三个月后回头看，<code>2</code> 是啥意思？谁也不知道。</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="n">Menu</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">MENU_EXIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">MENU_SHOW</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">MENU_ADD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">MENU_DEL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">};</span>
+
+<span class="k">enum</span><span class="w"> </span><span class="n">Menu</span><span class="w"> </span><span class="n">choice</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MENU_ADD</span><span class="p">;</span>
+<span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">choice</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="k">case</span><span class="w"> </span><span class="no">MENU_ADD</span><span class="p">:</span><span class="w">  </span><span class="cm">/* 一眼看懂 */</span><span class="w">  </span><span class="k">break</span><span class="p">;</span>
+<span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>要点三条：</p>
+<ol>
+<li><strong>枚举值就是整数</strong>：<code>MENU_ADD</code> 就是 2，<code>printf("%d", MENU_ADD)</code> 打印 2；不指定初值则从 0 开始自动 +1，指定了初值（如 <code>MON = 1</code>）则后面的接着数。</li>
+<li><strong>与 #define 的对比</strong>：<code>#define MENU_ADD 2</code> 也能做到，但#define 是「预处理期文本替换」，没有类型、不进调试器；enum 是「编译器认识的常量」，调试时能看到名字、switch 漏处理某个枚举值时 <code>-Wall</code> 还可能提醒你。<strong>一组相关的常量，优先 enum。</strong></li>
+<li><strong>enum + switch 是黄金搭档</strong>：菜单、星期、状态机，凡是「有限几种取值」的场合都这么写。任务四的菜单、考核的菜单，都该用 enum 写。</li>
+</ol>
+<p>配套 <code>04_enum_union.c</code> 上半段。练习 7 会让你亲手把一个魔法数字菜单重构成 enum 版。</p>
+<hr />
+<h2 id="h6432cf45">9. 核心概念七：union 联合——同一块内存的多种解读</h2>
+<p>结构体是「几个成员<strong>各占各的</strong>格子，并排摆放」；联合是「几个成员<strong>挤在同一块</strong>内存，互相覆盖」：</p>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="k">union</span><span class="w"> </span><span class="nc">IntViewer</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w">          </span><span class="n">whole</span><span class="p">;</span><span class="w">      </span><span class="cm">/* 4 字节 */</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">bytes</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span><span class="w">  </span><span class="cm">/* 也是 4 字节——和 whole 占同一块内存！ */</span>
+<span class="p">};</span>
+
+<span class="k">union</span><span class="w"> </span><span class="nc">IntViewer</span><span class="w"> </span><span class="n">v</span><span class="p">;</span>
+<span class="n">v</span><span class="p">.</span><span class="n">whole</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x01020304</span><span class="p">;</span><span class="w">        </span><span class="cm">/* 按 int 写入 */</span>
+<span class="n">v</span><span class="p">.</span><span class="n">bytes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w">                   </span><span class="cm">/* 按字节读出：04（x86 小端） */</span>
+</code></pre></div></div>
+
+<p>要点三条：</p>
+<ol>
+<li><strong>sizeof(union) = 最大成员的大小</strong>（大家合住一间房，房间只要装得下最大那位）；</li>
+<li><strong>写谁就用谁读</strong>是规矩；「写 whole 读 bytes」属于有意为之的<strong>类型双关</strong>——合法的观察手法，但要清楚自己在干什么；</li>
+<li>它是<strong>观察内存的显微镜</strong>：<code>04_enum_union.c</code> 下半段把 <code>0x01020304</code> 写进去再逐字节看，你会亲眼看到字节顺序是 <code>04 03 02 01</code>——<strong>最小的字节存在最前面，这叫「小端」</strong>。这个实验手法就是阶段七「字节序、类型截断」的预告，也是任务七的隐形地基。</li>
+</ol>
+<p>union 在初学阶段用途不多，记住一句话就够：<strong>结构体是并排摆，联合是叠着放。</strong></p>
+<hr />
+<h2 id="hcd98026d">10. 编译与运行（阶段六全部代码）</h2>
+<div class="scroll-hint"><div class="codehilite"><pre><span></span><code><span class="n">gcc</span> <span class="n">-Wall</span> <span class="n">-Wextra</span> <span class="n">-g</span> <span class="n">code</span><span class="p">\</span><span class="n">阶段六_结构体</span><span class="p">\</span><span class="n">01_struct_basics</span><span class="p">.</span><span class="n">c</span> <span class="n">-o</span> <span class="n">build</span><span class="p">\</span><span class="n">01_struct_basics</span><span class="p">.</span><span class="n">exe</span>
+<span class="p">.\</span><span class="n">build</span><span class="p">\</span><span class="n">01_struct_basics</span><span class="p">.</span><span class="n">exe</span>
+<span class="c"># 其余 4 个同理。预期输出见每个 .c 底部注释。</span>
+</code></pre></div></div>
+
+<p><strong>老规矩：先预测，再运行。</strong>尤其 02（传值 vs 传指针的三行结果）和 04（union 的字节顺序），预测错了就是你的认知缺口，当场补。</p>
+<hr />
+<h2 id="h5cc24f7d">11. 本阶段练习（题目在 <code>exercises\阶段六\练习_题目.md</code>，答案同目录）</h2>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>级别</th>
+<th>内容</th>
+<th>训练点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>基础</td>
+<td>两点距离函数 <code>distance(a, b)</code></td>
+<td>结构体传值、sqrt/math.h</td>
+</tr>
+<tr>
+<td>2</td>
+<td>基础</td>
+<td>矩形结构体：面积 + 判断点是否在矩形内</td>
+<td>成员访问、函数返回 int 标志</td>
+</tr>
+<tr>
+<td>3</td>
+<td>基础 · 纸上</td>
+<td>三个结构体的 sizeof 与内存布局推演</td>
+<td>对齐直觉（先推演再上机验证）</td>
+</tr>
+<tr>
+<td>4</td>
+<td>提高</td>
+<td>日期比较函数 <code>date_cmp</code>（年-月-日字典序）</td>
+<td>嵌套/逐成员比较、返回值约定</td>
+</tr>
+<tr>
+<td>5</td>
+<td>提高</td>
+<td>图书数组按年份冒泡排序</td>
+<td>结构体数组、整体赋值当交换</td>
+</tr>
+<tr>
+<td>6</td>
+<td>提高</td>
+<td>union 字节观察：先预测再验证</td>
+<td>union、十六进制、小端直觉</td>
+</tr>
+<tr>
+<td>7</td>
+<td>挑战</td>
+<td>把魔法数字菜单重构成 enum + switch</td>
+<td>枚举、菜单循环重构</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><strong>与任务的边界照旧</strong>：练习 1 用二维点（任务四是三维向量，分量多一个、函数是模长/共线/垂直三个——能力同族，题目不同）；练习 5 练的是「结构体数组 + 整体赋值交换」，任务六的函数组织由你独立完成。</p>
+<hr />
+<h2 id="h94dd95e0">12. 常见错误与调试速查（本阶段相关）</h2>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>症状</th>
+<th>真因</th>
+<th>一句话药方</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>expected identifier before ...</code> 一堆错</td>
+<td>结构体定义末尾<strong>忘了分号</strong> <code>};</code></td>
+<td>图纸结尾必须有分号</td>
+</tr>
+<tr>
+<td>成员改完打印还是垃圾值</td>
+<td>声明了没初始化就用</td>
+<td><code>= {0}</code> 起手，纪律同阶段二</td>
+</tr>
+<tr>
+<td><code>*p.x</code> 报错 / 行为诡异</td>
+<td><code>.</code> 优先级高于 <code>*</code>，变成 <code>*(p.x)</code></td>
+<td>写 <code>p-&gt;x</code> 或 <code>(*p).x</code></td>
+</tr>
+<tr>
+<td>函数里改了结构体，外面没变</td>
+<td>传值——改的是复印件</td>
+<td>改原件要传 <code>&amp;变量</code>，参数用指针</td>
+</tr>
+<tr>
+<td><code>scanf</code> 直接读进结构体里的字符数组溢出</td>
+<td><code>%s</code> 没写宽度</td>
+<td>阶段四纪律原样适用：<code>%39s</code> 或 fgets</td>
+</tr>
+<tr>
+<td>结构体 <code>==</code> 编译报错</td>
+<td>结构体不支持整体比较</td>
+<td>逐成员比（练习 4 专门练）</td>
+</tr>
+<tr>
+<td>sizeof 结果比自己算的大</td>
+<td>内存对齐（padding）</td>
+<td>sizeof 说了算，别自己算</td>
+</tr>
+<tr>
+<td>结构体数组越界</td>
+<td>老问题新场地</td>
+<td>下标 0~n-1，纪律同阶段四</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><strong>调试手段</strong>：断点 + VARIABLES 面板展开结构体（VSCode 可以逐层展开 <code>p</code> 看到 <code>x</code>、<code>y</code>）；传指针时在函数里悬停看 <code>p</code> 的地址，和 main 里 <code>&amp;a</code> 对比——<strong>地址相同 = 改的就是原件</strong>（阶段五的验证法原样复用）。</p>
+<hr />
+<h2 id="h4564491b">13. 安全与规范：本阶段三条铁律</h2>
+<ol>
+<li><strong>结构体变量出生时必须给值</strong>——<code>= {0}</code> 是最便宜的安全带；只给部分成员时，其余成员自动清零（仅限初始化，赋值语句没这待遇）。</li>
+<li><strong>结构体里的数组成员，遵守阶段四全部纪律</strong>——越界照样不设防，<code>title[40]</code> 写 <code>title[40]</code> 格就是越界；字符串成员照样要留 <code>\0</code> 的位置。</li>
+<li><strong>函数要改结构体，参数必须是指针；只读就加 const</strong>——传值改不动原件（复印件定理），传指针不加 const 就是放弃了编译器的保护。</li>
+</ol>
+<hr />
+<h2 id="h901a5e0b">14. 任务四 &amp; 任务六作战指南（知识映射 + 自查清单，独立完成）</h2>
+<blockquote>
+<p>铁律重申：任务禁止用 AI 完成。本节只给「知识地图、数学提示、自查方向」，<strong>不含任何任务解答代码</strong>。看完教程、做完练习，回到任务自己组织代码。</p>
+</blockquote>
+<h3 id="hf863c26a">14.1 任务四（空间向量）知识映射</h3>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>任务要求</th>
+<th>对应教程节</th>
+<th>配套示例/练习</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>结构体存三维向量坐标</td>
+<td>§3 定义与初始化</td>
+<td>01_struct_basics.c（二维版，三维照猫画虎）</td>
+</tr>
+<tr>
+<td>三个功能函数的组织</td>
+<td>§5 结构体与函数</td>
+<td>02（传值/传指针两种姿势选一个并说清理由）</td>
+</tr>
+<tr>
+<td>菜单调用各功能</td>
+<td>§8 enum + switch</td>
+<td>04_enum_union.c、练习 7</td>
+</tr>
+<tr>
+<td>浮点结果判等</td>
+<td>阶段二 fabs &lt; 1e-9</td>
+<td>下方数学提示</td>
+</tr>
+<tr>
+<td><strong>输出精度</strong>（示例值 <code>3.741657</code>）</td>
+<td>阶段二 <code>printf</code> 格式</td>
+<td><code>printf("%.6f", r)</code>——保留 6 位小数</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><strong>数学提示（属于知识，不属于代码）：</strong>
+- 向量模长：|v| = √(x² + y² + z²)，<code>sqrt</code> 在 <code>&lt;math.h&gt;</code> 里，MinGW 下直接链接无需额外参数；
+- 两向量<strong>垂直</strong> ⟺ 点积为 0，即 x₁x₂ + y₁y₂ + z₁z₂ = 0；
+- 两向量<strong>共线</strong> ⟺ 对应分量成比例（等价说法：叉积为零向量）；
+- 浮点数不许用 <code>==</code> 判等：用 <code>fabs(差) &lt; 1e-9</code>（阶段二教过，<code>fabs</code> 也在 <code>&lt;math.h&gt;</code>）；
+- <strong>输出格式要对上示例</strong>：任务四给的示例写的是「模长 3.741657」。这个数不是随便写的——1²+2²+3² = 14，√14 = 3.7416573867…，<strong>保留 6 位小数</strong>正好截成 <code>3.741657</code>。所以打印用 <code>printf("%.6f", r)</code>（<code>%f</code> 默认也是 6 位，等价）；别自作主张改成 <code>%.2f</code> 或 <code>%.10f</code>，格式对不上批改时会被当成算错；
+- 用除法求「比例」会遇到分量为 0 的麻烦——想一想：能否把「成比例」改写成只用乘法和减法的形式？（提示：a/b = c/d 两边同乘 bd；三个分量两两都要满足。）</p>
+<p><strong>提交前自查清单：</strong>
+- [ ] 三个分量装进一个结构体，而不是三个散装 double 传来传去；
+- [ ] 每个功能是一个独立函数，main 只负责菜单（阶段三「main 是目录页」）；
+- [ ] 判等全部用 <code>fabs(...) &lt; 1e-9</code>，没有一处直接 <code>==</code> 比 double；
+- [ ] 自设计测试至少含：零向量、有一两个分量为 0 的向量（专杀「除法求比例」）、垂直/共线/一般各一组；
+- [ ] <code>-Wall -Wextra</code> 零警告；关键行注释；push Gitee。</p>
+<h3 id="h6efbdf6f">14.2 任务六（结构体交换）知识映射</h3>
+<div class="scroll-hint"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>任务要求</th>
+<th>对应教程节</th>
+<th>配套示例/练习</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>定义含若干成员的结构体（含字符数组成员）</td>
+<td>§3、§6.1</td>
+<td>01、03</td>
+</tr>
+<tr>
+<td>函数交换两个结构体的内容</td>
+<td>§5.4 传指针改原件 + §4 整体赋值</td>
+<td>02（translate 手法）、练习 5（整体赋值当交换）</td>
+</tr>
+<tr>
+<td>交换后打印验证</td>
+<td>§5.2 const 指针打印</td>
+<td>02 print_point</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><strong>思考提示（不给代码）：</strong>
+- 交换两个 int 你用阶段五的 swap 会写；交换两个结构体，<strong>手法一模一样</strong>——目标类型从 int 换成结构体而已；
+- 函数内部交换需要「临时变量倒手」——结构体能不能像 int 一样整体赋给临时变量？§4 的值语义给了答案；
+- 结构体里的字符数组成员<strong>不需要</strong>你逐字符搬运——想清楚：整体赋值时它发生了什么？（提示：值语义是整个盒子逐字节复印。）</p>
+<p><strong>提交前自查清单：</strong>
+- [ ] 交换函数的参数是两个指针，调用处传 <code>&amp;</code>；
+- [ ] 函数内访问成员用 <code>-&gt;</code>（或 <code>(*p).</code>，二选一并说清等价关系）；
+- [ ] 交换前后各打印一遍全部成员，确认内容真的互换了；
+- [ ] 字符数组成员在交换后内容完整（含 <code>\0</code>）——用测试验证，不要想当然；
+- [ ] <code>-Wall -Wextra</code> 零警告；关键行注释；push Gitee。</p>
+<hr />
+<h2 id="ha36ff899">15. 验收清单（全部打勾才进入阶段七）</h2>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能默写结构体定义的完整语法（含结尾分号）与三种初始化。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能一句话讲清：为什么数组不能整体赋值、结构体可以（值语义 vs 地址退化）。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能讲清结构体传函数的两条路：传值（复印整个，浪费且改不动原件）与传指针（8 字节地址，const 保护），并默写 <code>-&gt;</code> 与 <code>(*p).</code> 的等价。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能解释 <code>sizeof</code> 结构体为什么可能大于成员之和（对齐），并坚持「用 sizeof 问编译器」。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能用 enum 重写一个魔法数字菜单（练习 7），并说清 enum 比 #define 强在哪。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 能预测 union 写字节序实验的输出（练习 6），预测错了能讲清错在哪。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 练习 1~6 完成（挑战 7 强烈推荐），练习 3 纸上作业必做且上机验证过。</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <strong>任务四、任务六独立完成并通过 14.1/14.2 自查清单，push Gitee</strong>（里程碑 M6）。</li>
+</ul>
+<hr />
+<h2 id="h6b3aadb2">16. 本阶段复盘与下一阶段衔接</h2>
+<p><strong>复盘三问：</strong>
+1. 「结构体是值语义」这一条，同时解释了整体赋值合法、传函数整个复印、传指针才能改原件三件事——你能把这个逻辑链完整复述一遍吗？
+2. <code>-&gt;</code> 只是 <code>(*p).</code> 的语法糖。语法糖的意义是什么？（提示：想想 <code>*p.x</code> 的优先级陷阱，以及「少写括号少犯错」。）
+3. union 实验里你亲眼看到了小端的字节顺序。如果换一台「大端」机器，同一行代码输出会变成什么样？</p>
+<p><strong>衔接预告（阶段七：类型与位运算）</strong>：本阶段埋下了三颗种子——<code>sizeof</code> 与对齐（§7）、union 看到的字节顺序（§9）、enum 背后「整数」的本质（§8）。阶段七把它们全部挖出来：char/short/int/long 各占几字节、有无符号怎么解读同一段位、整型提升与截断的规则、以及 <code>&amp; | ^ &lt;&lt; &gt;&gt;</code> 位运算——那是任务七（8/16/32 位数组与类型转换）的正面战场，也是将来 51 单片机 <code>P1 = 0xFE</code> 的语法本体。任务四、任务六的自查清单全绿了吗？绿了，就回复「继续」进阶段七。</p>
+<footer class="doc">
+  由 Markdown 教程自动转换生成 · 配套 .c 代码在 code\ 与 exercises\ 目录<br>
+  <a href="./index.html">返回教程目录</a>
+</footer>
+</div>
+<button id="totop" type="button" aria-label="回到顶部" title="回到顶部">↑</button>
+<script>
+(function () {
+  var nav = document.getElementById('docnav');
+  var cur = nav && nav.querySelector('a.cur');
+  if (cur && nav.scrollWidth > nav.clientWidth) {
+    nav.scrollLeft = cur.offsetLeft - nav.clientWidth / 2 + cur.offsetWidth / 2;
+  }
+  var btn = document.getElementById('totop');
+  if (!btn) return;
+  var onScroll = function () {
+    btn.classList.toggle('show', window.scrollY > 480);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  btn.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+(function () {
+  var boxes = document.querySelectorAll('.scroll-hint');
+  Array.prototype.forEach.call(boxes, function (box) {
+    var sc = box.firstElementChild;
+    if (!sc) return;
+    function upd() {
+      var more = sc.scrollWidth - sc.clientWidth > 4;
+      box.classList.toggle('has-more', more);
+      box.classList.toggle('at-end', more && sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 4);
+    }
+    upd();
+    sc.addEventListener('scroll', upd, { passive: true });
+    window.addEventListener('resize', upd);
+  });
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+﻿== 1. 未登录 ==
+   GET / -> 200 7164 字节 | 含登录表单: true | 含 Turnstile: true
+   GET 练习页 -> 200 7164 字节 | 被拦: true
+== 2. 登录 ==
+   POST /api/login -> 200 | {"ok":true}
+   Set-Cookie: study_session=1792977715225.339c7a56526115d92e798761d43cea46…
+== 3. 登录后访问 ==
+   /
+      200 15365B 仍被拦=false title="C 语言学习站 · 教程目录"
+      h1="C 语言学习站" kicker=""
+   /index.html
+      200 15365B 仍被拦=false title="C 语言学习站 · 教程目录"
+      h1="C 语言学习站" kicker=""
+   /02_阶段一_环境搭建与调试.html
+      200 51802B 仍被拦=false title="02 阶段一：环境搭建与调试（工欲善其事）"
+      h1="02 阶段一：环境搭建与调试（工欲善其事）" kicker="C 语言学习计划 · AI 生成教程"
+   /exercises/阶段三/练习_题目.html
+      200 29904B 仍被拦=false title="阶段三 练习题（函数）"
+      h1="阶段三 练习题（函数）" kicker="C 语言学习计划 · 练习题目 · 阶段三"
+   /exercises/阶段三/答案_参考_文字题.html
+      200 28212B 仍被拦=false title="阶段三 参考答案（练习 3 · 纸上作业）"
+      h1="阶段三 参考答案（练习 3 · 纸上作业）" kicker="C 语言学习计划 · 参考答案 · 阶段三"
+   /exercises/51实战二/练习_题目.html
+      200 33110B 仍被拦=false title="51 实战二 练习题（定时器、串口、I2C/EEPROM）"
+      h1="51 实战二 练习题（定时器、串口、I2C/EEPROM）" kicker="C 语言学习计划 · 练习题目 · 51实战二"
+   /exercises/阶段一/答案_参考.html
+      200 29291B 仍被拦=false title="阶段一 参考答案（练习 1~4 文字部分）"
+      h1="阶段一 参考答案（练习 1~4 文字部分）" kicker="C 语言学习计划 · 参考答案 · 阶段一"
+== 4. 伪造会话 ==
+   访问练习页 -> 200 | 被拦（回到登录页）: true
+== 5. 登出 ==
+   POST /api/logout -> 200 | 清除 cookie: true
+   旧 cookie 再访问 -> 200 | 已失效被拦: true
+   无 cookie 访问 -> 200 | 被拦: true
+
