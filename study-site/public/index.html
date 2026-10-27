@@ -88,7 +88,7 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 8px 14px;
-    margin: 0 0 22px;
+    margin: 0 0 14px;
     padding: 12px 15px;
     border: 1px solid var(--line);
     border-radius: 13px;
@@ -116,6 +116,77 @@
   .dot.done { background: var(--ok); }
   .dot.doing { background: var(--doing); }
   .dot.todo { background: #4a5468; }
+
+  /* ── 你的当前位置 ─────────────────────────────────────── */
+  .pos {
+    margin: 0 0 22px;
+    padding: 16px 17px;
+    border-radius: var(--radius);
+    border: 1px solid rgba(255,157,79,.28);
+    background:
+      linear-gradient(180deg, rgba(255,157,79,.075), rgba(255,157,79,.02));
+  }
+  .pos-h {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 650;
+    color: #ffd0a1;
+    letter-spacing: .01em;
+  }
+  .pos-h b { color: #fff; }
+  .pos-p {
+    margin: 10px 0 0;
+    font-size: 12.5px;
+    line-height: 1.8;
+    color: #b9c2d4;
+  }
+  .pos-p b { color: #e9edf5; font-weight: 650; }
+  .pos-p code, .pos-next code {
+    font-family: "JetBrains Mono", Consolas, monospace;
+    font-size: 11.5px;
+    color: #cbd4e8;
+    background: rgba(255,255,255,.06);
+    padding: 1px 5px;
+    border-radius: 5px;
+    word-break: break-all;
+  }
+  .pos-next {
+    display: grid;
+    gap: 7px;
+    margin-top: 13px;
+    padding-top: 13px;
+    border-top: 1px dashed rgba(255,255,255,.13);
+  }
+  .pos-next-h {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    color: #8d99b0;
+  }
+  a.pos-item {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #cfd9ee;
+    background: rgba(255,255,255,.045);
+    border: 1px solid rgba(255,255,255,.09);
+    font-size: 12.5px;
+    font-weight: 600;
+    transition: background .18s, border-color .18s, color .18s, transform .14s;
+  }
+  a.pos-item span {
+    font-weight: 500;
+    font-size: 11.5px;
+    color: #8b96ac;
+  }
+  a.pos-item:active { transform: scale(.99); }
 
   /* ── 分区标题 ─────────────────────────────────────────── */
   .section {
@@ -168,6 +239,11 @@
     transition: background .2s, border-color .2s, transform .16s, box-shadow .2s;
   }
   a.card:active { transform: scale(.988); }
+  a.card.is-done { border-color: rgba(79,211,154,.22); }
+  a.card.is-doing {
+    border-color: rgba(255,157,79,.34);
+    background: linear-gradient(180deg, rgba(255,157,79,.06), rgba(255,255,255,.042));
+  }
 
   .no {
     flex: none;
@@ -183,6 +259,8 @@
     box-shadow: 0 6px 18px rgba(109,141,255,.28);
     letter-spacing: .02em;
   }
+  .is-done .no { background: linear-gradient(135deg, #37b98a, #58d6a5); box-shadow: 0 6px 18px rgba(79,211,154,.24); }
+  .is-doing .no { background: linear-gradient(135deg, #f0954e, #ffb066); box-shadow: 0 6px 18px rgba(255,157,79,.28); }
 
   .meta { min-width: 0; flex: 1 1 auto; }
   .meta h2 {
@@ -253,6 +331,8 @@
     color: #b9c6ff;
     box-shadow: none;
   }
+  .ex-card.is-done .no { background: rgba(79,211,154,.14); border-color: rgba(79,211,154,.3); color: #7fe6ba; }
+  .ex-card.is-doing .no { background: rgba(255,157,79,.15); border-color: rgba(255,157,79,.34); color: #ffc48a; }
   .ex-card .meta h2 { font-size: 14.5px; }
   .ex-card .meta p { font-size: 12px; }
   .ex-links {
@@ -323,6 +403,11 @@
       box-shadow: 0 10px 30px rgba(0,0,0,.28);
     }
     a.card:hover .arrow { color: var(--accent); transform: translateX(3px); }
+    a.pos-item:hover {
+      background: rgba(255,157,79,.12);
+      border-color: rgba(255,157,79,.38);
+      color: #fff;
+    }
     .ex-card:hover { background: var(--card-hover); border-color: rgba(120,150,255,.3); }
     .ex-links a:hover {
       background: rgba(120,150,255,.18);
@@ -366,6 +451,9 @@
     .ex-links { margin-left: 0; width: 100%; }
     .ex-links a { flex: 1 1 auto; justify-content: center; padding: 8px 12px; min-height: 40px; }
     .progress { font-size: 11.5px; padding: 11px 13px; }
+    .pos { padding: 14px 14px; }
+    .pos-p { font-size: 12px; line-height: 1.75; }
+    a.pos-item { font-size: 12px; padding: 9px 11px; }
   }
 
   @media (max-width: 380px) {
@@ -390,62 +478,85 @@
 
   <div class="progress">
     <span class="k"><b>学习进度</b></span>
-    <span class="bar"><i style="width:20%"></i></span>
+    <span class="bar"><i style="width:13%"></i></span>
     <span class="k"><b>2 / 15</b> 篇教程</span>
-    <span class="k"><span class="dot done"></span><b>2</b> 篇已学</span>
+    <span class="k"><span class="dot done"></span><b>2</b> 篇已通关</span>
     <span class="k"><span class="dot doing"></span><b>1</b> 篇在学</span>
     <span class="k"><span class="dot todo"></span><b>12</b> 篇未学</span>
+  </div>
+
+  <div class="pos">
+    <div class="pos-h"><span class="dot doing"></span>你的当前位置 · <b>阶段三 · 函数</b><span class="tag doing"><i></i>在学</span></div>
+    <p class="pos-p">
+      按 <code>D:\Programing\C</code> 的 57 个 .c 文件时间线：<b>10-01 ~ 10-02</b> 变量与计算 →
+      <b>10-02 ~ 10-17</b> 条件分支 → <b>10-14 ~ 10-22</b> 循环（23 个练习）→
+      <b>10-25 ~ 10-26</b> 函数与递归。最后三笔修改是
+      <code>8_函数_10.c</code>（10-26 18:36）、<code>8_函数_11_递归_1.c</code>（22:21）、
+      <code>8_函数_11_递归_3.c</code>（23:20，斐波那契）。
+    </p>
+    <p class="pos-p">
+      另外 <b>10-26 21:42</b> 写了 <code>扫雷.c</code>（163 行）：6 个函数原型、全局变量、
+      <code>char board[ROWS][COLS]</code> 二维数组、<code>srand(time(NULL))</code> 随机布雷。
+      也就是说，你已经提前用到阶段四第 5 节的内容了。
+    </p>
+    <div class="pos-next">
+      <span class="pos-next-h">下一步建议（按顺序读）</span>
+      <a class="pos-item" href="./04_阶段三_函数.html#hcc3c7ff1">阶段三 §4 传值调用 · 复印件定理<span>全阶段最重要的一节，扫雷传二维数组时天天用</span></a>
+      <a class="pos-item" href="./04_阶段三_函数.html#h823f8830">阶段三 §9 递归初见<span>你刚写到递归 3，回头核对基准情形</span></a>
+      <a class="pos-item" href="./05_阶段四_数组与字符串.html#h418dc4dd">阶段四 §5 二维数组<span>扫雷的 board 为什么必须是二维</span></a>
+      <a class="pos-item" href="./05_阶段四_数组与字符串.html#h972129ed">阶段四 §6 字符数组与 '\0'<span>二维 char 数组的内存真相，接着补一维基础</span></a>
+    </div>
   </div>
 
   <div class="section"><span class="tick"></span>路线与分析<span class="cnt">先看这两篇</span></div>
   <div class="grid">
     <a class="card" href="./00_任务与进度分析.html">
       <div class="no">00</div>
-      <div class="meta"><h2>任务与进度分析<span class="tag todo"><i></i>未学</span></h2><p>实验室任务拆解 → 知识点映射 → 当前进度定位</p></div>
+      <div class="meta"><h2>任务与进度分析<span class="tag"><i></i>未学</span></h2><p>实验室任务拆解 → 知识点映射 → 当前进度定位</p></div>
       <div class="arrow">&#8594;</div>
     </a>
     <a class="card" href="./01_学习路线总览.html">
       <div class="no">01</div>
-      <div class="meta"><h2>学习路线总览<span class="tag todo"><i></i>未学</span></h2><p>三周期路线图、周节奏与 M1~M11 里程碑</p></div>
+      <div class="meta"><h2>学习路线总览<span class="tag"><i></i>未学</span></h2><p>三周期路线图、周节奏与 M1~M11 里程碑</p></div>
       <div class="arrow">&#8594;</div>
     </a>
   </div>
 
   <div class="section"><span class="tick"></span>第一周期 · C 语言主线<span class="cnt">阶段一 ~ 七</span></div>
   <div class="grid">
-    <a class="card" href="./02_阶段一_环境搭建与调试.html">
-      <div class="no">A</div>
-      <div class="meta"><h2>阶段一 · 环境搭建与调试<span class="tag done"><i></i>已学</span></h2><p>MinGW / VS Code / 编译四步流水线 / 断点调试</p></div>
+    <a class="card is-done" href="./02_阶段一_环境搭建与调试.html">
+      <div class="no">02</div>
+      <div class="meta"><h2>阶段一 · 环境搭建与调试<span class="tag done"><i></i>已通关</span></h2><p>MinGW / VS Code / 编译四步流水线 / 断点调试</p></div>
       <div class="arrow">&#8594;</div>
     </a>
-    <a class="card" href="./03_阶段二_基础语法与控制流.html">
-      <div class="no">B</div>
-      <div class="meta"><h2>阶段二 · 基础语法与控制流<span class="tag done"><i></i>已学</span></h2><p>变量 / 输入输出 / 分支与循环 / 排雷三颗</p></div>
+    <a class="card is-done" href="./03_阶段二_基础语法与控制流.html">
+      <div class="no">03</div>
+      <div class="meta"><h2>阶段二 · 基础语法与控制流<span class="tag done"><i></i>已通关</span></h2><p>变量 / 输入输出 / 分支与循环 / 排雷三颗 · 记录里 23 个循环练习</p></div>
       <div class="arrow">&#8594;</div>
     </a>
-    <a class="card" href="./04_阶段三_函数.html">
-      <div class="no">C</div>
-      <div class="meta"><h2>阶段三 · 函数<span class="tag doing"><i></i>在学</span></h2><p>传值调用 / 原型与定义 / 数组作参数</p></div>
+    <a class="card is-doing" href="./04_阶段三_函数.html">
+      <div class="no">04</div>
+      <div class="meta"><h2>阶段三 · 函数<span class="tag doing"><i></i>在学</span></h2><p>传值调用 / 原型与定义 / 数组作参数 · 已写到递归，扫雷.c 是毕业作品</p></div>
       <div class="arrow">&#8594;</div>
     </a>
     <a class="card" href="./05_阶段四_数组与字符串.html">
-      <div class="no">D</div>
-      <div class="meta"><h2>阶段四 · 数组与字符串<span class="tag todo"><i></i>未学</span></h2><p>数组算法 / '\0' 约定 / 手写字符串库</p></div>
+      <div class="no">05</div>
+      <div class="meta"><h2>阶段四 · 数组与字符串<span class="tag"><i></i>未学</span></h2><p>数组算法 / '\0' 约定 / 手写字符串库 · 你的扫雷已经用到二维数组</p></div>
       <div class="arrow">&#8594;</div>
     </a>
     <a class="card" href="./06_阶段五_指针.html">
-      <div class="no">E</div>
-      <div class="meta"><h2>阶段五 · 指针<span class="tag todo"><i></i>未学</span></h2><p>取地址与解引用 / 指针与数组 / 野指针防范</p></div>
+      <div class="no">06</div>
+      <div class="meta"><h2>阶段五 · 指针<span class="tag"><i></i>未学</span></h2><p>取地址与解引用 / 指针与数组 / 野指针防范</p></div>
       <div class="arrow">&#8594;</div>
     </a>
     <a class="card" href="./07_阶段六_结构体联合与枚举.html">
-      <div class="no">F</div>
-      <div class="meta"><h2>阶段六 · 结构体、联合与枚举<span class="tag todo"><i></i>未学</span></h2><p>复合数据组织 / 内存对齐 / 状态枚举</p></div>
+      <div class="no">07</div>
+      <div class="meta"><h2>阶段六 · 结构体、联合与枚举<span class="tag"><i></i>未学</span></h2><p>复合数据组织 / 内存对齐 / 状态枚举</p></div>
       <div class="arrow">&#8594;</div>
     </a>
     <a class="card" href="./08_阶段七_类型深入与位运算.html">
-      <div class="no">G</div>
-      <div class="meta"><h2>阶段七 · 类型深入与位运算<span class="tag todo"><i></i>未学</span></h2><p>stdint 定宽类型 / 位运算 / 大小端</p></div>
+      <div class="no">08</div>
+      <div class="meta"><h2>阶段七 · 类型深入与位运算<span class="tag"><i></i>未学</span></h2><p>stdint 定宽类型 / 位运算 / 大小端</p></div>
       <div class="arrow">&#8594;</div>
     </a>
   </div>
@@ -453,18 +564,18 @@
   <div class="section"><span class="tick"></span>第二周期 · 考核冲刺与基础补全<span class="cnt">阶段八 ~ 十</span></div>
   <div class="grid">
     <a class="card" href="./09_阶段八_多文件工程与考核冲刺.html">
-      <div class="no">H</div>
-      <div class="meta"><h2>阶段八 · 多文件工程与考核冲刺<span class="tag todo"><i></i>未学</span></h2><p>声明与定义 / 头文件守卫 / extern 与 static / Makefile</p></div>
+      <div class="no">09</div>
+      <div class="meta"><h2>阶段八 · 多文件工程与考核冲刺<span class="tag"><i></i>未学</span></h2><p>声明与定义 / 头文件守卫 / extern 与 static / Makefile</p></div>
       <div class="arrow">&#8594;</div>
     </a>
     <a class="card" href="./10_阶段九_动态内存与文件IO.html">
-      <div class="no">I</div>
-      <div class="meta"><h2>阶段九 · 动态内存与文件 IO<span class="tag todo"><i></i>未学</span></h2><p>malloc/free 配对纪律 / realloc / 记录持久化</p></div>
+      <div class="no">10</div>
+      <div class="meta"><h2>阶段九 · 动态内存与文件 IO<span class="tag"><i></i>未学</span></h2><p>malloc/free 配对纪律 / realloc / 记录持久化</p></div>
       <div class="arrow">&#8594;</div>
     </a>
     <a class="card" href="./11_阶段十_51单片机C语言预备.html">
-      <div class="no">J</div>
-      <div class="meta"><h2>阶段十 · 51 单片机 C 语言预备<span class="tag todo"><i></i>未学</span></h2><p>SFR 与 sbit / volatile / 位运算点灯 / 段码查表</p></div>
+      <div class="no">11</div>
+      <div class="meta"><h2>阶段十 · 51 单片机 C 语言预备<span class="tag"><i></i>未学</span></h2><p>SFR 与 sbit / volatile / 位运算点灯 / 段码查表</p></div>
       <div class="arrow">&#8594;</div>
     </a>
   </div>
@@ -472,42 +583,43 @@
   <div class="section"><span class="tick"></span>第三周期 · 51 单片机实战<span class="cnt">任务 2 ~ A</span></div>
   <div class="grid">
     <a class="card" href="./12_51实战一_数码管与按键.html">
-      <div class="no">K</div>
-      <div class="meta"><h2>实战一 · 数码管与按键<span class="tag todo"><i></i>未学</span></h2><p>动态扫描 / 消隐防重影 / 按键消抖 / 矩阵键盘 / 蜂鸣器</p></div>
+      <div class="no">12</div>
+      <div class="meta"><h2>实战一 · 数码管与按键<span class="tag"><i></i>未学</span></h2><p>动态扫描 / 消隐防重影 / 按键消抖 / 矩阵键盘 / 蜂鸣器</p></div>
       <div class="arrow">&#8594;</div>
     </a>
     <a class="card" href="./13_51实战二_定时器串口与I2C.html">
-      <div class="no">L</div>
-      <div class="meta"><h2>实战二 · 定时器、串口与 I2C<span class="tag todo"><i></i>未学</span></h2><p>TH0/TL0 初值 / 中断纪律 / UART 命令解析 / EEPROM</p></div>
+      <div class="no">13</div>
+      <div class="meta"><h2>实战二 · 定时器、串口与 I2C<span class="tag"><i></i>未学</span></h2><p>TH0/TL0 初值 / 中断纪律 / UART 命令解析 / EEPROM</p></div>
       <div class="arrow">&#8594;</div>
     </a>
     <a class="card" href="./14_51实战三_时钟液晶AD与综合项目.html">
-      <div class="no">M</div>
-      <div class="meta"><h2>实战三 · 时钟、液晶、AD 与综合项目<span class="tag todo"><i></i>未学</span></h2><p>DS1302 / LCD1602 / AD 换算 / DS18B20 / 多文件架构</p></div>
+      <div class="no">14</div>
+      <div class="meta"><h2>实战三 · 时钟、液晶、AD 与综合项目<span class="tag"><i></i>未学</span></h2><p>DS1302 / LCD1602 / AD 换算 / DS18B20 / 多文件架构</p></div>
       <div class="arrow">&#8594;</div>
     </a>
   </div>
 
   <div class="section"><span class="tick"></span>配套练习<span class="cnt">题目 / 文字答案 / 代码答案</span></div>
   <div class="grid">
-    <a class="ex-card" href="./exercises/阶段一/练习_题目.html">
+    <a class="ex-card is-done" href="./exercises/阶段一/练习_题目.html">
       <div class="no">一</div>
-      <div class="meta"><h2>阶段一 练习<span class="tag done"><i></i>已学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="meta"><h2>阶段一 练习<span class="tag done"><i></i>已通关</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
       <div class="ex-links">
       <a href="./exercises/阶段一/练习_题目.html">题目</a>
       <a class="ans" href="./exercises/阶段一/答案_参考.html">文字答案</a>
       <a class="code" href="./exercises/阶段一/代码答案.html">代码</a>
       </div>
     </a>
-    <a class="ex-card" href="./exercises/阶段二/练习_题目.html">
+    <a class="ex-card is-done" href="./exercises/阶段二/练习_题目.html">
       <div class="no">二</div>
-      <div class="meta"><h2>阶段二 练习<span class="tag done"><i></i>已学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="meta"><h2>阶段二 练习<span class="tag done"><i></i>已通关</span></h2><p>6 题：排雷 1 + 基础 2 + 提高 2 + 挑战 1（菜单雏形）</p></div>
       <div class="ex-links">
       <a href="./exercises/阶段二/练习_题目.html">题目</a>
+      <a class="ans" href="./exercises/阶段二/答案_参考_文字题.html">文字答案</a>
       <a class="code" href="./exercises/阶段二/代码答案.html">代码</a>
       </div>
     </a>
-    <a class="ex-card" href="./exercises/阶段三/练习_题目.html">
+    <a class="ex-card is-doing" href="./exercises/阶段三/练习_题目.html">
       <div class="no">三</div>
       <div class="meta"><h2>阶段三 练习<span class="tag doing"><i></i>在学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
       <div class="ex-links">
@@ -518,7 +630,7 @@
     </a>
     <a class="ex-card" href="./exercises/阶段四/练习_题目.html">
       <div class="no">四</div>
-      <div class="meta"><h2>阶段四 练习<span class="tag todo"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="meta"><h2>阶段四 练习<span class="tag"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
       <div class="ex-links">
       <a href="./exercises/阶段四/练习_题目.html">题目</a>
       <a class="ans" href="./exercises/阶段四/答案_参考_文字题.html">文字答案</a>
@@ -527,7 +639,7 @@
     </a>
     <a class="ex-card" href="./exercises/阶段五/练习_题目.html">
       <div class="no">五</div>
-      <div class="meta"><h2>阶段五 练习<span class="tag todo"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="meta"><h2>阶段五 练习<span class="tag"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
       <div class="ex-links">
       <a href="./exercises/阶段五/练习_题目.html">题目</a>
       <a class="ans" href="./exercises/阶段五/答案_参考_文字题.html">文字答案</a>
@@ -536,7 +648,7 @@
     </a>
     <a class="ex-card" href="./exercises/阶段六/练习_题目.html">
       <div class="no">六</div>
-      <div class="meta"><h2>阶段六 练习<span class="tag todo"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="meta"><h2>阶段六 练习<span class="tag"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
       <div class="ex-links">
       <a href="./exercises/阶段六/练习_题目.html">题目</a>
       <a class="ans" href="./exercises/阶段六/答案_参考_文字题.html">文字答案</a>
@@ -545,7 +657,7 @@
     </a>
     <a class="ex-card" href="./exercises/阶段七/练习_题目.html">
       <div class="no">七</div>
-      <div class="meta"><h2>阶段七 练习<span class="tag todo"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="meta"><h2>阶段七 练习<span class="tag"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
       <div class="ex-links">
       <a href="./exercises/阶段七/练习_题目.html">题目</a>
       <a class="ans" href="./exercises/阶段七/答案_参考_文字题.html">文字答案</a>
@@ -554,7 +666,7 @@
     </a>
     <a class="ex-card" href="./exercises/阶段八/练习_题目.html">
       <div class="no">八</div>
-      <div class="meta"><h2>阶段八 练习<span class="tag todo"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="meta"><h2>阶段八 练习<span class="tag"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
       <div class="ex-links">
       <a href="./exercises/阶段八/练习_题目.html">题目</a>
       <a class="ans" href="./exercises/阶段八/答案_参考_文字题.html">文字答案</a>
@@ -563,7 +675,7 @@
     </a>
     <a class="ex-card" href="./exercises/阶段九/练习_题目.html">
       <div class="no">九</div>
-      <div class="meta"><h2>阶段九 练习<span class="tag todo"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="meta"><h2>阶段九 练习<span class="tag"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
       <div class="ex-links">
       <a href="./exercises/阶段九/练习_题目.html">题目</a>
       <a class="ans" href="./exercises/阶段九/答案_参考_文字题.html">文字答案</a>
@@ -572,7 +684,7 @@
     </a>
     <a class="ex-card" href="./exercises/阶段十/练习_题目.html">
       <div class="no">十</div>
-      <div class="meta"><h2>阶段十 练习<span class="tag todo"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="meta"><h2>阶段十 练习<span class="tag"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
       <div class="ex-links">
       <a href="./exercises/阶段十/练习_题目.html">题目</a>
       <a class="ans" href="./exercises/阶段十/答案_参考_文字题.html">文字答案</a>
@@ -581,7 +693,7 @@
     </a>
     <a class="ex-card" href="./exercises/51实战一/练习_题目.html">
       <div class="no">A</div>
-      <div class="meta"><h2>51实战一 练习<span class="tag todo"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="meta"><h2>51实战一 练习<span class="tag"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
       <div class="ex-links">
       <a href="./exercises/51实战一/练习_题目.html">题目</a>
       <a class="ans" href="./exercises/51实战一/答案_参考_文字题.html">文字答案</a>
@@ -590,7 +702,7 @@
     </a>
     <a class="ex-card" href="./exercises/51实战二/练习_题目.html">
       <div class="no">B</div>
-      <div class="meta"><h2>51实战二 练习<span class="tag todo"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="meta"><h2>51实战二 练习<span class="tag"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
       <div class="ex-links">
       <a href="./exercises/51实战二/练习_题目.html">题目</a>
       <a class="ans" href="./exercises/51实战二/答案_参考_文字题.html">文字答案</a>
@@ -599,7 +711,7 @@
     </a>
     <a class="ex-card" href="./exercises/51实战三/练习_题目.html">
       <div class="no">C</div>
-      <div class="meta"><h2>51实战三 练习<span class="tag todo"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
+      <div class="meta"><h2>51实战三 练习<span class="tag"><i></i>未学</span></h2><p>7 题：基础 2 + 提高 4 + 纸上作业 1</p></div>
       <div class="ex-links">
       <a href="./exercises/51实战三/练习_题目.html">题目</a>
       <a class="ans" href="./exercises/51实战三/答案_参考_文字题.html">文字答案</a>
@@ -611,7 +723,8 @@
   <div class="note">
     覆盖实验室 C 语言任务一~七、入队考核，以及 51 单片机任务 1~A 的全部知识面。<br>
     每个阶段提供 <b>题目</b>、<b>文字答案</b>（思路解析）与 <b>代码答案</b>（可直接编译运行的 .c 源码）三类页面；练习 3 一律为纸上作业，所以代码答案页通常含 6 个文件而非 7 个。<br>
-    全部示例通过 <code>gcc -Wall -Wextra -std=c99</code> 零警告编译，并实跑核对过预期输出。
+    全部示例通过 <code>gcc -Wall -Wextra -std=c99</code> 零警告编译，并实跑核对过预期输出。<br>
+    进度标记依据 <code>D:\Programing\C</code> 里的实际练习文件（57 个 .c，最后修改 10-26 23:20）判定，不是估算。
   </div>
 </div>
 

@@ -328,8 +328,8 @@ function loginPage(siteKey, message) {
 </head>
 <body>
 <div class="card">
-  <h1>C 语言学习站</h1>
-  <div class="sub">UPRE 实验室 · 内部教程 · 需登录访问</div>
+  <h1>学习站</h1>
+  <div class="sub">内部教程 · 需登录访问</div>
   <form id="f" novalidate>
     <label for="u">用户名</label>
     <input id="u" name="user" type="text" autocomplete="username"
