@@ -15,6 +15,5 @@ slug: no_love
 <img src="https://img.lonelybing.top/file/post/1790738380951.jpg" width="400" />
 <span style="color:green">原来是被绿了</span>，
 **1000天没打过10天的小男友，真是搞笑啊。**
-*白让我抑郁了两个星期，*
 
 
