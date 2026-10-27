@@ -40,7 +40,7 @@ study-site/
 | Turnstile Secret | 已写入 Worker Secret `TURNSTILE_SECRET_KEY` |
 | 其它 Secrets | `STUDY_USER` / `STUDY_PASS` / `STUDY_SESSION_SECRET` |
 | 登录凭据 | 用户名 `bingshanak`（密码见密码管理器，本文不写明文） |
-| 最近一次部署 | Version ID `d2b0c701-a30d-4f61-bcc6-035ecf67959a`，含登出黑名单修复 + 25 个练习/答案页 + 13 个代码答案页 |
+| 最近一次部署 | Version ID `4f0bf726-fe75-4da9-b186-174a16459659`（2026-10-27），含按真实学习进度重做的首页 + 新增「阶段二 文字答案」页；共 69 个资源文件 |
 
 > 机密备份（**明文，注意保管**）：`C:\Users\lonel\.study-site-secrets.json`
 
