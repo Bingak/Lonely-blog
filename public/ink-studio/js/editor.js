@@ -308,6 +308,11 @@ window.InkEditor = (function () {
       { k: "h", label: "高度", value: "400" },
     ], v => {
       if (!v.src) return;
+      // 直链媒体一律走原生播放器：iframe 承载 mp4 会丢边框外壳、出现上下黑边
+      if (/\.(mp4|webm|mov|ogv|m4v)(?:[?#]|$)/i.test(v.src)) {
+        const html = videoEmbed(v.src, v.w || "100%", v.h || "468");
+        if (html) { insertBlock("\n" + html + "\n"); return; }
+      }
       insertBlock(`\n<iframe width="${v.w}" height="${v.h}" src="${v.src}" frameborder="0" allowfullscreen></iframe>\n`);
     });
   }

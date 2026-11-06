@@ -419,10 +419,13 @@ html:not([data-wallpaper-mode="none"]) body.wallpaper-transparent .dynamic-year-
 	margin-block: 0.5rem;
 }
 
-.dynamic-content video {
+/* 视频与内嵌播放器共用同一外框；加 .custom-md 提权，避免被 markdown-extend.styl 的
+   .custom-md iframe（同权重后加载）覆盖掉圆角与外边距 */
+.dynamic-content.custom-md video,
+.dynamic-content.custom-md iframe {
 	box-sizing: border-box;
 	display: block;
-	max-width: min(100%, 640px);
+	max-width: 100%;
 	margin-block: 1rem;
 	border: 2px solid transparent;
 	border-radius: 1rem;
@@ -438,6 +441,20 @@ html:not([data-wallpaper-mode="none"]) body.wallpaper-transparent .dynamic-year-
 		0 0 0 1px rgb(255 255 255 / 10%),
 		0 14px 34px -18px rgb(0 0 0 / 72%);
 	overflow: hidden;
+}
+
+.dynamic-content.custom-md video {
+	max-width: min(100%, 640px);
+}
+
+/* 兜底：直链媒体被 iframe 承载时，去掉固定 height 带来的上下黑边 */
+.dynamic-content.custom-md iframe[src*=".mp4"],
+.dynamic-content.custom-md iframe[src*=".webm"],
+.dynamic-content.custom-md iframe[src*=".mov"] {
+	width: 100%;
+	height: auto;
+	max-width: min(100%, 640px);
+	aspect-ratio: 16 / 9;
 }
 
 .dynamic-content ul,
