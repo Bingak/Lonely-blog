@@ -511,6 +511,7 @@ export const ko: Translation = {
 	[Key.calendarDecember]: "12월",
 	[Key.calendar]: "사이트 캘린더",
 	[Key.calendarHeatmapWeek]: "{month}의 {week}주차, 게시글 {count}개",
+	[Key.calendarHeatmapActivity]: "{range}: 게시글 {posts}개, 동적 {dyn}개",
 	[Key.advertisement]: "광고",
 
 	[Key.shareArticle]: "공유",

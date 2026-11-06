@@ -5,6 +5,7 @@ import { siteConfig } from "@/config/siteConfig";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import type { WidgetComponentConfig } from "@/types/config";
+import { activityRangeStyle } from "@/utils/activity-utils";
 import { url } from "@/utils/url-utils";
 
 interface Props {
@@ -48,13 +49,16 @@ const weekDays = [
 // 年份文本
 const yearText = i18n(I18nKey.year);
 
-// 热力图周数文本模板
-const heatmapWeekTemplate = i18n(I18nKey.calendarHeatmapWeek);
+// 热力图提示文案模板：{range}：{posts}篇文章，{dyn}条动态
+const heatmapActivityTemplate = i18n(I18nKey.calendarHeatmapActivity);
+// 日格标签的写法随语言切换（中文「10月1日」，其余 MM/DD），与导航栏热力图同源
+const rangeStyle = activityRangeStyle(siteConfig.lang || "en");
 
 // 获取当前语言
 const currentLang = siteConfig.lang || "en";
 
 const calendarDataUrl = url("/api/allPostMeta.json");
+const dynamicDataUrl = url("/api/dynamicMeta.json");
 const postUrlPrefix = url("/posts/");
 ---
 
@@ -121,7 +125,7 @@ const postUrlPrefix = url("/posts/");
   </div>
 </WidgetLayout>
 
-<script is:inline data-swup-ignore-script define:vars={{ monthNames, weekDays, yearText, currentLang, calendarDataUrl, postUrlPrefix, heatmapWeekTemplate }}>
+<script is:inline data-swup-ignore-script define:vars={{ monthNames, weekDays, yearText, currentLang, calendarDataUrl, dynamicDataUrl, postUrlPrefix, heatmapActivityTemplate, rangeStyle }}>
   // State variables
   let displayYear = new Date().getFullYear();
   let displayMonth = new Date().getMonth();
@@ -129,6 +133,65 @@ const postUrlPrefix = url("/posts/");
   let postDateMap = {};
   let allPostsData = [];
   let availableYears = [];
+  let dynamicDateCounts = {}; // 'YYYY-MM-DD' -> 当天动态条数
+
+  function pad2(value) {
+    return String(value).padStart(2, "0");
+  }
+
+  // 本地时区日期键，避免 toISOString 的 UTC 偏移导致跨日
+  function dateKeyOf(date) {
+    return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+  }
+
+  function weekIndexOf(day) {
+    return Math.min(3, Math.floor((day - 1) / 7));
+  }
+
+  // 周标签：沿用日历原本的「10月第2周」口径，只补动态数，不改表述
+  function formatWeekLabel(month, week) {
+    if (currentLang.startsWith('ko')) return `${month + 1}월 ${week + 1}주차`;
+    if (currentLang.startsWith('zh') || currentLang.startsWith('ja') || currentLang.startsWith('ru')) {
+      return `${month + 1}月第${week + 1}周`;
+    }
+    return `Week ${week + 1} of ${month + 1}`;
+  }
+
+  // 单日标签：中文「10月1日」，其他语言 MM/DD，与周区间共用 rangeStyle
+  function formatDayLabel(month, day) {
+    if (rangeStyle.monthSuffix) {
+      return `${month + 1}${rangeStyle.monthSuffix}${day}${rangeStyle.daySuffix}`;
+    }
+    return `${pad2(month + 1)}/${pad2(day)}`;
+  }
+
+  // 统一文案模板，只替换 range / posts / dyn 三个占位符
+  function buildActivityLabel(range, posts, dynamics) {
+    return heatmapActivityTemplate
+      .replace('{range}', range)
+      .replace('{posts}', posts)
+      .replace('{dyn}', dynamics);
+  }
+
+  // 动态元数据（轻量接口，只含 id / published）
+  async function fetchDynamicData() {
+    try {
+      let data = window.__dynamicMetaCache;
+      if (!data) {
+        const response = await fetch(dynamicDataUrl);
+        data = await response.json();
+        window.__dynamicMetaCache = data;
+      }
+      dynamicDateCounts = {};
+      (data || []).forEach(item => {
+        const key = dateKeyOf(new Date(item.published));
+        dynamicDateCounts[key] = (dynamicDateCounts[key] || 0) + 1;
+      });
+    } catch (error) {
+      console.error("Failed to fetch dynamic data", error);
+      dynamicDateCounts = {};
+    }
+  }
 
   async function fetchData() {
     try {
@@ -146,7 +209,7 @@ const postUrlPrefix = url("/posts/");
       const yearsSet = new Set();
       allPostsData.forEach(post => {
         const date = new Date(post.published);
-        const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+        const dateKey = dateKeyOf(date);
         if (!postDateMap[dateKey]) {
           postDateMap[dateKey] = [];
         }
@@ -155,6 +218,8 @@ const postUrlPrefix = url("/posts/");
       });
       
       availableYears = Array.from(yearsSet).sort((a, b) => b - a);
+
+      await fetchDynamicData();
       
       renderCalendar();
     } catch (error) {
@@ -177,15 +242,20 @@ const postUrlPrefix = url("/posts/");
       `<span class="text-[10px] text-neutral-400 dark:text-neutral-500 text-center">${i + 1}</span>`
     ).join('');
 
-    // Build weekly post counts: heatmapData[month][week] = count
-    const heatmapData = Array.from({ length: 12 }, () => [0, 0, 0, 0]);
+    // Build weekly counts: heatmapData[month][week] = { posts, dynamics }
+    const heatmapData = Array.from({ length: 12 }, () =>
+      Array.from({ length: 4 }, () => ({ posts: 0, dynamics: 0 }))
+    );
     allPostsData.forEach(post => {
       const date = new Date(post.published);
       if (date.getFullYear() !== displayYear) return;
-      const month = date.getMonth();
-      const day = date.getDate();
-      const week = Math.min(Math.floor((day - 1) / 7), 3); // 0-3
-      heatmapData[month][week]++;
+      heatmapData[date.getMonth()][weekIndexOf(date.getDate())].posts++;
+    });
+    // 按日期汇总的动态数并入同一「月-周」格子，与文章数口径一致
+    Object.keys(dynamicDateCounts).forEach(key => {
+      const [year, month, day] = key.split("-").map(Number);
+      if (year !== displayYear) return;
+      heatmapData[month - 1][weekIndexOf(day)].dynamics += dynamicDateCounts[key];
     });
 
     // Find max for scaling
@@ -195,16 +265,18 @@ const postUrlPrefix = url("/posts/");
     let cellsHtml = '';
     for (let week = 0; week < 4; week++) {
       for (let month = 0; month < 12; month++) {
-        const count = heatmapData[month][week];
-        const level = Math.min(count, 4);
-        const bgStyle = count === 0
+        const counts = heatmapData[month][week];
+        const total = counts.posts + counts.dynamics;
+        const level = Math.min(total, 4);
+        const bgStyle = total === 0
           ? 'background-color: var(--btn-plain-bg-hover)'
           : `background-color: var(--primary); opacity: ${opacityLevels[level]}`;
-        // Generate tooltip text using i18n template
-        const tooltip = heatmapWeekTemplate
-          .replace('{month}', month + 1)
-          .replace('{week}', week + 1)
-          .replace('{count}', count);
+        // 统一文案：10月第2周：4篇文章，2条动态（数量为 0 时显示 0）
+        const tooltip = buildActivityLabel(
+          formatWeekLabel(month, week),
+          counts.posts,
+          counts.dynamics
+        );
         cellsHtml += `<div class="heatmap-cell rounded-sm" style="${bgStyle}" data-tooltip="${tooltip}" data-month="${month}"></div>`;
       }
     }
@@ -220,7 +292,11 @@ const postUrlPrefix = url("/posts/");
       });
     });
 
-    // 热力图提示框 (fixed 定位，不被父容器裁剪)
+    bindTooltip(gridEl.querySelectorAll('.heatmap-cell[data-tooltip]'));
+  }
+
+  // ── 悬浮提示：fixed 定位不被父容器裁剪，数字等宽避免计数变化时抖动 ──
+  function ensureTooltipEl() {
     let tooltipEl = document.getElementById('heatmap-tooltip');
     if (!tooltipEl) {
       tooltipEl = document.createElement('div');
@@ -234,6 +310,7 @@ const postUrlPrefix = url("/posts/");
         background: 'rgba(0,0,0,0.8)',
         color: '#fff',
         boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+        fontVariantNumeric: 'tabular-nums',
         pointerEvents: 'none',
         opacity: '0',
         transition: 'opacity 0.15s ease',
@@ -242,12 +319,21 @@ const postUrlPrefix = url("/posts/");
       });
       document.body.appendChild(tooltipEl);
     }
-    gridEl.querySelectorAll('.heatmap-cell[data-tooltip]').forEach(cell => {
+    return tooltipEl;
+  }
+
+  function bindTooltip(elements) {
+    const tooltipEl = ensureTooltipEl();
+    elements.forEach(cell => {
       cell.addEventListener('mouseenter', () => {
         tooltipEl.textContent = cell.getAttribute('data-tooltip');
         tooltipEl.style.opacity = '1';
         const rect = cell.getBoundingClientRect();
-        tooltipEl.style.left = rect.left + rect.width / 2 - tooltipEl.offsetWidth / 2 + 'px';
+        // 文案变长后居中定位可能溢出视口，这里左右各留 8px 安全边距
+        const margin = 8;
+        const maxLeft = Math.max(margin, window.innerWidth - tooltipEl.offsetWidth - margin);
+        const centered = rect.left + rect.width / 2 - tooltipEl.offsetWidth / 2;
+        tooltipEl.style.left = Math.min(Math.max(centered, margin), maxLeft) + 'px';
         tooltipEl.style.top = rect.top - tooltipEl.offsetHeight - 6 + 'px';
       });
       cell.addEventListener('mouseleave', () => {
@@ -334,24 +420,25 @@ const postUrlPrefix = url("/posts/");
     
     // 添加空白格子（月初空白）
     for (let i = 0; i < firstDayOfMonth; i++) {
-      calendarDays.push({ day: null, hasPost: false, count: 0, dateKey: "" });
+      calendarDays.push({ day: null, hasPost: false, count: 0, dynCount: 0, dateKey: "" });
     }
     
     // 添加每一天
     for (let day = 1; day <= daysInMonth; day++) {
-      const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const dateKey = dateKeyOf(new Date(currentYear, currentMonth, day));
       const posts = postDateMap[dateKey] || [];
       const count = posts.length;
       calendarDays.push({
         day,
         hasPost: count > 0,
         count,
+        dynCount: dynamicDateCounts[dateKey] || 0,
         dateKey
       });
     }
     
     // 渲染日历格子
-    calendarGrid.innerHTML = calendarDays.map(({day, hasPost, count, dateKey}) => {
+    calendarGrid.innerHTML = calendarDays.map(({day, hasPost, count, dynCount, dateKey}) => {
       const isToday = day === currentDate && isCurrentMonth;
       const classes = [
         "calendar-day aspect-square flex items-center justify-center rounded-sm text-sm relative cursor-pointer"
@@ -368,19 +455,27 @@ const postUrlPrefix = url("/posts/");
       if (isToday) {
         classes.push("ring-2 ring-(--primary)");
       }
+
+      // 有内容的日期悬浮显示「10月1日：3篇文章，2条动态」，无内容则不弹提示
+      const dayTooltip = day && (count + dynCount) > 0
+        ? ` data-tooltip="${buildActivityLabel(formatDayLabel(currentMonth, day), count, dynCount)}"`
+        : '';
       
       return `
         <div
           class="${classes.join(' ')}"
           data-date="${dateKey}"
-          data-has-post="${hasPost}"
+          data-has-post="${hasPost}"${dayTooltip}
         >
           ${day || ''}
           ${hasPost ? '<span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-(--primary)"></span>' : ''}
-          ${hasPost && count > 1 ? `<span class="absolute top-0 right-0 text-[10px] text-(--primary) font-bold">${count}</span>` : ''}
+          ${hasPost && count > 1 ? `<span class="absolute top-0 right-0 text-[10px] text-(--primary) font-bold tabular-nums">${count}</span>` : ''}
         </div>
       `;
     }).join('');
+
+    // 日视图的悬浮提示与热力图共用同一个 fixed 提示框
+    bindTooltip(Array.from(calendarGrid.querySelectorAll('.calendar-day[data-tooltip]')));
     
     // 获取当月所有文章
     const currentMonthPosts = allPostsData.filter(post => {

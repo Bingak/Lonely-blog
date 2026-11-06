@@ -514,6 +514,7 @@ export const en: Translation = {
 	[Key.calendarDecember]: "Dec",
 	[Key.calendar]: "Site Calendar",
 	[Key.calendarHeatmapWeek]: "Week {week} of {month}, {count} posts",
+	[Key.calendarHeatmapActivity]: "{range}: {posts} posts, {dyn} updates",
 	[Key.advertisement]: "Advertisement",
 
 	[Key.shareArticle]: "Share",

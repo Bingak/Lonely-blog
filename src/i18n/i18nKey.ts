@@ -498,6 +498,7 @@ enum I18nKey {
 	calendarDecember = "calendarDecember",
 	calendar = "calendar",
 	calendarHeatmapWeek = "calendarHeatmapWeek",
+	calendarHeatmapActivity = "calendarHeatmapActivity",
 	advertisement = "advertisement",
 
 	shareArticle = "shareArticle",

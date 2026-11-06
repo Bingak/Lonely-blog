@@ -505,6 +505,7 @@ export const zh_TW: Translation = {
 	[Key.calendarDecember]: "12月",
 	[Key.calendar]: "站點日曆",
 	[Key.calendarHeatmapWeek]: "{month}月第{week}週，{count}篇文章",
+	[Key.calendarHeatmapActivity]: "{range}：{posts}篇文章，{dyn}則動態",
 	[Key.advertisement]: "廣告",
 
 	[Key.shareArticle]: "分享",
