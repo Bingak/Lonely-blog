@@ -35,6 +35,8 @@ export const fontsList: FontDefinition[] = [
 		styles: ["normal"],
 		subsets: ["latin", "cyrillic"],
 		fallbacks: ["sans-serif"],
+		// cdn.jsdelivr.net 不可达时，度量回退的额外下载会让 dev/build 直接失败
+		optimizedFallbacks: false,
 	},
 	{
 		name: "Inter",
@@ -44,6 +46,7 @@ export const fontsList: FontDefinition[] = [
 		styles: ["normal"],
 		subsets: ["latin", "cyrillic"],
 		fallbacks: ["sans-serif"],
+		optimizedFallbacks: false,
 	},
 	{
 		name: "JetBrains Mono",
@@ -52,6 +55,7 @@ export const fontsList: FontDefinition[] = [
 		weights: ["400", "700"],
 		styles: ["normal"],
 		subsets: ["latin", "cyrillic"],
+		optimizedFallbacks: false,
 		fallbacks: [
 			"ui-monospace",
 			"SFMono-Regular",

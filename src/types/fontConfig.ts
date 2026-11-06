@@ -41,6 +41,13 @@ export type FontDefinition = {
 	subsets?: string[];
 	/** 回退字体列表 */
 	fallbacks?: string[];
+	/**
+	 * 是否启用 Astro 的字体度量优化回退（默认 true）。
+	 * 该优化会在构建/开发启动时从字体 CDN 额外下载字体文件来计算度量，
+	 * 网络受限（cdn.jsdelivr.net 不可达）时会直接报 CannotFetchFontFile，
+	 * 这种情况关掉即可，仅损失少量 CLS 优化。
+	 */
+	optimizedFallbacks?: boolean;
 	/** 字体显示策略 */
 	display?: "auto" | "optional" | "fallback" | "block" | "swap";
 	/** 本地字体的额外选项（如 variants 定义） */
