@@ -670,6 +670,39 @@ async function handleUmami(request, env, ctx, url) {
 }
 
 /* ---------------------------------------------------------------------------
+ * Vercount 统计反代：POST /vercount/api/v2/log
+ *
+ * 存在的理由与 Umami / Bangumi 反代一致：events.vercount.one 在大陆可能被 SNI 阻断或 DNS 污染，
+ * 访客浏览器直连超时后 PV/UV 就整块丢了（脚本是 defer 的，页面照常显示，所以故障很隐蔽）。
+ * 脚本本体已固化在 public/vercount.js（由资源绑定直接服务，不占反代），这里只反代上报端点。
+ * 访客真实 IP / 地理位置不参与统计，无需像 Umami 那样透传头部；直接转发 JSON body 即可。
+ * ------------------------------------------------------------------------- */
+const VERCOUNT_UPSTREAM = "https://events.vercount.one";
+/** 只放行上报端点，其余一律 404，避免变成通用代理 */
+const VERCOUNT_LOG_PATH = "/vercount/api/v2/log";
+
+async function handleVercount(request, env) {
+	if (request.method !== "POST") {
+		return jsonResponse({ error: "仅支持 POST" }, 405, { Allow: "POST" });
+	}
+
+	const upstreamUrl = `${env.VERCOUNT_UPSTREAM || VERCOUNT_UPSTREAM}/api/v2/log`;
+	const headers = new Headers();
+	for (const key of ["content-type", "user-agent", "accept-language"]) {
+		const value = request.headers.get(key);
+		if (value) headers.set(key, value);
+	}
+	const init = { method: "POST", headers, body: await request.text() };
+
+	const upstream = await fetch(upstreamUrl, init);
+	const body = await upstream.text();
+	return new Response(body, {
+		status: upstream.status,
+		headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
+	});
+}
+
+/* ---------------------------------------------------------------------------
  * 后台登录：POST /api/admin-login 与 POST /api/admin-session
  *
  * 用户名 / 密码存于 Worker Secrets（wrangler secret put ADMIN_USER / ADMIN_PASS），
@@ -823,6 +856,10 @@ export default {
 
 		if (url.pathname === "/umami" || url.pathname.startsWith("/umami/")) {
 			return handleUmami(request, env, ctx, url);
+		}
+
+		if (url.pathname === VERCOUNT_LOG_PATH) {
+			return handleVercount(request, env);
 		}
 
 		if (url.pathname === "/api/friend-apply") {

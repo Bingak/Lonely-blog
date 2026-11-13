@@ -8,7 +8,7 @@ export const analyticsConfig: AnalyticsConfig = {
 	// Umami 统计配置
 	umamiAnalytics: {
 		// Umami Website ID
-		websiteId: "a228e7c9-6234-4d07-98a5-8aa8c6c501da",
+		websiteId: "dd210a43-bfda-440a-85fc-c1a1d87e5519",
 		// Umami JS地址，支持使用自建
 		// 走本站域名的 Worker 反代（见 worker/index.js 的 /umami 路由），避免大陆访客直连 cloud.umami.is 超时丢数据
 		scriptUrl: "https://lonelybing.top/umami/script.js",

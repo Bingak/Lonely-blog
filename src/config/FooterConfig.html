@@ -1,5 +1,6 @@
-<!-- Vercount 访问统计 · 官网 https://vercount.one · GitHub https://github.com/EvanNotFound/vercount -->
-<script defer src="https://events.vercount.one/js"></script>
+<!-- Vercount 访问统计 · 官网 https://vercount.one · GitHub https://github.com/EvanNotFound/vercount
+     脚本本体已固化到 public/vercount.js（同源加载），上报端点走 Worker 反代 /vercount/api/v2/log，避免大陆直连境外超时 -->
+<script defer src="/vercount.js"></script>
 
 <div class="lb-footer">
 	<!-- 建站时间统计 -->
@@ -42,8 +43,6 @@
 		setInterval(updateRuntime, 1000);
 	})();
 </script>
-
-<script defer src="https://cloud.umami.is/script.js" data-website-id="a228e7c9-6234-4d07-98a5-8aa8c6c501da"></script>
 
 <style>
 	/* 页脚美化 · 统一用 lb- 前缀，避免与主题类名冲突。
