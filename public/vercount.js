@@ -1,1 +1,157 @@
-(()=>{var $="/vercount/api/v2/log",E="visitorCountData";var S="vercount_uv_";var s=["site_pv","page_pv","site_uv"];var g=t=>{var e,n,o;if((t==null?void 0:t.status)==="success"&&t.data){var u,a,c;return{site_pv:Number((u=t.data.site_pv)!=null?u:0),page_pv:Number((a=t.data.page_pv)!=null?a:0),site_uv:Number((c=t.data.site_uv)!=null?c:0)}}if((t==null?void 0:t.status)==="error"){var i,r,v,d,m,C;return{site_pv:Number((i=(d=t.data)==null?void 0:d.site_pv)!=null?i:0),page_pv:Number((r=(m=t.data)==null?void 0:m.page_pv)!=null?r:0),site_uv:Number((v=(C=t.data)==null?void 0:C.site_uv)!=null?v:0)}}return{site_pv:Number((e=t==null?void 0:t.site_pv)!=null?e:0),page_pv:Number((n=t==null?void 0:t.page_pv)!=null?n:0),site_uv:Number((o=t==null?void 0:t.site_uv)!=null?o:0)}};var I=()=>{let t=window.location.href;return t.startsWith("http")?t:null},h=()=>{let t=window.location.host||"unknown-host";return`${S}${t.replace(/[^a-zA-Z0-9_-]/g,"_")}`},N=t=>{let e=document.cookie.split("; ").find(n=>n.startsWith(`${t}=`));return e?e.substring(t.length+1):null},A=()=>N(h())==="1",O=()=>{document.cookie=`${h()}=1; path=/; max-age=31536000; samesite=lax`},f=()=>{try{let t=localStorage.getItem(E);return t?g(JSON.parse(t)):null}catch(t){return null}},y=t=>{try{localStorage.setItem(E,JSON.stringify(t))}catch(e){}},b=async(t={})=>{var e,n;let o=(e=t.url)!=null?e:I();if(!o)return null;let u=new AbortController,a=setTimeout(()=>u.abort(),(n=t.requestTimeout)!=null?n:5e3),c=!A();c&&O();try{var i;let r=await fetch((i=t.apiUrl)!=null?i:$,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:o,isNewUv:c}),signal:u.signal});if(clearTimeout(a),!r.ok)throw new Error(`HTTP ${r.status}`);let v=await r.json();return g(v)}catch(r){return clearTimeout(a),t.onError==null||t.onError.call(t,r),null}};var p=[],T=!1,l=null,w=t=>{T||document.readyState!=="loading"?t():(p.push(t),document.addEventListener("DOMContentLoaded",()=>{T=!0,p.forEach(e=>e())},{once:!0}))},_=()=>l||(l={},s.forEach(t=>{l[`busuanzi_value_${t}`]=document.getElementById(`busuanzi_value_${t}`),l[`busuanzi_container_${t}`]=document.getElementById(`busuanzi_container_${t}`),l[`vercount_value_${t}`]=document.getElementById(`vercount_value_${t}`),l[`vercount_container_${t}`]=document.getElementById(`vercount_container_${t}`)}),l),U=t=>{let e=_();s.forEach(n=>{let o=String(t[n]||"0"),u=e[`busuanzi_value_${n}`],a=e[`vercount_value_${n}`];u&&(u.textContent=o),a&&(a.textContent=o)})},D=()=>{let t=_();s.forEach(e=>{let n=t[`busuanzi_container_${e}`],o=t[`vercount_container_${e}`];n&&(n.style.display="inline"),o&&(o.style.display="inline")})},z=()=>{let t=_();s.forEach(e=>{let n=t[`busuanzi_container_${e}`],o=t[`vercount_container_${e}`];n&&(n.style.display="none"),o&&(o.style.display="none")})},R=t=>{(t==null?void 0:t.name)==="AbortError"?console.warn("Request timeout"):console.warn("API error:",t instanceof Error?t.message:t)},P=async()=>{z();let t=await b({onError:R});if(t){U(t),y(t),D();return}let e=f();e&&(U(e),D())};w(P);})();
+/**
+ * Vercount 访问统计客户端脚本（本地化版）
+ *
+ * 官方脚本 https://events.vercount.one/js 用 document.getElementById 填充元素，
+ * 但本站的 SiteStats 卡片在「桌面右侧栏」和「移动端底部」各渲染一份（相同 id），
+ * getElementById 只会命中 DOM 顺序里的第一个（移动端那份，桌面端被 md:hidden 隐藏），
+ * 导致桌面端右侧栏的 PV/UV 永远停留在占位符「—」。
+ *
+ * 这里改为 querySelectorAll 填充所有匹配元素，两份实例都能正确显示；
+ * 上报端点走 Worker 反代 /vercount/api/v2/log（见 worker/index.js 的 handleVercount），
+ * 避免大陆访客直连 events.vercount.one 超时丢数据。
+ */
+(function () {
+	var API = "/vercount/api/v2/log";
+	var STORAGE_KEY = "visitorCountData";
+	var COOKIE_PREFIX = "vercount_uv_";
+	var KEYS = ["site_pv", "page_pv", "site_uv"];
+
+	function cookieName() {
+		var host = window.location.host || "unknown-host";
+		return COOKIE_PREFIX + host.replace(/[^a-zA-Z0-9_-]/g, "_");
+	}
+
+	function readCookie() {
+		var name = cookieName() + "=";
+		var parts = document.cookie.split("; ");
+		for (var i = 0; i < parts.length; i++) {
+			if (parts[i].indexOf(name) === 0) return parts[i].slice(name.length);
+		}
+		return null;
+	}
+
+	function hasVisited() {
+		return readCookie() === "1";
+	}
+
+	function markVisited() {
+		document.cookie = cookieName() + "=1; path=/; max-age=31536000; samesite=lax";
+	}
+
+	/** 兼容官方脚本的三种返回形态（success / error / 裸对象），统一成 { site_pv, page_pv, site_uv } */
+	function normalize(data) {
+		if (data && (data.status === "success" || data.status === "error") && data.data) {
+			return {
+				site_pv: Number(data.data.site_pv) || 0,
+				page_pv: Number(data.data.page_pv) || 0,
+				site_uv: Number(data.data.site_uv) || 0,
+			};
+		}
+		return {
+			site_pv: Number(data && data.site_pv) || 0,
+			page_pv: Number(data && data.page_pv) || 0,
+			site_uv: Number(data && data.site_uv) || 0,
+		};
+	}
+
+	function readCache() {
+		try {
+			var raw = localStorage.getItem(STORAGE_KEY);
+			return raw ? normalize(JSON.parse(raw)) : null;
+		} catch (e) {
+			return null;
+		}
+	}
+
+	function writeCache(data) {
+		try {
+			localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+		} catch (e) {
+			/* 隐私模式 / 配额满时忽略，不影响展示 */
+		}
+	}
+
+	/** 填充所有匹配元素（value 直接写数字；container 切回可见） */
+	function fill(data) {
+		KEYS.forEach(function (key) {
+			var value = String(data[key] || "0");
+			document
+				.querySelectorAll("#vercount_value_" + key + ", #busuanzi_value_" + key)
+				.forEach(function (el) {
+					el.textContent = value;
+				});
+			document
+				.querySelectorAll("#vercount_container_" + key + ", #busuanzi_container_" + key)
+				.forEach(function (el) {
+					el.style.display = "inline";
+				});
+		});
+	}
+
+	/** 请求发出前先隐藏 container，避免闪现占位符 */
+	function hide() {
+		KEYS.forEach(function (key) {
+			document
+				.querySelectorAll("#vercount_container_" + key + ", #busuanzi_container_" + key)
+				.forEach(function (el) {
+					el.style.display = "none";
+				});
+		});
+	}
+
+	function pageUrl() {
+		var href = window.location.href;
+		return href.indexOf("http") === 0 ? href : null;
+	}
+
+	function report() {
+		hide();
+		var url = pageUrl();
+		if (!url) return;
+
+		var isNewUv = !hasVisited();
+		if (isNewUv) markVisited();
+
+		var controller = new AbortController();
+		var timer = setTimeout(function () {
+			controller.abort();
+		}, 5000);
+
+		fetch(API, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ url: url, isNewUv: isNewUv }),
+			signal: controller.signal,
+		})
+			.then(function (res) {
+				clearTimeout(timer);
+				if (!res.ok) throw new Error("HTTP " + res.status);
+				return res.json();
+			})
+			.then(function (data) {
+				var normalized = normalize(data);
+				fill(normalized);
+				writeCache(normalized);
+			})
+			.catch(function (err) {
+				clearTimeout(timer);
+				if (err && err.name === "AbortError") {
+					console.warn("Vercount request timeout");
+				} else {
+					console.warn("Vercount API error:", err instanceof Error ? err.message : err);
+				}
+				var cached = readCache();
+				if (cached) fill(cached);
+			});
+	}
+
+	function ready(fn) {
+		if (document.readyState !== "loading") {
+			fn();
+		} else {
+			document.addEventListener("DOMContentLoaded", fn, { once: true });
+		}
+	}
+
+	ready(report);
+})();
