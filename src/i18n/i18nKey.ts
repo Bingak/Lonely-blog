@@ -458,6 +458,8 @@ enum I18nKey {
 	siteStatsTotalWords = "siteStatsTotalWords",
 	siteStatsRunningDays = "siteStatsRunningDays",
 	siteStatsLastUpdate = "siteStatsLastUpdate",
+	siteStatsVisitors = "siteStatsVisitors",
+	siteStatsViews = "siteStatsViews",
 	siteStatsDaysAgo = "siteStatsDaysAgo",
 	siteStatsDays = "siteStatsDays",
 	today = "today",

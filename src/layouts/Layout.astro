@@ -40,6 +40,7 @@ import { getCanonicalUrl, url } from "@/utils/url-utils";
 
 import "@/styles/main.css";
 import "@/styles/live-photo.css";
+import "@/styles/video-facade.css";
 import "@/styles/textures.css";
 import "@/styles/immersive-reading.css";
 import "@/styles/variables.styl";
@@ -574,6 +575,7 @@ const ogImageAlt = propsOgImageAlt ?? pageTitle;
     <slot />
     <script>
       import "@/utils/live-photo";
+      import "@/utils/video-facade";
     </script>
 
     <!-- 播放器视图脚本：必须在 <slot /> 之后（解析到它时所有 widget 的 DOM 要已存在），

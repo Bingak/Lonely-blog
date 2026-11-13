@@ -80,3 +80,5 @@ class LivePhoto extends HTMLElement {
 if (!customElements.get("live-photo")) {
 	customElements.define("live-photo", LivePhoto);
 }
+
+export {};

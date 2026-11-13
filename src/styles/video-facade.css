@@ -1,0 +1,146 @@
+/* <video-facade> 视频门面样式：封面 + 播放按钮，点击后淡入真正的播放器。
+   外框视觉与 dynamic.css 的「视频统一外框」保持一致（渐变描边 / 圆角 / 投影）。 */
+
+video-facade.video-facade {
+	box-sizing: border-box;
+	display: block;
+	position: relative;
+	max-width: 100%;
+	margin-block: 1rem;
+	border: 2px solid transparent;
+	border-radius: 1rem;
+	background:
+		linear-gradient(#101116, #101116) padding-box,
+		linear-gradient(
+			135deg,
+			color-mix(in srgb, var(--primary) 66%, white 34%),
+			color-mix(in srgb, var(--primary) 24%, transparent),
+			color-mix(in srgb, var(--primary) 52%, white 48%)
+		) border-box;
+	box-shadow:
+		0 0 0 1px rgb(255 255 255 / 10%),
+		0 14px 34px -18px rgb(0 0 0 / 72%);
+	overflow: hidden;
+}
+
+/* 自托管视频：宽度上限与 dynamic.css 的 640px 一致 */
+video-facade.video-facade[data-kind="video"] {
+	max-width: min(100%, 640px);
+}
+
+/* ===== 封面 ===== */
+video-facade.video-facade > .video-facade-cover {
+	display: block;
+	width: 100%;
+	margin: 0;
+	background: #08090d;
+	transition: opacity 280ms ease;
+}
+
+/* 自托管视频封面（poster 图 / 抓帧视频）按内容自适应高度 */
+video-facade.video-facade[data-kind="video"] > img.video-facade-cover,
+video-facade.video-facade[data-kind="video"] > video.video-facade-cover {
+	width: 100%;
+	height: auto;
+	min-height: 9rem;
+	object-fit: contain;
+}
+
+/* 第三方播放器统一 16:9，封面铺满 */
+video-facade.video-facade[data-kind="iframe"] {
+	aspect-ratio: 16 / 9;
+}
+
+video-facade.video-facade[data-kind="iframe"] > .video-facade-cover {
+	height: 100%;
+	object-fit: cover;
+}
+
+/* 无缩略图的第三方占位封面 */
+video-facade.video-facade[data-kind="iframe"] > .video-facade-placeholder {
+	height: 100%;
+	display: grid;
+	place-items: center;
+	color: rgb(255 255 255 / 55%);
+	font-size: 0.9rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+/* ===== 播放器（点击后淡入） ===== */
+video-facade.video-facade > .video-facade-player {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	border: 0;
+	opacity: 0;
+	transition: opacity 280ms ease;
+}
+
+video-facade.video-facade[data-kind="video"] > .video-facade-player {
+	object-fit: contain;
+}
+
+video-facade.video-facade.is-playing > .video-facade-player {
+	opacity: 1;
+}
+
+video-facade.video-facade.is-playing > .video-facade-cover {
+	opacity: 0;
+}
+
+/* ===== 播放按钮 ===== */
+video-facade .video-facade-play {
+	position: absolute;
+	inset: 0;
+	margin: auto;
+	z-index: 2;
+	display: grid;
+	width: 4.25rem;
+	height: 4.25rem;
+	place-items: center;
+	border: 1px solid rgb(255 255 255 / 30%);
+	border-radius: 50%;
+	background: rgb(15 18 28 / 60%);
+	color: white;
+	font-family: inherit;
+	cursor: pointer;
+	box-shadow: 0 6px 20px rgb(0 0 0 / 34%);
+	backdrop-filter: blur(12px) saturate(1.25);
+	transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+}
+
+video-facade .video-facade-play[hidden] {
+	display: none;
+}
+
+video-facade .video-facade-play:hover {
+	transform: scale(1.06);
+	border-color: rgb(255 255 255 / 55%);
+	background: rgb(15 18 28 / 82%);
+}
+
+video-facade .video-facade-play-icon {
+	display: grid;
+	place-items: center;
+	width: 100%;
+	height: 100%;
+}
+
+video-facade .video-facade-play-icon svg {
+	width: 1.6rem;
+	height: 1.6rem;
+	margin-left: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	video-facade.video-facade > .video-facade-cover,
+	video-facade.video-facade > .video-facade-player,
+	video-facade .video-facade-play {
+		transition-duration: 0.01ms;
+	}
+}
