@@ -9,9 +9,73 @@ category: 学习笔记
 slug: mcu-51-part-1
 ---
 
-想把玩 51 单片机的过程记一下。板子是 STC89C52，11.0592MHz 晶振，Keil C51 写代码，stcgal 通过 COM4 烧录，下载时还得手动断电再上电，麻烦归麻烦，能用就行。
+想把学习 51 单片机的过程记一下
+板子是 STC89C52，11.0592MHz 晶振。代码是在 VSCode 里写的(EIDE)，编译用 Keil C51 工具链，烧录用 stcgal，比开 Keil 那个老界面舒服
 
-每个工程目录里还带着一份一模一样的 README，是 SDCC 的 delay_100ms 模板（i=195，j=138，按 12MHz 算的），跟正文没什么关系，纯粹是建工程时复制进来的。
+##VSCode 的配置
+
+EIDE 把 Keil 的编译器接进 VSCode
+项目根目录有一个 `.eide` 文件夹。核心是 `eide.yml`，里面指定芯片类型、源码目录和工具链：
+
+```yaml
+version: "4.1"
+name: 1.点亮LED
+type: C51
+srcDirs:
+  - src
+outDir: build
+targets:
+  Debug:
+    toolchain: Keil_C51
+    toolchainConfigMap:
+      Keil_C51:
+        options:
+          global:
+            ram-mode: SMALL
+            rom-mode: LARGE
+          c/cpp-compiler:
+            optimization-level: level-8
+            optimization-type: SPEED
+    uploader: stcgal
+    uploadConfigMap:
+      stcgal:
+        options: C:/Users/lonel/.eide/stc.flash.json
+```
+
+烧录的串口和型号写在 `stc.flash.json` 里：
+
+```json
+{
+    "device": "stc89",
+    "port": "COM4"
+}
+```
+
+头文件路径和 C51 的关键字（code、sfr、sbit 这些）靠 `.vscode/c_cpp_properties.json` 告诉 VSCode，不然编辑器满屏红线。主要是把 Keil 的头文件目录加进 includePath，再把 C51 专有关键字 define 成空或者 char：
+
+```json
+{
+    "configurations": [{
+        "name": "Keil C51",
+        "includePath": [
+            "${workspaceFolder}/inc",
+            "${workspaceFolder}/src",
+            "D:/KeilC51/C51/INC",
+            "D:/KeilC51/C51/INC/Atmel"
+        ],
+        "defines": [
+            "__C51__",
+            "code=", "sfr=char", "sbit=char", "bit=char",
+            "interrupt=", "using=", "data=", "xdata="
+        ],
+        "intelliSenseMode": "${default}"
+    }],
+    "version": 4
+}
+```
+
+编译、烧录、清理这些操作 EIDE 已经注册成 VSCode 任务了，`.vscode/tasks.json` 里直接调用它的命令，`Ctrl+Shift+B` 就能 build。.code-workspace 里还推荐了 `cl.eide`、串口监视器这些插件。
+
 
 ## 让一颗LED亮起来
 
