@@ -51,7 +51,7 @@ CPU 都 80 多度了，跟要原地升空一样，(直升机已起飞)
 
 ![CCD00 全开、CCD01 全关，等于把第二个 CCD 整个关掉](https://img.lonelybing.top/file/post/amd-core-count-ccd.jpg)
 
-我把 CCD01 整条设 0，只留 CCD00 那 8 个核.任务管理器内核变 8、逻辑处理器变 16，L3 从 64MB 掉到 32MB.
+我把 CCD01 整条设 0，只留 CCD00 那 8 个核.任务管理器内核变 8、逻辑处理器变 16，L3 从 64MB 减少到 32MB.
 
 ![任务管理器：8 核 16 线程，确实只剩一个 CCD 了](https://img.lonelybing.top/file/post/amd-taskmanager-8c16t.jpg)
 

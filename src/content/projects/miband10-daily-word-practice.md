@@ -28,11 +28,11 @@ lang: "zh_CN"
 
 ## 项目概述
 
-MiBand10-Daily-Word-Practice 是个跑在小米手环 10 标准版上的每日背单词小程序. 
-它本来是 9 Pro 版的 [MiBand-Daily-Word-Practice](https://github.com/Bingak/MiBand-Daily-Word-Practice) 往手环 10 上移植的适配版，
-功能和实现方式跟 9 Pro 那版一模一样
+MiBand10-Daily-Word-Practice 是个跑在小米手环 10 标准版上的每日背单词小程序。
+它是从 9 Pro 版的 [MiBand-Daily-Word-Practice](https://github.com/Bingak/MiBand-Daily-Word-Practice) 移植过来的适配版，
+功能和实现方式跟那版一模一样。
 
-尝试把「墨墨背单词」最核心的那点思路——让记忆越模糊的单词出现得越频繁——塞进手环里，（~~肯定有不少bug~~）. *~~高中生福利喵~~~*
+我试着把「墨墨背单词」最核心的那点思路——让记忆越模糊的单词出现得越频繁——塞进手环里，（~~肯定有不少 bug~~）。*~~高中生福利喵~~~*
 
 开源地址：[https://github.com/Bingak/MiBand10-Daily-Word-Practice](https://github.com/Bingak/MiBand10-Daily-Word-Practice)
 
@@ -44,13 +44,13 @@ MiBand10-Daily-Word-Practice 是个跑在小米手环 10 标准版上的每日�
 
 ![每日记单词主菜单](https://img.lonelybing.top/file/post/miband10-daily-word-practice-menu.png)
 
-内置词表塞了不少单词汉译和短语，词库文件差不多有 ==6MB== 大. 手环空间不足的话，建议先腾点地方再装.
+内置词表塞了不少单词汉译和短语，词库文件差不多有 ==6MB== 大. 手环空间不足的话，建议先腾点地方再装喵~
 
 ## 从 9 Pro 到手环 10：移植适配
 
 手环 9 Pro 的屏是 336×480，手环 10 标准版换成了 212×520 的胶囊形窄屏（DPR 2，326 PPI）
 
-- 改动：`manifest.json` 沿用 `designWidth: "device-width"`（px 与物理像素 1:1 映射）、`minPlatformVersion: 1200`、`deviceTypeList: ["watch"]`，手环 10兼容
+- 改动：`manifest.json` 沿用 `designWidth: "device-width"`（px 与物理像素 1:1 映射）、`minPlatformVersion: 1200`、`deviceTypeList: ["watch"]`，手环 10兼容~
 - 样式重构：移除 336px 固定容器宽度，重排头部时间的绝对定位，字号、按钮、卡片、圆角等尺寸整体按窄屏重调；5 个主菜单按钮在 520px 高度内完整展示，无需滚动
 - 逻辑无改动：所用 API（router / storage / prompt / brightness / configuration）与组件（div / text / scroll / switch / input）都是 Vela Level 1 基础能力，两代设备通用
 
@@ -65,7 +65,7 @@ MiBand10-Daily-Word-Practice 是个跑在小米手环 10 标准版上的每日�
 
 ### 四档记忆状态
 
-每个单词被复习的时候，你可以给它四种反馈. 你选哪一档，直接决定它以后出场的频率：
+每个单词被复习时，你可以给它四种反馈。选哪一档，直接决定它以后出场的频率。
 
 | 状态 | 颜色 | 含义 | 后续行为 |
 | --- | --- | --- | --- |
@@ -81,11 +81,11 @@ MiBand10-Daily-Word-Practice 是个跑在小米手环 10 标准版上的每日�
 - 除「熟知」外的所有单词，统一归入 **「待练习单词」**
 - 每天从待练习单词内**随机抽取 50 个**单词作为当天的任务
 - 当天反复出现的次数按记忆状态区分（认识 3 次 / 模糊 5 次 / 忘记 7 次），越生疏的单词被出现的次数越多
-- 一旦标记为熟知，该词便彻底退出练习队列，不再浪费时间
+- 一旦标记为熟知，该词便彻底退出练习队列，不再浪费时间。
 
 ### 复习与学习统计
 
-除了当天的任务，还提供复习功能，可以回看近 7 日学习统计. *数据不会骗人*——坚持没坚持，一眼就能看出来.
+除了当天的任务，还提供复习功能，可以回看近 7 日学习统计。数据不会骗人，坚持没坚持，一眼就能看出来。
 
 ![数据统计界面](https://img.lonelybing.top/file/post/miband10-daily-word-practice-stats.png)
 
@@ -99,7 +99,7 @@ MiBand10-Daily-Word-Practice 是个跑在小米手环 10 标准版上的每日�
 
 ### 简洁的界面
 
-UI 走极简路线，理由很诚实：作者懒得加喵~
+UI 走极简路线，理由很诚实：我懒得加 XD
 
 ## 词库与数据格式
 
@@ -119,7 +119,7 @@ UI 走极简路线，理由很诚实：作者懒得加喵~
 | `phonetic` | 音标 |
 | `chinese` | 释义，多个义项与短语之间用 `\|` 分隔 |
 
-顺带一提，想换成自己的词表（考研、雅思啥的），只要保持上面这三段式结构、替掉 `words.js` 就行. 有定制需求也可以找作者聊喵~.
+顺带一提，想换成自己的词表，比如考研、雅思，只要保持上面这三段式结构，替掉 `words.js` 就行。有定制需求也可以找我聊喵~
 
 ## 使用说明
 
@@ -144,13 +144,13 @@ git clone https://github.com/Bingak/MiBand10-Daily-Word-Practice.git
 1. 打开小程序，进当天的练习，自动从「待练习单词」里抽 50 个
 2. 一个个答，按记忆实况选 熟知 / 认识 / 模糊 / 忘记
 3. 生词会被反复叩问好几轮，直到当天任务做完
-4. 有空翻翻近 7 日学习统计，看看自己是不是又偷懒了喵~!
+4. 有空翻翻近 7 日学习统计，看看自己是不是又偷懒了~
 
 ## 说明与反馈
 
 - 本仓库是小米手环 10 标准版适配版；小米手环 9 Pro 版本请见 [MiBand-Daily-Word-Practice](https://github.com/Bingak/MiBand-Daily-Word-Practice)
-- 更新节奏看作者的驾照练习进度，但只要有空就会接着维护
-- 作者现在也在用这小程序备考，有问题或建议欢迎来戳：**LonelyBing@outlook.com**
+- 更新节奏看我的驾照练习进度，但只要有空就会接着维护
+- 我现在也在用这小程序备考，有问题或建议欢迎来戳：**LonelyBing@outlook.com**
 - 觉得有用的话，可以去 [爱发电](https://ifdian.net/a/LonelyBing) 支持一下
 
-希望大家都能取得好成绩！！喵~
+希望大家都能取得好成绩喵~

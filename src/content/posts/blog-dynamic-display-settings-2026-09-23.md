@@ -16,7 +16,7 @@ series: "博客"
 
 ## 一、添加设置面板
 
-Firefly 主题本来就带一个显示设置面板组件，只是默认 `enable: false` 关着的——因为开启后整套运行时切换逻辑会打进客户端产物，大概 +33 KB/页。本尊权衡了一下还是决定开，毕竟谁不想不重新构建就能换壁纸和配色
+Firefly 主题本身就带一个显示设置面板组件，只是默认 `enable: false` 关着。开启之后，整套运行时切换逻辑会打进客户端产物，大概每页多出 33 KB。我权衡了一下还是决定开——毕竟谁不想不重新构建就能换壁纸和配色。
 
 ```typescript
 // src/config/displaySettingsConfig.ts
@@ -40,13 +40,13 @@ enable: true,
 
 ![特效标签页的樱花开关](https://img.lonelybing.top/file/post/display-panel-effects-sakura.png)
 
-偏好全部存在 localStorage 里，刷新不丢。另外这一项也可以不改代码，直接在部署平台配 `PUBLIC_DISPLAY_SETTINGS=true` 环境变量覆盖喵~（记得是**构建环境变量**，`PUBLIC_*` 是构建时内联进产物的，配成运行时变量不会生效）
+偏好全部存在 localStorage 里，刷新不丢。这一项也可以不改代码，直接在部署平台配 `PUBLIC_DISPLAY_SETTINGS=true` 环境变量来覆盖喵~（记得这是**构建环境变量**，`PUBLIC_*` 会在构建时内联进产物，配成运行时变量是不会生效的）。
 
 ---
 
 ## 二、Material 3 动态配色：九种风格 + 两种规范
 
-这是这次最大的一块。参考了 [Shirone](https://github.com/LyraVoid/Shirone) 的实现，把 M3 的 HCT 色空间配色引擎搬了过来。
+这是这次工作量最大的一块。我参考了 [Shirone](https://github.com/LyraVoid/Shirone) 的实现，实现了 M3 的 HCT 色空间配色引擎
 
 ### 面板长这样
 
@@ -80,19 +80,19 @@ export function resolveScheme(
 
 ### 怎么接到本站的颜色系统上
 
-本站的颜色全部从 `--hue` 派生，写死在 `variables.styl` 里。本尊不想把这套东西推翻重写，所以做的是**覆盖 + 回退**：
+本站的颜色全部从 `--hue` 派生，写在 `variables.styl` 里。我不想把这套东西推翻重写，所以采用的做法是**覆盖 + 回退**：
 
 ```stylus
 --primary: var(--mc-primary, oklch(0.70 0.14 var(--hue)))
 --selection-bg: var(--mc-secondary-container, oklch(0.85 0.06 var(--hue)))
 ```
 
-JS 只在 `<html>` 上写 `--mc-*` 这两个变量，没写的时候浏览器自动用后面的 oklch 回退值。所以：
+JS 只往 `<html>` 上写 `--mc-*` 这两个变量，没写的时候浏览器会自动用后面的 oklch 回退值。这样一来：
 
-- **默认那一档（色调点 + 2025）根本不注入任何覆盖变量**，站点看着跟原来一模一样，还是本尊调了半天的青蓝色
-- 只有主动切了别的风格，M3 配色才接管
+- **默认那一档（色调点 + 2025）根本不注入任何覆盖变量**，站点看上去跟原来一模一样，还是我调了半天的那个青蓝色
+- 只有主动切到别的风格，M3 配色才会接管
 
-这个设计很重要，不然一上线全站颜色就变了
+这个设计很重要，不然一上线全站颜色就全变了。
 
 ### 明暗切换和色相联动
 
@@ -106,7 +106,7 @@ function refreshMcScheme(): void {
 }
 ```
 
-这里用动态 `import()` 而不是顶部静态导入，是为了让面板关闭时整套 M3 引擎不进主包——不然白省了体积喵~
+这里用动态 `import()` 而不是顶部静态导入，是为了面板关闭的时候整套 M3 引擎不进主包，不然前面省下来的体积就白省了喵~
 
 ---
 
@@ -157,13 +157,13 @@ html[data-wallpaper-mode="none"][data-texture-preset="starlight"] #texture-canva
 --texture-c: oklch(0.68 0.13 calc(var(--hue) - 70));
 ```
 
-所以换主题色时纹理会自己跟着变，暗色模式下另有单独一档浓度（浅色 `0.4` / 暗色 `0.35`）
+所以换主题色时纹理会自己跟着变，暗色模式下另有单独一档浓度（浅色 `0.4` / 暗色 `0.35`）。
 
-这里踩过一个小坑：一开始照搬参考实现里的 `0.12`，结果在浅色页面上**几乎完全看不见**，本尊一度以为是 mask 没生效。原因是本站浅色底色的亮度高达 `oklch(0.95)`，纹理色大概 `0.7`，`0.12` 的不透明度混合下来只差 0.03 个亮度，肉眼根本分不出来。所以浓度这东西得按自己主题的明度算，别照抄
+这里踩过一个小坑：一开始我照搬了参考实现里的 `0.12`，结果在浅色页面上**几乎完全看不见**，一度以为是 mask 没生效。后来查下来，原因是本站浅色底色的亮度高达 `oklch(0.95)`，纹理色大概在 `0.7` 左右，`0.12` 的不透明度混合下来只差 0.03 个亮度，肉眼根本分不出来。所以浓度这个东西还是得按自己主题的明度来算，照抄是行不通的。
 
 ### 面板图标要加进离线集合
 
-六个按钮的图标一开始全渲染成了空心圆圈——因为本站 Svelte 组件用的 `Icon.svelte` 是 **@iconify 离线模式**，只认 `src/constants/icons-data.json` 里预裁剪好的那几十个图标，没网请求也不会自动兜底，找不到就画一个空心圆当占位（所以不报错，只是不显示）.
+六个按钮的图标一开始全渲染成了空心圆圈。原因是本站 Svelte 组件用的 `Icon.svelte` 走的是 **@iconify 离线模式**，只认 `src/constants/icons-data.json` 里预裁剪好的那几十个图标，没有网络请求，也不会自动兜底，找不到就画一个空心圆当占位——所以不报错，只是不显示。
 
 解法是从本地已装的 `@iconify-json/material-symbols` 里把需要的图标抠出来追加进 JSON：
 
@@ -175,13 +175,13 @@ for (const w of want) {
 }
 ```
 
-顺便一提，`block-rounded` 这个名字在 material-symbols 里**根本不存在**，得用 `block`——查名字最靠谱的办法是直接翻 `node_modules/@iconify-json/*/icons.json` 的 `icons` 键
+顺便一提，`block-rounded` 这个名字在 material-symbols 里**根本不存在**，得用 `block`——查名字最靠谱的办法是直接翻 `node_modules/@iconify-json/*/icons.json` 的 `icons` 键。
 
 ### 两个小细节
 
-**只在纯色模式生效**：选择器前置了 `html[data-wallpaper-mode="none"]`，切到横幅/全屏/覆盖透明时纹理自动让位——不然跟图片打架
+**只在纯色模式生效**：选择器前置了 `html[data-wallpaper-mode="none"]`，切到横幅/全屏/覆盖透明时纹理会被隐藏，避免和图片叠在一起。
 
-**动画静止**：`prefers-reduced-motion: reduce` 下三条 keyframes 全部 `animation: none`，尊重一下晕 3D 的访客~
+**动画静止**：`prefers-reduced-motion: reduce` 下三条 keyframes 全部 `animation: none`，算是照顾一下晕 3D 的访客~
 
 动画本体是平移 `mask-position`，不是移动元素，所以很轻：
 
@@ -192,7 +192,7 @@ for (const w of want) {
 }
 ```
 
-另外纹理预设是在主题初始化的那段内联脚本里、首帧之前恢复到 `<html data-texture-preset>` 上的，不然刷新时会看到纹理晚一步闪出来喵~
+另外，纹理预设是在主题初始化的那段内联脚本里、首帧之前恢复到 `<html data-texture-preset>` 上的，不然刷新的时候会看到纹理晚一步才闪出来喵~
 
 ---
 
@@ -228,7 +228,7 @@ ui.waveBar.setAttribute('d', _wavePath(Math.max(head, 0.01), amp, -WAVE_LEN));
 ui.waveTrack.setAttribute('d', _linePath(head, waveW));
 ```
 
-`viewBox` 宽度被设成容器的实际像素宽（`1 用户单位 = 1px`），所以 CSS 里 `translateX(-40px)` 刚好是一个波长，流动动画无缝循环
+`viewBox` 宽度被设成容器的实际像素宽（`1 用户单位 = 1px`），所以 CSS 里 `translateX(-40px)` 刚好是一个波长，流动动画可以无缝循环。
 
 ### 播放 / 暂停的状态变化
 
@@ -239,11 +239,11 @@ var speed = ampTarget > amp ? 1 / 0.4 : 1 / 0.5; // 升起快、落下慢
 amp += (ampTarget - amp) * Math.min(1, dt * speed);
 ```
 
-所以点暂停的时候波浪是**缓缓摊平**的，比瞬间消失好看很多
+所以点暂停的时候波浪是**缓缓摊平**的，比瞬间消失好看很多。
 
 ### 拖拽 seek
 
-原来是 `click` 一下跳转，这次改成 pointer 事件三件套：按下即冻结波浪流动（`.wave-dragging` 把 `animation-play-state` 设成 `paused`），拖动实时重画波形预览，抬起才真正 `mgr.seek()`。加上 `ResizeObserver` 监听容器宽度，侧栏收放、窗口缩放都能自动重算 viewBox 喵~
+原来是 `click` 一下跳转，这次改成了 pointer 事件三件套：按下就冻结波浪的流动（`.wave-dragging` 把 `animation-play-state` 设成 `paused`），拖动的时候实时重画波形预览，抬起才真正调用 `mgr.seek()`。再加上 `ResizeObserver` 监听容器宽度，侧栏收放、窗口缩放都能自动重算 viewBox 喵~
 
 ---
 
@@ -256,7 +256,7 @@ Cannot find module '...\@material\material-color-utilities\dynamiccolor\dynamic_
 imported from ...\dynamiccolor\color_spec_2025.js
 ```
 
-文件明明就在那儿（`dynamic_color.js`），一度以为是 pnpm 装坏了，重装了三遍
+文件明明就在那儿（`dynamic_color.js`），一度以为是 pnpm 装坏了，重装了三遍。
 
 后来直接 grep 包内部才发现是**上游打包的 bug**——一共 10 处相对 import 漏了 `.js` 后缀：
 
@@ -288,7 +288,7 @@ patchedDependencies:
   '@material/material-color-utilities@0.4.0': patches/@material__material-color-utilities@0.4.0.patch
 ```
 
-**记得把 `patches/` 目录提交进仓库**喵~ 只提交 `package.json` 是不够的，补丁文件不在的话 CI 上还是原版，（本尊差点就漏了这个喵~）
+**记得把 `patches/` 目录提交进仓库**。只提交 `package.json` 是不够的，补丁文件不在的话，CI 上装到的还是原版——我差点就漏了这一步（XD）。
 
 ---
 
@@ -318,4 +318,4 @@ patchedDependencies:
 - 面板总开关关掉时，M3 引擎和纹理逻辑都不会进主包，构建体积不受影响
 - 欢迎反馈问题与建议：**LonelyBing@outlook.com**
 
-就这样~ 现在博客终于做到不重新构建就能换壁纸、换配色、换纹理了，本尊可以安心摸鱼了喵~
+就先写到这儿。现在博客终于做到了不重新构建就能换壁纸、换配色、换纹理，我可以安心摸鱼了喵~
