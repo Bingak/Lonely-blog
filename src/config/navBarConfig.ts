@@ -120,7 +120,7 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 			},
 			{
 				name: "后台",
-				url: "https://api.lonelybing.top/",
+				url: "https://api.lonelybing.top/admin-panel.html",
 				external: true,
 				icon: "material-symbols:admin-panel-settings-rounded",
 			},
